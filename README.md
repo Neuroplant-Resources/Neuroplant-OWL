@@ -27,5 +27,12 @@ Tasks:
 
 
 <!---
+Have each team member count manually in imageJ
+
+For August 22- work in parallel, check in with things we found
+Later- make code more robust over time
+--->
+
+<!---
 Google drive API tutorial: https://codelabs.developers.google.com/codelabs/gsuite-apis-intro/
  --->
