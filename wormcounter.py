@@ -13,7 +13,7 @@ layout = [
     [sg.Text('Choose whether you would like to process a single image or all images from a batch')],     
     [sg.Frame(layout=[            
     [sg.Radio('Single Image', "RADIO1", default=True, size=(15,1), key='_SINGLE_', enable_events=True), sg.Radio('Batch', "RADIO1", key='_BATCH_', enable_events=True)]], title='Options',title_color='red', relief=sg.RELIEF_SUNKEN)],     
-    [sg.Text('_'  * 120)],
+    [sg.Text('_'  * 120, justification='center')],
     
     [sg.Frame('Single Pic', key = '_test_', visible = False, layout=[
     
@@ -46,15 +46,19 @@ layout = [
         sg.InputText('Default Folder'), sg.FileBrowse()],      
             ])]])],
     
-    [sg.Frame('Connecting file paths to the code', key='_Folder_', visible=False, layout = [ 
+    [sg.Frame('Connecting file paths to the code', size=(50,1), key='_Folder_', visible=False, layout = [ 
     [sg.Text('Choose A Folder', size=(35, 1))],      
-    [sg.Text('Your Folder', size=(15, 1), auto_size_text=False, justification='right'),      
-        sg.InputText('Default Folder'), sg.FolderBrowse()],      
+    [sg.Text('File path to the folder containg images to be analyzed', size=(20, 1), auto_size_text=False, justification='right'),      
+        sg.InputText('Default Folder'), sg.FolderBrowse()],
+    [sg.Text('Select the Image Metadata file:', size=(20, 1), auto_size_text=False, justification='right'),      
+        sg.InputText('Default Folder'), sg.FileBrowse()],
+     [sg.Text('Select the Batch Metadata file:', size=(20, 1), auto_size_text=False, justification='right'),      
+        sg.InputText('Default Folder'), sg.FileBrowse()],            
     [sg.Submit(tooltip='Click to submit this window')] ])  ],
     [sg.Exit()]]
 
 
-window1 = sg.Window('Worm Counter', layout, default_element_size=(40, 1), grab_anywhere=False, keep_on_top=True)      
+window1 = sg.Window('Worm Counter', layout, default_element_size=(50, 1), grab_anywhere=False, keep_on_top=True)      
 
 
 
