@@ -7,14 +7,14 @@ dependencies:
   - imageio
   - ipython
   - jupyter
-  - matplotlib=3.1.0
+  - matplotlib
   - numpy=1.16.4
   - pillow
   - pip
   - pydrive
   - python=3.7.4
   - pyyaml
-  - scikit-image=0.15.0
+  - scikit-image=0.16.2
   - scipy=1.3.1
   - seaborn=0.9.0
   - statsmodels=0.10.1
