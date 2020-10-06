@@ -19,27 +19,27 @@ layout = [
     [sg.Frame('Single Pic', key = '_test_', visible = False, layout=[
     
     [sg.Frame('Worm Strains in Each Well', visible = True, layout=[
-    [sg.Text('Strain in Well P'), sg.InputText()],
-    [sg.Text('Strain in Well Q'), sg.InputText()],
-    [sg.Text('Strain in Well R'), sg.InputText()],
-    [sg.Text('Strain in Well S'), sg.InputText()]])],
+    [sg.Text('Strain in Well P', size=(15,1)), sg.InputText()],
+    [sg.Text('Strain in Well Q', size=(15,1)), sg.InputText()],
+    [sg.Text('Strain in Well R', size=(15,1)), sg.InputText()],
+    [sg.Text('Strain in Well S', size=(15,1)), sg.InputText()]])],
     
     [sg.Frame('Slot 1 Data', visible = True, layout=[
-    [sg.Text('Plate ID'), sg.InputText()],
-    [sg.Text('Compound'), sg.InputText()]]
+    [sg.Text('Plate ID', size=(15,1)), sg.InputText()],
+    [sg.Text('Compound', size=(15,1)), sg.InputText()]]
     ),
     sg.Frame('Slot 2 Data',visible = True,  layout=[
-    [sg.Text('Plate ID'), sg.InputText()],
-    [sg.Text('Compound'), sg.InputText()]
+    [sg.Text('Plate ID', size=(15,1)), sg.InputText()],
+    [sg.Text('Compound', size=(15,1)), sg.InputText()]
     ])],
 
     [sg.Frame('Slot 3 Data',visible = True, layout=[
-    [sg.Text('Plate ID'), sg.InputText()],
-    [sg.Text('Compound'), sg.InputText()]]
+    [sg.Text('Plate ID', size=(15,1)), sg.InputText()],
+    [sg.Text('Compound', size=(15,1)), sg.InputText()]]
     ),
     sg.Frame('Slot 4 Data',visible = True,  layout=[
-    [sg.Text('Plate ID'), sg.InputText()],
-    [sg.Text('Compound'), sg.InputText()]
+    [sg.Text('Plate ID', size=(15,1)), sg.InputText()],
+    [sg.Text('Compound', size=(15,1)), sg.InputText()]
     ])],
 
     [sg.Frame('Choose the image file to be analyzed', visible=True, layout=[     
@@ -48,7 +48,7 @@ layout = [
             ])]])],
     
     [sg.Frame('Connecting file paths to the code', key='_Folder_', visible=False, layout = [ 
-    [sg.Text('Choose A Folder', size=(35, 1))],      
+    [sg.Text('Choose A Folder', size=(15, 1))],      
     [sg.Text('Your Folder', size=(15, 1), auto_size_text=False, justification='right'),      
         sg.InputText('Default Folder'), sg.FolderBrowse()],      
     [sg.Submit(tooltip='Click to submit this window')] ])  ],
