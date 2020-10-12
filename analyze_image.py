@@ -1,9 +1,7 @@
 import pandas as pd
 import time
 from skimage.io import imread, imshow
-from skimage import filters
 from skimage import feature
-from skimage import morphology
 from skimage import measure
 from skimage import exposure
 import matplotlib as mpl
@@ -20,10 +18,9 @@ import numpy as np
 from skimage.io import imread
 from skimage.util import crop
 from skimage import data
-from skimage.filters import threshold_otsu
+from skimage.filters import threshold_otsu, threshold_li
 from skimage.segmentation import clear_border
 from skimage.measure import label, regionprops, regionprops_table
-from skimage.color import label2rgb
 from skimage.morphology import closing, square, remove_small_objects
 
 
@@ -65,14 +62,14 @@ def loopWell(df_f,image,path_rslt):
     for well in range(len(df_f)):
 
 #     fin_image = image[ df_f[][]:Lower_boundary , Left_boundary:Right_boundary ]
-        new_image=np.invert(image)
-        fin_image = new_image[ df_f['bbox-0'][well]:df_f['bbox-2'][well], df_f['bbox-1'][well]:df_f['bbox-3'][well]]
+        
+        fin_image = image[ df_f['bbox-0'][well]:df_f['bbox-2'][well], df_f['bbox-1'][well]:df_f['bbox-3'][well]]
         wellno = df_f['WellNo'][well]
         image_dims = fin_image.shape
         print(wellno)
 
         
-        thresh = threshold_otsu(fin_image)
+        thresh = threshold_li(fin_image)
         binarized = closing(fin_image > thresh, square(10))
         #imshow(binarized)
         
