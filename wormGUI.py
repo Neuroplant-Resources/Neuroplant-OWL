@@ -30,28 +30,28 @@ def make_single_win():
 	layout3 = [
 	[sg.Frame('Single Pic', key = '_test_', layout=[
 
-	[sg.Frame('Worm Strains in Each Well', visible = True, layout=[
+	[sg.Frame('Worm Strains in Each Well', visible = False, layout=[
 	[sg.Text('Strain in Well P', size=(15,1)), sg.InputText(key='-StrainP-')],
-	[sg.Text('Strain in Well Q', size=(15,1)), sg.InputText()],
-	[sg.Text('Strain in Well R', size=(15,1)), sg.InputText()],
-	[sg.Text('Strain in Well S', size=(15,1)), sg.InputText()]])],
+	[sg.Text('Strain in Well Q', size=(15,1)), sg.InputText(key='-StrainQ-')],
+	[sg.Text('Strain in Well R', size=(15,1)), sg.InputText(key='-StrainR-')],
+	[sg.Text('Strain in Well S', size=(15,1)), sg.InputText(key='-StrainS-')]])],
 
 	[sg.Frame('Slot 1 Data', visible = True, layout=[
-	[sg.Text('Plate ID', size=(15,1)), sg.InputText()],
-	[sg.Text('Compound', size=(15,1)), sg.InputText()]]
+	[sg.Text('Plate ID', size=(15,1)), sg.InputText(key='-PID1-')],
+	[sg.Text('Compound', size=(15,1)), sg.InputText(key='-Compound1-')]]
 	),
 	sg.Frame('Slot 2 Data',visible = True,  layout=[
-	[sg.Text('Plate ID', size=(15,1)), sg.InputText()],
-	[sg.Text('Compound', size=(15,1)), sg.InputText()]
+	[sg.Text('Plate ID', size=(15,1)), sg.InputText(key='-PID2-')],
+	[sg.Text('Compound', size=(15,1)), sg.InputText(key='-Compound2-')]
 	])],
 
 	[sg.Frame('Slot 3 Data',visible = True, layout=[
-	[sg.Text('Plate ID', size=(15,1)), sg.InputText()],
-	[sg.Text('Compound', size=(15,1)), sg.InputText()]]
+	[sg.Text('Plate ID', size=(15,1)), sg.InputText(key='-PID3-')],
+	[sg.Text('Compound', size=(15,1)), sg.InputText(key='-Compound3-')]]
 	),
 	sg.Frame('Slot 4 Data',visible = True,  layout=[
-	[sg.Text('Plate ID', size=(15,1)), sg.InputText()],
-	[sg.Text('Compound', size=(15,1)), sg.InputText()]
+	[sg.Text('Plate ID', size=(15,1)), sg.InputText(key='-PID4-')],
+	[sg.Text('Compound', size=(15,1)), sg.InputText(key='-Compound4-')]
 	])],
 
 	[sg.Frame('Choose the image file to be analyzed', visible=True, layout=[  
@@ -89,7 +89,10 @@ def main():
 				if e3 == 'Analyze':
 					fpath = (v3['-file-'])
 					rpath = (v3['-results-'])
-					ai.crop_image(fpath, rpath)
+					test = v3
+					print(type(test))
+					#ai.crop_image(fpath, rpath)
+
 					break
 				if e3 in (None, 'Exit'):
 					break
