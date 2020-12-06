@@ -55,21 +55,28 @@ def calc_chemotaxis_index(filtered_worm, dims):
     except ZeroDivisionError:
         return 0
     
+def slots_wells(row):
+    row['Slot'] = row['WellNo'][0]
+    row['Well'] = row['WellNo'][1]
+    return row
 
+def loopWell(df_f,image,path_rslt, vals):
 
-def loopWell(df_f,image,path_rslt):
-
-    for well in range(len(df_f)):
+    for index, row in df_f.iterrows():
 
 #     fin_image = image[ df_f[][]:Lower_boundary , Left_boundary:Right_boundary ]
         
-        fin_image = image[ df_f['bbox-0'][well]:df_f['bbox-2'][well], df_f['bbox-1'][well]:df_f['bbox-3'][well]]
-        wellno = df_f['WellNo'][well]
+        fin_image = image[ df_f['bbox-0'][index]:df_f['bbox-2'][index], df_f['bbox-1'][index]:df_f['bbox-3'][index]]
+        wellno = df_f['WellNo'][index]
         image_dims = fin_image.shape
-        print(wellno)
-
+        compound_key = '-Compound' + wellno[0] + '-'
+        pid_key = '-PID' + wellno[0] + '-'
+        plate_id = vals.get(pid_key)
+        compound = vals.get(compound_key)
+        df_f['Compound'] = compound_key
+        print(compound)
         
-        thresh = threshold_li(fin_image)
+        thresh = threshold_otsu(fin_image)
         binarized = closing(fin_image > thresh, square(10))
         #imshow(binarized)
         
@@ -93,14 +100,16 @@ def loopWell(df_f,image,path_rslt):
         #sns.scatterplot(x='centroid-1', y='centroid-0', ax=axes, data=filtered_worm, s=10,color='red',edgecolor='none', legend=False )
         #fig.savefig(fig_path.joinpath(wellno + ".tif"), orientation='landscape')
         
-
+        tw = len(filtered_worm)
         CI = calc_chemotaxis_index(filtered_worm,image_dims)
-        df_f.loc[df_f['WellNo'] == wellno, 'Chemotaxis'] = CI
+        df_f['Chemotaxis']=CI
+        #df_f.loc[df_f['WellNo'] == wellno, 'Chemotaxis'] = CI
+        df_f.loc[df_f['WellNo'] == wellno, 'Total Worms'] = tw
     df_f.to_csv(path_or_buf= path_rslt.joinpath('test_summary.csv'))
         #save_worm_locations(df_f,filtered_worm,path_rslt,label)
 
 
-def crop_image(flpath, rslt_path):
+def crop_image(flpath, rslt_path, vals):
     label_begin = time.time()
     #os.chdir(path_img)
 
@@ -110,7 +119,8 @@ def crop_image(flpath, rslt_path):
     image_nvrt = np.invert(image)
     # apply threshold
     print('At threshold')
-    thresh = filters.threshold_otsu(image_nvrt)
+    thresh = threshold_otsu(image_nvrt)
+    print('Threshold: ' + str(thresh))
     bw = closing(image_nvrt > thresh, square(10))
 
     # remove artifacts connected to image border
@@ -126,7 +136,8 @@ def crop_image(flpath, rslt_path):
     dff=pd.DataFrame(props)
 
     df_area = dff.sort_values(by=['area'], ascending=False)
-    center_mass = (df_area['centroid-1'][0], df_area['centroid-0'][0])
+    image_center = (int(label_image.shape[1]/2),int(label_image.shape[0]/2))
+    print('Center of image = ' + str(image_center))
     df_area.to_csv(path_or_buf=path_rslt.joinpath('df_area.csv'))
 
     wells = df_area[(df_area.area>= 2000000) & (df_area.area<=2500000)]
@@ -137,7 +148,7 @@ def crop_image(flpath, rslt_path):
 
     #df.to_csv(path_or_buf=path_rslt.joinpath('df.csv'))
     # Sort the plates into the left and right
-    mask1 = wells['bbox-1'] > center_mass[0]
+    mask1 = wells['bbox-1'] > image_center[0]
     df_r = wells[mask1]
     df_l = wells[~mask1]
 
@@ -146,7 +157,7 @@ def crop_image(flpath, rslt_path):
     dffr.reset_index(drop=True, inplace=True)
 
 
-    mask2 = df_r['bbox-0'] > center_mass[1]
+    mask2 = df_r['bbox-0'] > image_center[1]
     dff4 = df_r[mask2]
     dff1 = df_r[~mask2]
 
@@ -161,7 +172,7 @@ def crop_image(flpath, rslt_path):
     dffl.reset_index(drop=True, inplace=True)
 
     #MinCol2=1.05*list(dffl.items())[3][1][3]
-    mask = df_l['bbox-0'] > center_mass[1]
+    mask = df_l['bbox-0'] > image_center[1]
     dff3 = df_l[mask]
     dff2 = df_l[~mask]
 
@@ -172,22 +183,24 @@ def crop_image(flpath, rslt_path):
     df2.reset_index(drop=True, inplace=True)
 
     ## Update the label of each well
-    new_label_1 = pd.Series(['1P', '1Q','1R','1S'], name='label', index=[0,1,2,3])
+    new_label_1 = pd.Series(['1A', '1B','1C','1D'], name='label', index=[0,1,2,3])
     df1.update(new_label_1)
 
-    new_label_2 = pd.Series(['2P', '2Q','2R','2S'], name='label', index=[0,1,2,3])
+    new_label_2 = pd.Series(['2A', '2B','2C','2D'], name='label', index=[0,1,2,3])
     df2.update(new_label_2)
 
-    new_label_3 = pd.Series(['3P', '3Q','3R','3S'], name='label', index=[0,1,2,3])
+    new_label_3 = pd.Series(['3A', '3B','3C','3D'], name='label', index=[0,1,2,3])
     df3.update(new_label_3)
 
-    new_label_4 = pd.Series(['4P', '4Q','4R','4S'], name='label', index=[0,1,2,3])
+    new_label_4 = pd.Series(['4A', '4B','4C','4D'], name='label', index=[0,1,2,3])
     df4.update(new_label_4)
 
 
     ### Append the dataframes
     df_f=df1.append(df2, ignore_index=True).append(df3, ignore_index=True).append(df4, ignore_index=True)
-    df_f["Chemotaxis"] = np.nan
+    df_f["Total Worms"],df_f["Chemotaxis"], df_f["Compound"], df_f["Strain"] = [np.nan,np.nan,np.nan,np.nan] 
 
     df_f = df_f.rename(columns={'label': 'WellNo'})
-    loopWell(df_f, image, path_rslt)
+    df_f.apply(lambda row: slots_wells(row), axis=1)
+
+    loopWell(df_f, image, path_rslt,vals)

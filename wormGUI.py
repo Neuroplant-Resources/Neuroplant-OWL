@@ -36,7 +36,7 @@ def make_single_win():
 	[sg.Text('Strain in Well R', size=(15,1)), sg.InputText(key='-StrainR-')],
 	[sg.Text('Strain in Well S', size=(15,1)), sg.InputText(key='-StrainS-')]])],
 
-	[sg.Frame('Slot 1 Data', visible = True, layout=[
+	[sg.Frame('Slot 1 Data', visible = True,layout=[
 	[sg.Text('Plate ID', size=(15,1)), sg.InputText(key='-PID1-')],
 	[sg.Text('Compound', size=(15,1)), sg.InputText(key='-Compound1-')]]
 	),
@@ -89,9 +89,8 @@ def main():
 				if e3 == 'Analyze':
 					fpath = (v3['-file-'])
 					rpath = (v3['-results-'])
-					test = v3
-					print(type(test))
-					#ai.crop_image(fpath, rpath)
+					print(v3)
+					ai.crop_image(fpath, rpath, v3)
 
 					break
 				if e3 in (None, 'Exit'):
