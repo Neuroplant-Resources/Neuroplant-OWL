@@ -30,27 +30,32 @@ def make_single_win():
 	layout3 = [
 	[sg.Frame('Single Pic', key = '_test_', layout=[
 
-	[sg.Frame('Worm Strains in Each Well', visible = False, layout=[
+	[sg.Frame('Worm Strains in Each Well', visible = False, key='-4Strains-', layout=[
 	[sg.Text('Strain in Well P', size=(15,1)), sg.InputText(key='-StrainP-')],
 	[sg.Text('Strain in Well Q', size=(15,1)), sg.InputText(key='-StrainQ-')],
 	[sg.Text('Strain in Well R', size=(15,1)), sg.InputText(key='-StrainR-')],
 	[sg.Text('Strain in Well S', size=(15,1)), sg.InputText(key='-StrainS-')]])],
 
 	[sg.Frame('Slot 1 Data', visible = True,layout=[
+	[sg.Checkbox('Check this box if you there are multiple strains on this plate', enable_events=True ,key='-show_strains-', size=(10,1))],
 	[sg.Text('Plate ID', size=(15,1)), sg.InputText(key='-PID1-')],
+	[sg.Text('Strain on Plate 1', size=(15,1)), sg.InputText(key='-Strain1-')],
 	[sg.Text('Compound', size=(15,1)), sg.InputText(key='-Compound1-')]]
 	),
 	sg.Frame('Slot 2 Data',visible = True,  layout=[
 	[sg.Text('Plate ID', size=(15,1)), sg.InputText(key='-PID2-')],
+	[sg.Text('Strain on Plate 2', size=(15,1)), sg.InputText(key='-Strain2-')],
 	[sg.Text('Compound', size=(15,1)), sg.InputText(key='-Compound2-')]
 	])],
 
 	[sg.Frame('Slot 3 Data',visible = True, layout=[
 	[sg.Text('Plate ID', size=(15,1)), sg.InputText(key='-PID3-')],
+	[sg.Text('Strain on Plate 3', size=(15,1)), sg.InputText(key='-Strain3-')],
 	[sg.Text('Compound', size=(15,1)), sg.InputText(key='-Compound3-')]]
 	),
 	sg.Frame('Slot 4 Data',visible = True,  layout=[
 	[sg.Text('Plate ID', size=(15,1)), sg.InputText(key='-PID4-')],
+	[sg.Text('Strain on Plate 4', size=(15,1)), sg.InputText(key='-Strain4-')],
 	[sg.Text('Compound', size=(15,1)), sg.InputText(key='-Compound4-')]
 	])],
 
@@ -64,6 +69,7 @@ def make_single_win():
 	single_im = sg.Window('Single Image Processing', layout3, size=(900,400))
 	return single_im
 
+opened=True
 
 def main():
 	win1 = make_win1()
@@ -86,6 +92,10 @@ def main():
 			single_win = make_single_win()
 			while True:
 				e3, v3 = single_win.read()
+				#if e3.startswith('-show_strains-'):
+				#	make_single_win['-4Strains-'].ucpdate(visible=True)
+					#window['-SEC1-'].update(visible=opened)
+					#make_win1['-4Strains-'].update(disabled = True)
 				if e3 == 'Analyze':
 					fpath = (v3['-file-'])
 					rpath = (v3['-results-'])

@@ -70,14 +70,15 @@ def loopWell(df_f,image,path_rslt, vals):
         wellno = df_f['WellNo'][index]
         image_dims = fin_image.shape
         compound_key = '-Compound' + wellno[0] + '-'
+        strain_key = '-Strain' + wellno[0] + '-'
         pid_key = '-PID' + wellno[0] + '-'
         plate_id = vals.get(pid_key)
         compound = vals.get(compound_key)
-        df_f['Compound'] = compound_key
-        print(compound)
+        strain = vals.get(strain_key)
+        print(strain)
         
         thresh = threshold_otsu(fin_image)
-        binarized = closing(fin_image > thresh, square(10))
+        binarized = fin_image > thresh
         #imshow(binarized)
         
         ## Find features in binary image
@@ -88,7 +89,7 @@ def loopWell(df_f,image,path_rslt, vals):
         # label image regions
         #label_image = label(cleare)
         #image_label_overlayy = label2rgb(label_image, image=fin_image, bg_label=0)
-        filt_worm=worms[worms['area']<2000]
+        filt_worm=worms[worms['area']<2500]
         filtered_worm=filt_worm[filt_worm['area']>50]
 
 
@@ -102,9 +103,10 @@ def loopWell(df_f,image,path_rslt, vals):
         
         tw = len(filtered_worm)
         CI = calc_chemotaxis_index(filtered_worm,image_dims)
-        df_f['Chemotaxis']=CI
-        #df_f.loc[df_f['WellNo'] == wellno, 'Chemotaxis'] = CI
+        df_f.loc[df_f['WellNo'] == wellno, 'Chemotaxis'] = CI
         df_f.loc[df_f['WellNo'] == wellno, 'Total Worms'] = tw
+        df_f.loc[df_f['WellNo'] == wellno, 'Compound'] = compound
+        df_f.loc[df_f['WellNo'] == wellno, 'Strain'] = strain
     df_f.to_csv(path_or_buf= path_rslt.joinpath('test_summary.csv'))
         #save_worm_locations(df_f,filtered_worm,path_rslt,label)
 
