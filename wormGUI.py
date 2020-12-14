@@ -17,9 +17,9 @@ def make_win1():
 
 def make_batch_win():
 	layout2 = [      
-	[sg.Text('Choose a folder to store your results: ', size=(65, 1), auto_size_text=False, justification='right'),sg.InputText('Default Folder'), sg.FolderBrowse()],      
-	[sg.Text('Choose the folder that contains the images to be analyzed: ', size=(65, 1), auto_size_text=False, justification='right'),sg.InputText('Default Folder'), sg.FolderBrowse()],
-	[sg.Text('Choose the metadata file associated with this batch of images: ', size=(65, 1), auto_size_text=False, justification='right'), sg.Input(), sg.FileBrowse()],
+	[sg.Text('Choose a folder to store your results: ', size=(65, 1), auto_size_text=False, justification='right'),sg.InputText('Default Folder', key = '-results_folder-'), sg.FolderBrowse()],      
+	[sg.Text('Choose the folder that contains the images to be analyzed: ',  size=(65, 1), auto_size_text=False, justification='right'),sg.InputText('Default Folder', key='-image_folder-',), sg.FolderBrowse()],
+	#[sg.Text('Choose the metadata file associated with this batch of images: ', size=(65, 1), auto_size_text=False, justification='right'), sg.Input(), sg.FileBrowse()],
 	[sg.Submit(tooltip='Click to submit this window')],
 	[sg.Exit()]]
 
@@ -37,7 +37,7 @@ def make_single_win():
 	[sg.Text('Strain in Well S', size=(15,1)), sg.InputText(key='-StrainS-')]])],
 
 	[sg.Frame('Slot 1 Data', visible = True,layout=[
-	[sg.Checkbox('Check this box if you there are multiple strains on this plate', enable_events=True ,key='-show_strains-', size=(10,1))],
+	#[sg.Checkbox('Check this box if you there are multiple strains on this plate', enable_events=True ,key='-show_strains-', size=(10,1))],
 	[sg.Text('Plate ID', size=(15,1)), sg.InputText(key='-PID1-')],
 	[sg.Text('Strain on Plate 1', size=(15,1)), sg.InputText(key='-Strain1-')],
 	[sg.Text('Compound', size=(15,1)), sg.InputText(key='-Compound1-')]]
@@ -60,9 +60,9 @@ def make_single_win():
 	])],
 
 	[sg.Frame('Choose the image file to be analyzed', visible=True, layout=[  
-	[sg.Text('Choose a folder to save your results in: ', size=(15, 1), auto_size_text=False, justification='right'),      
+	[sg.Text('Choose a folder to save your results in: ', size=(40, 1), auto_size_text=False, justification='right'),      
 	    sg.InputText('Results folder', key='-results-'), sg.FolderBrowse()], 
-	[sg.Text('Your File', size=(15, 1), auto_size_text=False, justification='right'),      
+	[sg.Text('Your File', size=(40, 1), auto_size_text=False, justification='right'),      
 	    sg.InputText('Image file', key='-file-'), sg.FileBrowse(),sg.Button('Analyze'), sg.Exit(),]])]
 	])]]
 
@@ -82,8 +82,14 @@ def main():
 			batch_win = make_batch_win()
 			while True:
 				e2, v2 = batch_win.read()
-				#print(e2, v2)
+				print(e2, v2)
 				if e2 in (None, 'Exit'):
+					break
+				if e2 == 'Submit':
+					rpath = (v2['-results_folder-'])
+					fpath = (v2['-image_folder-'])
+					print(e2)
+					ai.batch_process(fpath, rpath, v2, e2)
 					break
 			batch_win.close()
 			break
@@ -93,14 +99,14 @@ def main():
 			while True:
 				e3, v3 = single_win.read()
 				#if e3.startswith('-show_strains-'):
-				#	make_single_win['-4Strains-'].ucpdate(visible=True)
+					#make_single_win['-4Strains-'].update(visible=True)
 					#window['-SEC1-'].update(visible=opened)
 					#make_win1['-4Strains-'].update(disabled = True)
 				if e3 == 'Analyze':
 					fpath = (v3['-file-'])
 					rpath = (v3['-results-'])
-					print(v3)
-					ai.crop_image(fpath, rpath, v3)
+					print(e3)
+					ai.single_process(fpath, rpath, v3, e3)
 
 					break
 				if e3 in (None, 'Exit'):

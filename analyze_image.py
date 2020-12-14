@@ -60,7 +60,28 @@ def slots_wells(row):
     row['Well'] = row['WellNo'][1]
     return row
 
-def loopWell(df_f,image,path_rslt, vals):
+def single_process(image_fpath, rslt_path, vals, event):
+    image_folder = plb.Path(image_fpath)
+    results_folder = plb.Path(rslt_path)
+
+    results = crop_image(image_folder, results_folder, vals, event)
+    results.to_csv(path_or_buf= results_folder.joinpath('single_result.csv'))
+    
+
+
+def batch_process(image_fpath, rslt_path, vals, event):
+    image_folder = plb.Path(image_fpath)
+    results_folder = plb.Path(rslt_path)
+    results_df = pd.DataFrame()
+    for image in image_folder.glob('*.tif'):
+        image_data = crop_image(image, rslt_path, vals, event)
+        fname = image.stem
+        #image_data.to_csv(path_or_buf= results_folder.joinpath(fname + '.csv'))
+        results_df = results_df.append(image_data)
+        #results_df.head()
+    results_df.to_csv(path_or_buf= results_folder.joinpath( 'Batch_analysis.csv'))
+
+def loopWell(df_f,image, im_path, path_rslt, vals, event):
 
     for index, row in df_f.iterrows():
 
@@ -75,7 +96,7 @@ def loopWell(df_f,image,path_rslt, vals):
         plate_id = vals.get(pid_key)
         compound = vals.get(compound_key)
         strain = vals.get(strain_key)
-        print(strain)
+        image_fname = im_path.stem
         
         thresh = threshold_otsu(fin_image)
         binarized = fin_image > thresh
@@ -103,22 +124,24 @@ def loopWell(df_f,image,path_rslt, vals):
         
         tw = len(filtered_worm)
         CI = calc_chemotaxis_index(filtered_worm,image_dims)
-        df_f.loc[df_f['WellNo'] == wellno, 'Chemotaxis'] = CI
-        df_f.loc[df_f['WellNo'] == wellno, 'Total Worms'] = tw
-        df_f.loc[df_f['WellNo'] == wellno, 'Compound'] = compound
-        df_f.loc[df_f['WellNo'] == wellno, 'Strain'] = strain
-    df_f.to_csv(path_or_buf= path_rslt.joinpath('test_summary.csv'))
-        #save_worm_locations(df_f,filtered_worm,path_rslt,label)
+
+        df_f.loc[index, 'Chemotaxis'] = CI
+        df_f.loc[index, 'Total Worms'] = tw
+        df_f.loc[index, 'Compound'] = compound
+        df_f.loc[index, 'Strain'] = strain
+    return df_f
 
 
-def crop_image(flpath, rslt_path, vals):
+
+def crop_image(flpath, rslt_path, vals, event):
     label_begin = time.time()
     #os.chdir(path_img)
 
-    image_path = plb.Path(flpath)
-    path_rslt = plb.Path(rslt_path)
-    image = imread(image_path)
+    #image_path = plb.Path(flpath)
+    #path_rslt = plb.Path(rslt_path)
+    image = imread(flpath)
     image_nvrt = np.invert(image)
+    
     # apply threshold
     print('At threshold')
     thresh = threshold_otsu(image_nvrt)
@@ -140,7 +163,7 @@ def crop_image(flpath, rslt_path, vals):
     df_area = dff.sort_values(by=['area'], ascending=False)
     image_center = (int(label_image.shape[1]/2),int(label_image.shape[0]/2))
     print('Center of image = ' + str(image_center))
-    df_area.to_csv(path_or_buf=path_rslt.joinpath('df_area.csv'))
+    #df_area.to_csv(path_or_buf=path_rslt.joinpath('df_area.csv'))
 
     wells = df_area[(df_area.area>= 2000000) & (df_area.area<=2500000)]
     wells=wells.sort_values(by=['bbox-1'])
@@ -205,4 +228,7 @@ def crop_image(flpath, rslt_path, vals):
     df_f = df_f.rename(columns={'label': 'WellNo'})
     df_f.apply(lambda row: slots_wells(row), axis=1)
 
-    loopWell(df_f, image, path_rslt,vals)
+    results_df = loopWell(df_f, image, flpath, rslt_path, vals, event)
+    return results_df
+    
+        #save_worm_locations(df_f,filtered_worm,path_rslt,label)
