@@ -20,6 +20,7 @@ dependencies:
   - statsmodels=0.10.1
   - yaml
   - pandas==0.24.2
+  - PySimpleGUI
   - pip:
     - dabest
     
