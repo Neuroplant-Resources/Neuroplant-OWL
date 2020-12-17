@@ -8,9 +8,9 @@ sg.ChangeLookAndFeel('GreenTan')
 def make_win1():
 	layout1 = [          
 	[sg.Text('Welcome to the Worm Counter!', size=(60, 1), justification='center', font=("Helvetica", 25), relief=sg.RELIEF_RIDGE)],    
-	[sg.Text('Choose whether you would like to process a single image or a batch of images')],     
+	[sg.Text('Choose whether you would like to process a single image or a batch of images', font=(14))],     
 	[sg.Frame(layout=[            
-	[sg.Radio('Single Image', "RADIO1", default=True, size=(15,1), key='_SINGLE_', enable_events=True, font=(14)), sg.Radio('Batch', "RADIO1", key='_BATCH_', enable_events=True, font=(14))]], title='Options',title_color='red', relief=sg.RELIEF_SUNKEN)],     
+	[sg.Radio('Single Image', "RADIO1", default=True, size=(15,1), key='_SINGLE_', enable_events=True, font=(14)), sg.Radio('Batch', "RADIO1", key='_BATCH_', enable_events=True, font=(14))]], title='Options',title_color='black', relief=sg.RELIEF_SUNKEN)],     
 	[sg.Text('_'  * 120)], [sg.Exit()]]
 
 	window1 = sg.Window('Worm Counter', layout1, default_element_size=(40, 1))
