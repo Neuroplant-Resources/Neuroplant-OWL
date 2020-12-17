@@ -1,20 +1,13 @@
 import pandas as pd
 import time
-from skimage.io import imread, imshow
-from skimage import feature
-from skimage import measure
-from skimage import exposure
-import matplotlib as mpl
-import matplotlib.pyplot as plt
 import scipy.stats as stats
 from scipy import ndimage as ndi
 import numpy as np
 import pathlib as plb 
 import csv
-
-#import seaborn as sns
-import matplotlib.patches as mpatches
 import numpy as np
+from skimage import feature
+from skimage import exposure
 from skimage.io import imread
 from skimage.util import crop
 from skimage import data
@@ -60,15 +53,16 @@ def slots_wells(row):
     row['Well'] = row['WellNo'][1]
     return row
 
+### This function is called when the user clicks the "Analyze" button on the Single Image GUI window
 def single_process(image_fpath, rslt_path, vals, event):
     image_folder = plb.Path(image_fpath)
     results_folder = plb.Path(rslt_path)
-
+    fname = image_folder.stem
     results = crop_image(image_folder, results_folder, vals, event)
-    results.to_csv(path_or_buf= results_folder.joinpath('single_result.csv'))
+    results.to_csv(path_or_buf= results_folder.joinpath(fname + '.csv'))
     
 
-
+### This function is called when the user clicks the "Submit" button in the Batch Process window
 def batch_process(image_fpath, rslt_path, vals, event):
     image_folder = plb.Path(image_fpath)
     results_folder = plb.Path(rslt_path)
@@ -81,6 +75,9 @@ def batch_process(image_fpath, rslt_path, vals, event):
         #results_df.head()
     results_df.to_csv(path_or_buf= results_folder.joinpath( 'Batch_analysis.csv'))
 
+
+### loopwell() is called after the image has been cropped
+### This is when the worms are identified, counted and when the CI is calculated
 def loopWell(df_f,image, im_path, path_rslt, vals, event):
 
     for index, row in df_f.iterrows():
@@ -113,8 +110,6 @@ def loopWell(df_f,image, im_path, path_rslt, vals, event):
         filt_worm=worms[worms['area']<2500]
         filtered_worm=filt_worm[filt_worm['area']>50]
 
-
-        print(len(filtered_worm))
         
         #fig, axes = plt.subplots(figsize=(8, 16), constrained_layout=True)
         #axes.imshow(binarized)
@@ -135,10 +130,6 @@ def loopWell(df_f,image, im_path, path_rslt, vals, event):
 
 def crop_image(flpath, rslt_path, vals, event):
     label_begin = time.time()
-    #os.chdir(path_img)
-
-    #image_path = plb.Path(flpath)
-    #path_rslt = plb.Path(rslt_path)
     image = imread(flpath)
     image_nvrt = np.invert(image)
     
@@ -146,10 +137,11 @@ def crop_image(flpath, rslt_path, vals, event):
     print('At threshold')
     thresh = threshold_otsu(image_nvrt)
     print('Threshold: ' + str(thresh))
-    bw = closing(image_nvrt > thresh, square(10))
+    bw = closing(image_nvrt > thresh, square(3))
 
     # remove artifacts connected to image border
-    cleared = remove_small_objects(clear_border(bw), 1000000)
+    cleared = clear_border(bw)
+    #cleared = remove_small_objects(clear_border(bw))
     print('Clearing small objects took ', str(int(time.time() - label_begin)), 'seconds.')
     #print('Image Cleared')
     # label image regions
