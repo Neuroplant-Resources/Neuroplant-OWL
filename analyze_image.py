@@ -59,9 +59,12 @@ def single_process(image_fpath, rslt_path, vals, event):
     results_folder = plb.Path(rslt_path)
     fname = image_folder.stem
     results = crop_image(image_folder, results_folder, vals, event)
-    results.drop(['centroid-0', 'centroid-1', 'bbox-0', 'bbox-1', 'bbox-2', 'bbox-3', 'area'], axis=1, inplace=True)
-    results.to_csv(path_or_buf= results_folder.joinpath(fname + '.csv'))
-    
+    if results.empty:
+        results.to_csv(path_or_buf= results_folder.joinpath(fname + '.csv'))
+    else:  
+        results.drop(['centroid-0', 'centroid-1', 'bbox-0', 'bbox-1', 'bbox-2', 'bbox-3', 'area'], axis=1, inplace=True)
+        results.to_csv(path_or_buf= results_folder.joinpath(fname + '.csv'))
+        
 
 ### This function is called when the user clicks the "Submit" button in the Batch Process window
 def batch_process(image_fpath, rslt_path, vals, event, results_name):
