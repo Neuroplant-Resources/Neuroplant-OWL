@@ -59,11 +59,15 @@ def single_process(image_fpath, rslt_path, vals, event):
     results_folder = plb.Path(rslt_path)
     fname = image_folder.stem
     results = crop_image(image_folder, results_folder, vals, event)
-    results.to_csv(path_or_buf= results_folder.joinpath(fname + '.csv'))
-    
+    if results.empty:
+        results.to_csv(path_or_buf= results_folder.joinpath(fname + '.csv'))
+    else:  
+        results.drop(['centroid-0', 'centroid-1', 'bbox-0', 'bbox-1', 'bbox-2', 'bbox-3', 'area'], axis=1, inplace=True)
+        results.to_csv(path_or_buf= results_folder.joinpath(fname + '.csv'))
+        
 
 ### This function is called when the user clicks the "Submit" button in the Batch Process window
-def batch_process(image_fpath, rslt_path, vals, event):
+def batch_process(image_fpath, rslt_path, vals, event, results_name):
     image_folder = plb.Path(image_fpath)
     results_folder = plb.Path(rslt_path)
     results_df = pd.DataFrame()
@@ -73,7 +77,20 @@ def batch_process(image_fpath, rslt_path, vals, event):
         #image_data.to_csv(path_or_buf= results_folder.joinpath(fname + '.csv'))
         results_df = results_df.append(image_data)
         #results_df.head()
-    results_df.to_csv(path_or_buf= results_folder.joinpath( 'Batch_analysis.csv'))
+    
+    ### Ensuring that the file is named correctly
+    substring = '.csv'
+    if substring in results_name:
+        results_file = results_name
+    else:
+        results_file  = results_name + substring
+
+    if results_df.empty:
+        results_df.to_csv(path_or_buf= results_folder.joinpath(results_file))
+    else:
+        results_df.drop(['centroid-0', 'centroid-1', 'bbox-0', 'bbox-1', 'bbox-2', 'bbox-3', 'area'], axis=1, inplace=True)
+        results_df.to_csv(path_or_buf= results_folder.joinpath(results_file))
+
 
 
 ### loopwell() is called after the image has been cropped
@@ -105,8 +122,6 @@ def loopWell(df_f,image, im_path, path_rslt, vals, event):
         worms=pd.DataFrame(props_worm)
         
         # label image regions
-        #label_image = label(cleare)
-        #image_label_overlayy = label2rgb(label_image, image=fin_image, bg_label=0)
         filt_worm=worms[worms['area']<2500]
         filtered_worm=filt_worm[filt_worm['area']>50]
 
@@ -143,7 +158,7 @@ def crop_image(flpath, rslt_path, vals, event):
     cleared = clear_border(bw)
     #cleared = remove_small_objects(clear_border(bw))
     print('Clearing small objects took ', str(int(time.time() - label_begin)), 'seconds.')
-    #print('Image Cleared')
+
     # label image regions
     label_image = label(bw)
     print('Feature finding and labeling took ', str(int(time.time() - label_begin)), 'seconds.')
@@ -154,8 +169,7 @@ def crop_image(flpath, rslt_path, vals, event):
 
     df_area = dff.sort_values(by=['area'], ascending=False)
     image_center = (int(label_image.shape[1]/2),int(label_image.shape[0]/2))
-    print('Center of image = ' + str(image_center))
-    #df_area.to_csv(path_or_buf=path_rslt.joinpath('df_area.csv'))
+
 
     wells = df_area[(df_area.area>= 2000000) & (df_area.area<=2500000)]
     wells=wells.sort_values(by=['bbox-1'])
@@ -163,7 +177,6 @@ def crop_image(flpath, rslt_path, vals, event):
 
     wells.reset_index(drop=True, inplace=True)
 
-    #df.to_csv(path_or_buf=path_rslt.joinpath('df.csv'))
     # Sort the plates into the left and right
     mask1 = wells['bbox-1'] > image_center[0]
     df_r = wells[mask1]
