@@ -59,11 +59,12 @@ def single_process(image_fpath, rslt_path, vals, event):
     results_folder = plb.Path(rslt_path)
     fname = image_folder.stem
     results = crop_image(image_folder, results_folder, vals, event)
+    results.drop(['centroid-0', 'centroid-1', 'bbox-0', 'bbox-1', 'bbox-2', 'bbox-3', 'area'], axis=1, inplace=True)
     results.to_csv(path_or_buf= results_folder.joinpath(fname + '.csv'))
     
 
 ### This function is called when the user clicks the "Submit" button in the Batch Process window
-def batch_process(image_fpath, rslt_path, vals, event):
+def batch_process(image_fpath, rslt_path, vals, event, results_name):
     image_folder = plb.Path(image_fpath)
     results_folder = plb.Path(rslt_path)
     results_df = pd.DataFrame()
@@ -73,7 +74,20 @@ def batch_process(image_fpath, rslt_path, vals, event):
         #image_data.to_csv(path_or_buf= results_folder.joinpath(fname + '.csv'))
         results_df = results_df.append(image_data)
         #results_df.head()
-    results_df.to_csv(path_or_buf= results_folder.joinpath( 'Batch_analysis.csv'))
+    
+    ### Ensuring that the file is named correctly
+    substring = '.csv'
+    if substring in results_name:
+        results_file = results_name
+    else:
+        results_file  = results_name + substring
+
+    if results_df.empty:
+        results_df.to_csv(path_or_buf= results_folder.joinpath(results_file))
+    else:
+        results_df.drop(['centroid-0', 'centroid-1', 'bbox-0', 'bbox-1', 'bbox-2', 'bbox-3', 'area'], axis=1, inplace=True)
+        results_df.to_csv(path_or_buf= results_folder.joinpath(results_file))
+
 
 
 ### loopwell() is called after the image has been cropped

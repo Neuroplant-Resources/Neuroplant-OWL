@@ -1,5 +1,5 @@
 # Neuroplant
-Analysis code for the lab's neuroplant project. This code analyzes images of chemotaxis assays as part of the [Neuroplant project]{http://www.neuroplant.org/}. There are 2 python files and a .yml file:
+Analysis code for the lab's neuroplant project. This code analyzes images of chemotaxis assays as part of the [Neuroplant project](http://www.neuroplant.org/). There are 2 python files and a .yml file:
 * wormGUI.py: Generates the graphic user interface to analyze chemotaxis images
 * analyze_image.py: This is the code that automatically crops the images, identifies and counts worms, and calculates the chemotaxis index.
 * simplified_conda_env.yml: Creates the the virtual environment that contains all of the packages needed to run the image analysis code.
@@ -28,7 +28,7 @@ Installing and running the code requires some knowledge of using github, conda, 
 	```
 
 ## Using the Worm Counter GUI
-The Worm Counter GUI allows users to automate the counting of C. elegans on a 4 well plate. The algorithm will detect up to 4 assay plates in any configuration. To ensure that the algorithm provides accurate counts for your images, be sure to follow the instructuions in the [image capture workflow] ...link to workflow...
+The Worm Counter GUI allows users to automate the counting of C. elegans on a 4 well plate. The algorithm will detect up to 4 assay plates in any configuration. To ensure that the algorithm provides accurate counts for your images, be sure to follow the instructuions in the [image capture workflow](https://docs.google.com/document/d/1WqvyStj1oJBW2A7Xqlo0mq0W0xOidGS7VAgk4tvFv_Y/edit?usp=sharing)
 
 #### Welcom Window: This is where you will choose to process a single image or a batch of images. 
 Just click on the radio button that matches your needs:
@@ -40,6 +40,7 @@ Just click on the radio button that matches your needs:
 1. Results Folder: The user is required to choose a folder to store the analysis results in. Click the 'Browse' button and navigate to the desired folder. ...The user should not store the results in the repository folder...
 1. Image File: The user is required to choose an image file to analyze. Click 'Browse' and select the desired image file.
 1. Click 'Analyze'
+1. The results will be stored as a .csv file in the folder chosen and will be named with the title of the image file selected: Choosen_image.csv
 
 #### Batch Image Processing
 1. Results Folder: The user is required to choose a folder to store the analysis results in. Click the 'Browse' button and navigate to the desired folder.
@@ -50,7 +51,7 @@ Just click on the radio button that matches your needs:
 You can monitor the progress of your analysis in the Terminal or PowerShell/Command Prompt window. Each image takes approximately 30 seconds to analyze. Once the analysis is complete, you will be returned to the 'Welcome Window.' Here you can choose to analyze more images or simply 'Exit' the program. 
 
 #### Compare the results with your images
-It is always a good idea to check that the returned results are accurate. If the images don't appear to match the results see below for common problems and troubleshooting tips.
+It is always a good idea to check that the returned results are accurate. If the images don't appear to match the results, see below for common problems and troubleshooting tips.
 
 ## Troubleshooting
 
@@ -65,6 +66,7 @@ It is always a good idea to check that the returned results are accurate. If the
 
 #### The code was unable to identify my image file.
 1. Check that you scanned and saved your image file in the .tif file format.
+1. Check that you choose the correct folder.
 
  
 
