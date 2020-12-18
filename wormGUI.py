@@ -66,8 +66,8 @@ def make_single_win():
 	[sg.Frame('Choose the image file to be analyzed', visible=True, font=(12),layout=[  
 	[sg.Text('Choose a folder to save your results in: ', size=(40, 1), auto_size_text=False, font=(12), justification='right'),      
 	    sg.InputText('Results folder', key='-results-'), sg.FolderBrowse()], 
-	[sg.Text('Select the image to be analyzed', size=(40, 1), auto_size_text=False, font=(12), justification='right'),      
-	    sg.InputText('Image file', key='-file-'), sg.FileBrowse(),sg.Button('Analyze'), sg.Button('Back'), sg.Exit(),]])]
+	[sg.Text('Select the image to be analyzed', size=(40, 1), auto_size_text=False, font=(12), justification='right'), sg.InputText('Image file', key='-file-'), sg.FileBrowse()],
+	    [sg.Button('Analyze'), sg.Button('Back'), sg.Exit()]])]
 	])]]
 
 	single_im = sg.Window('Single Image Processing', layout3, size=(900,400))
