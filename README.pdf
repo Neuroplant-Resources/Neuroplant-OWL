@@ -1,0 +1,322 @@
+%PDF-1.3
+1 0 obj
+<< /Type /Catalog
+/Outlines 2 0 R
+/Pages 3 0 R >>
+endobj
+2 0 obj
+<< /Type /Outlines /Count 0 >>
+endobj
+3 0 obj
+<< /Type /Pages
+/Kids [6 0 R
+21 0 R
+]
+/Count 2
+/Resources <<
+/ProcSet 4 0 R
+/Font << 
+/F1 8 0 R
+/F2 9 0 R
+/F3 10 0 R
+>>
+>>
+/MediaBox [0.000 0.000 595.280 841.890]
+ >>
+endobj
+4 0 obj
+[/PDF /Text ]
+endobj
+5 0 obj
+<<
+/Creator (DOMPDF)
+/CreationDate (D:20210118204746+00'00')
+/ModDate (D:20210118204746+00'00')
+>>
+endobj
+6 0 obj
+<< /Type /Page
+/Parent 3 0 R
+/Annots [ 11 0 R 13 0 R 15 0 R 17 0 R 19 0 R ]
+/Contents 7 0 R
+>>
+endobj
+7 0 obj
+<<
+/Length 5298 >>
+stream
+
+0.000 0.000 0.000 rg
+BT 34.016 768.985 Td /F1 24.0 Tf  [(Neuroplant)] TJ ET
+BT 34.016 735.797 Td /F2 12.0 Tf  [(Analysis code for the lab's neuroplant project. This code analyzes images of chemotaxis assays as part of the )] TJ ET
+0.000 0.000 0.800 rg
+BT 34.016 721.541 Td /F2 12.0 Tf  [(Neuroplant project)] TJ ET
+0.000 0.000 0.800 RG
+0.6 w 0 J [  ] 0 d
+34.016 718.841 m 124.328 718.841 l S
+0.000 0.000 0.000 rg
+BT 124.328 721.541 Td /F2 12.0 Tf  [(. There are 2 python files and a .yml file: * wormGUI.py: Generates the graphic user )] TJ ET
+BT 34.016 707.285 Td /F2 12.0 Tf  [(interface to analyze chemotaxis images * analyze_image.py: This is the code that automatically crops the )] TJ ET
+BT 34.016 693.029 Td /F2 12.0 Tf  [(images, identifies and counts worms, and calculates the chemotaxis index. * simplified_conda_env.yml: )] TJ ET
+BT 34.016 678.773 Td /F2 12.0 Tf  [(Creates the the virtual environment that contains all of the packages needed to run the image analysis code.)] TJ ET
+BT 34.016 643.875 Td /F1 18.0 Tf  [(Getting started)] TJ ET
+BT 34.016 613.253 Td /F2 12.0 Tf  [(Installing and running the code requires some knowledge of using github, conda, jupyter notebook, and )] TJ ET
+BT 34.016 598.997 Td /F2 12.0 Tf  [(python.)] TJ ET
+BT 48.816 572.746 Td /F2 12.0 Tf  [(1.)] TJ ET
+BT 64.016 572.741 Td /F2 12.0 Tf  [(Clone the github repo: Next, you need to download the code to your computer. If you do so by )] TJ ET
+0.000 0.000 0.800 rg
+BT 520.964 572.741 Td /F2 12.0 Tf  [(cloning )] TJ ET
+0.6 w 0 J [  ] 0 d
+520.964 570.041 m 559.964 570.041 l S
+BT 64.016 558.485 Td /F2 12.0 Tf  [(this github)] TJ ET
+0.6 w 0 J [  ] 0 d
+64.016 555.785 m 115.028 555.785 l S
+0.000 0.000 0.000 rg
+BT 115.028 558.485 Td /F2 12.0 Tf  [(, you'll be able to keep your code updated with the latest edits using git.)] TJ ET
+BT 48.816 544.234 Td /F2 12.0 Tf  [(2.)] TJ ET
+BT 64.016 532.229 Td /F2 12.0 Tf  [(Install conda environment: To use the code, you first need to install the software libraries it uses. To )] TJ ET
+BT 64.016 517.973 Td /F2 12.0 Tf  [(do so, you must )] TJ ET
+0.000 0.000 0.800 rg
+BT 143.024 517.973 Td /F2 12.0 Tf  [(install conda)] TJ ET
+0.6 w 0 J [  ] 0 d
+143.024 515.273 m 204.020 515.273 l S
+0.000 0.000 0.000 rg
+BT 204.020 517.973 Td /F2 12.0 Tf  [( first. Use the )] TJ ET
+BT 271.676 517.973 Td /F3 12.0 Tf  [(NP_conda_env.yml)] TJ ET
+BT 386.876 517.973 Td /F2 12.0 Tf  [( file to recreate the software )] TJ ET
+BT 64.016 503.717 Td /F2 12.0 Tf  [(libraries needed for running the code. To do so, open a terminal, navigate to the cloned git repo and )] TJ ET
+BT 64.016 489.461 Td /F2 12.0 Tf  [(run the command: )] TJ ET
+BT 154.340 489.461 Td /F3 12.0 Tf  [( conda env create -f NP_conda_env.yml )] TJ ET
+BT 427.940 489.461 Td /F2 12.0 Tf  [( This will create a conda )] TJ ET
+BT 64.016 475.205 Td /F2 12.0 Tf  [(environment called )] TJ ET
+BT 159.332 475.205 Td /F3 12.0 Tf  [(neuroplant)] TJ ET
+BT 231.332 475.205 Td /F2 12.0 Tf  [( that has all the packages for running the analysis code.)] TJ ET
+BT 48.816 448.954 Td /F2 12.0 Tf  [(3.)] TJ ET
+BT 64.016 436.949 Td /F2 12.0 Tf  [(Run the wormGUI.py code: Navigate to the location of the github repo, activate the conda )] TJ ET
+BT 64.016 422.693 Td /F2 12.0 Tf  [(environment, and launch jupyter notebook. The following line of code will run each step. Be sure )] TJ ET
+BT 64.016 408.437 Td /F2 12.0 Tf  [(replace the text in the file path to match the location of the repo on your own device. )] TJ ET
+BT 64.016 395.626 Td /F3 12.0 Tf  [(cd /path/to/repo/Neuroplant conda activate neuroplant python )] TJ ET
+BT 64.016 383.176 Td /F3 12.0 Tf  [(wormGUI.py )] TJ ET
+BT 48.816 357.286 Td /F2 12.0 Tf  [(4.)] TJ ET
+BT 64.016 345.281 Td /F2 12.0 Tf  [(The Worm Counter GUI window should appear)] TJ ET
+BT 48.816 319.030 Td /F2 12.0 Tf  [(5.)] TJ ET
+BT 64.016 307.025 Td /F2 12.0 Tf  [(When finished with the Worm Counter, you should deactivate the virtual environmet. Just input: )] TJ ET
+BT 64.016 294.214 Td /F3 12.0 Tf  [(conda deactivate )] TJ ET
+BT 34.016 247.676 Td /F1 18.0 Tf  [(Using the Worm Counter GUI)] TJ ET
+BT 34.016 217.055 Td /F2 12.0 Tf  [(The Worm Counter GUI allows users to automate the counting of C. elegans on a 4 well plate. The )] TJ ET
+BT 34.016 202.799 Td /F2 12.0 Tf  [(algorithm will detect up to 4 assay plates in any configuration. To ensure that the algorithm provides )] TJ ET
+BT 34.016 188.543 Td /F2 12.0 Tf  [(accurate counts for your images, be sure to follow the instructuions in the )] TJ ET
+0.000 0.000 0.800 rg
+BT 389.960 188.543 Td /F2 12.0 Tf  [(image capture workflow)] TJ ET
+0.6 w 0 J [  ] 0 d
+389.960 185.843 m 507.260 185.843 l S
+0.000 0.000 0.000 rg
+BT 34.016 158.327 Td /F1 12.0 Tf  [(Welcom Window: This is where you will choose to process a single image or a batch of images.)] TJ ET
+BT 34.016 128.111 Td /F2 12.0 Tf  [(Just click on the radio button that matches your needs: * Single Image * Batch)] TJ ET
+BT 34.016 97.895 Td /F1 12.0 Tf  [(Single Image Processing)] TJ ET
+BT 48.816 67.684 Td /F2 12.0 Tf  [(1.)] TJ ET
+BT 64.016 67.679 Td /F2 12.0 Tf  [(Metadata: There are text fields to enter some of metadata to be included in the results that are returned )] TJ ET
+BT 64.016 53.423 Td /F2 12.0 Tf  [(to the user. These text fields are ...not mandatory...)] TJ ET
+endstream
+endobj
+8 0 obj
+<< /Type /Font
+/Subtype /Type1
+/Name /F1
+/BaseFont /Times-Bold
+/Encoding /WinAnsiEncoding
+>>
+endobj
+9 0 obj
+<< /Type /Font
+/Subtype /Type1
+/Name /F2
+/BaseFont /Times-Roman
+/Encoding /WinAnsiEncoding
+>>
+endobj
+10 0 obj
+<< /Type /Font
+/Subtype /Type1
+/Name /F3
+/BaseFont /Courier
+/Encoding /WinAnsiEncoding
+>>
+endobj
+11 0 obj
+<< /Type /Annot
+/Subtype /Link
+/A 12 0 R
+/Border [0 0 0]
+/H /I
+/Rect [ 34.0157 720.4615 124.3277 732.3415 ]
+>>
+endobj
+12 0 obj
+<< /Type /Action
+/S /URI
+/URI (http://www.neuroplant.org/)
+>>
+endobj
+13 0 obj
+<< /Type /Annot
+/Subtype /Link
+/A 14 0 R
+/Border [0 0 0]
+/H /I
+/Rect [ 520.9637 571.6615 559.9637 583.5415 ]
+>>
+endobj
+14 0 obj
+<< /Type /Action
+/S /URI
+/URI (https://help.github.com/en/articles/cloning-a-repository)
+>>
+endobj
+15 0 obj
+<< /Type /Annot
+/Subtype /Link
+/A 16 0 R
+/Border [0 0 0]
+/H /I
+/Rect [ 64.0157 557.4055 115.0277 569.2855 ]
+>>
+endobj
+16 0 obj
+<< /Type /Action
+/S /URI
+/URI (https://help.github.com/en/articles/cloning-a-repository)
+>>
+endobj
+17 0 obj
+<< /Type /Annot
+/Subtype /Link
+/A 18 0 R
+/Border [0 0 0]
+/H /I
+/Rect [ 143.0237 516.8935 204.0197 528.7735 ]
+>>
+endobj
+18 0 obj
+<< /Type /Action
+/S /URI
+/URI (https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html)
+>>
+endobj
+19 0 obj
+<< /Type /Annot
+/Subtype /Link
+/A 20 0 R
+/Border [0 0 0]
+/H /I
+/Rect [ 389.9597 187.4627 507.2597 199.3427 ]
+>>
+endobj
+20 0 obj
+<< /Type /Action
+/S /URI
+/URI (https://docs.google.com/document/d/1WqvyStj1oJBW2A7Xqlo0mq0W0xOidGS7VAgk4tvFv_Y/edit?usp=sharing)
+>>
+endobj
+21 0 obj
+<< /Type /Page
+/Parent 3 0 R
+/Contents 22 0 R
+>>
+endobj
+22 0 obj
+<<
+/Length 5057 >>
+stream
+
+0.000 0.000 0.000 rg
+0.000 0.000 0.800 RG
+0.6 w 0 J [  ] 0 d
+BT 48.816 796.474 Td /F2 12.0 Tf  [(2.)] TJ ET
+BT 64.016 796.469 Td /F2 12.0 Tf  [(Results Folder: The user is required to choose a folder to store the analysis results in. Click the )] TJ ET
+BT 64.016 782.213 Td /F2 12.0 Tf  [('Browse' button and navigate to the desired folder. ...The user should not store the results in the )] TJ ET
+BT 64.016 767.957 Td /F2 12.0 Tf  [(repository folder...)] TJ ET
+BT 48.816 753.706 Td /F2 12.0 Tf  [(3.)] TJ ET
+BT 64.016 753.701 Td /F2 12.0 Tf  [(Image File: The user is required to choose an image file to analyze. Click 'Browse' and select the )] TJ ET
+BT 64.016 739.445 Td /F2 12.0 Tf  [(desired image file.)] TJ ET
+BT 48.816 725.194 Td /F2 12.0 Tf  [(4.)] TJ ET
+BT 64.016 725.189 Td /F2 12.0 Tf  [(Click 'Analyze')] TJ ET
+BT 48.816 710.938 Td /F2 12.0 Tf  [(5.)] TJ ET
+BT 64.016 710.933 Td /F2 12.0 Tf  [(The results will be stored as a .csv file in the folder chosen and will be named with the title of the )] TJ ET
+BT 64.016 696.677 Td /F2 12.0 Tf  [(image file selected: Choosen_image.csv)] TJ ET
+BT 34.016 666.461 Td /F1 12.0 Tf  [(Batch Image Processing)] TJ ET
+BT 48.816 636.250 Td /F2 12.0 Tf  [(1.)] TJ ET
+BT 64.016 636.245 Td /F2 12.0 Tf  [(Results Folder: The user is required to choose a folder to store the analysis results in. Click the )] TJ ET
+BT 64.016 621.989 Td /F2 12.0 Tf  [('Browse' button and navigate to the desired folder.)] TJ ET
+BT 48.816 607.738 Td /F2 12.0 Tf  [(2.)] TJ ET
+BT 64.016 607.733 Td /F2 12.0 Tf  [(Image Folder: The user is required to choose a folder containing images to analyze. Click 'Browse' and )] TJ ET
+BT 64.016 593.477 Td /F2 12.0 Tf  [(select the desired folder. The code will detect and analyze all files ending in .tif)] TJ ET
+BT 48.816 579.226 Td /F2 12.0 Tf  [(3.)] TJ ET
+BT 64.016 579.221 Td /F2 12.0 Tf  [(Click 'Analyze')] TJ ET
+BT 34.016 549.005 Td /F1 12.0 Tf  [(Analysis)] TJ ET
+BT 34.016 518.789 Td /F2 12.0 Tf  [(You can monitor the progress of your analysis in the Terminal or PowerShell/Command Prompt window. )] TJ ET
+BT 34.016 504.533 Td /F2 12.0 Tf  [(Each image takes approximately 30 seconds to analyze. Once the analysis is complete, you will be returned )] TJ ET
+BT 34.016 490.277 Td /F2 12.0 Tf  [(to the 'Welcome Window.' Here you can choose to analyze more images or simply 'Exit' the program.)] TJ ET
+BT 34.016 460.061 Td /F1 12.0 Tf  [(Compare the results with your images)] TJ ET
+BT 34.016 429.845 Td /F2 12.0 Tf  [(It is always a good idea to check that the returned results are accurate. If the images don't appear to match )] TJ ET
+BT 34.016 415.589 Td /F2 12.0 Tf  [(the results, see below for common problems and troubleshooting tips.)] TJ ET
+BT 34.016 380.691 Td /F1 18.0 Tf  [(Troubleshooting)] TJ ET
+BT 34.016 349.049 Td /F1 12.0 Tf  [(The number of worms counted during the analysis is less than the number on the assay plate.)] TJ ET
+BT 48.816 318.838 Td /F2 12.0 Tf  [(1.)] TJ ET
+BT 64.016 318.833 Td /F2 12.0 Tf  [(This problem often arises due to a low contrast image. To fix this, you can manually adjust the image )] TJ ET
+BT 64.016 304.577 Td /F2 12.0 Tf  [(contrast and/or brightness.)] TJ ET
+BT 48.816 290.326 Td /F2 12.0 Tf  [(2.)] TJ ET
+BT 64.016 290.321 Td /F2 12.0 Tf  [(The assay plate may not have been placed properly on the scanner glass. Unfortunately there isn't )] TJ ET
+BT 64.016 276.065 Td /F2 12.0 Tf  [(anything that will fix this and the assay plate must be counted manually.)] TJ ET
+BT 48.816 261.814 Td /F2 12.0 Tf  [(3.)] TJ ET
+BT 64.016 261.809 Td /F2 12.0 Tf  [(Clumping of worms. This can occur from adding too many worms to the assay plate or not drying the )] TJ ET
+BT 64.016 247.553 Td /F2 12.0 Tf  [(worms after dispensing them onto the plate. Sometimes the worms just aggregate. An update is )] TJ ET
+BT 64.016 233.297 Td /F2 12.0 Tf  [(coming shortly to handle the clumping phenomenon.)] TJ ET
+BT 34.016 203.081 Td /F1 12.0 Tf  [(The Chemotaxis Index \(CI\) doesn't match the trend I see on the assay plate.)] TJ ET
+BT 48.816 172.870 Td /F2 12.0 Tf  [(1.)] TJ ET
+BT 64.016 172.865 Td /F2 12.0 Tf  [(Check to see that the plate is oriented correctly in the image. It is easy to place the plate on the scanner )] TJ ET
+BT 64.016 158.609 Td /F2 12.0 Tf  [(incorrectly. If the orientation of the compound and solvent are not in the correct place )] TJ ET
+BT 64.016 144.353 Td /F2 12.0 Tf  [(\(Compound/Left : Solvent/Right\) then the sign of the CI will be flipped \(+/-\).)] TJ ET
+BT 48.816 130.102 Td /F2 12.0 Tf  [(2.)] TJ ET
+BT 64.016 130.097 Td /F2 12.0 Tf  [(This may occur due to clumping or any of the common problems mentioned above.)] TJ ET
+BT 34.016 99.881 Td /F1 12.0 Tf  [(The code was unable to identify my image file.)] TJ ET
+BT 48.816 69.670 Td /F2 12.0 Tf  [(1.)] TJ ET
+BT 64.016 69.665 Td /F2 12.0 Tf  [(Check that you scanned and saved your image file in the .tif file format.)] TJ ET
+BT 48.816 55.414 Td /F2 12.0 Tf  [(2.)] TJ ET
+BT 64.016 55.409 Td /F2 12.0 Tf  [(Check that you choose the correct folder.)] TJ ET
+endstream
+endobj
+xref
+0 23
+0000000000 65535 f 
+0000000009 00000 n 
+0000000074 00000 n 
+0000000120 00000 n 
+0000000302 00000 n 
+0000000331 00000 n 
+0000000445 00000 n 
+0000000555 00000 n 
+0000005905 00000 n 
+0000006013 00000 n 
+0000006122 00000 n 
+0000006228 00000 n 
+0000006355 00000 n 
+0000006433 00000 n 
+0000006561 00000 n 
+0000006669 00000 n 
+0000006796 00000 n 
+0000006904 00000 n 
+0000007032 00000 n 
+0000007162 00000 n 
+0000007290 00000 n 
+0000007438 00000 n 
+0000007503 00000 n 
+trailer
+<<
+/Size 23
+/Root 1 0 R
+/Info 5 0 R
+>>
+startxref
+12613
+%%EOF
