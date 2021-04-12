@@ -71,7 +71,9 @@ def batch_process(image_fpath, rslt_path, vals, event, results_name):
     image_folder = plb.Path(image_fpath)
     results_folder = plb.Path(rslt_path)
     results_df = pd.DataFrame()
-    for image in image_folder.glob('*.tif'):
+    for image in image_folder.glob('[!._]*.tif*'):
+        pattern = "^[a-zA-Z]"
+        
         image_data = crop_image(image, rslt_path, vals, event)
         fname = image.stem
         #image_data.to_csv(path_or_buf= results_folder.joinpath(fname + '.csv'))
@@ -111,6 +113,7 @@ def loopWell(df_f,image, im_path, path_rslt, vals, event):
         compound = vals.get(compound_key)
         strain = vals.get(strain_key)
         image_fname = im_path.stem
+        rslts_fldr = plb.Path(path_rslt)
         
         thresh = threshold_otsu(fin_image)
         binarized = fin_image > thresh
@@ -124,7 +127,7 @@ def loopWell(df_f,image, im_path, path_rslt, vals, event):
         # label image regions
         filt_worm=worms[worms['area']<2500]
         filtered_worm=filt_worm[filt_worm['area']>50]
-
+        filtered_worm.to_csv(rslts_fldr.joinpath('loc_' + image_fname + '_' +  wellno + '.csv'))
         
         #fig, axes = plt.subplots(figsize=(8, 16), constrained_layout=True)
         #axes.imshow(binarized)
@@ -135,11 +138,13 @@ def loopWell(df_f,image, im_path, path_rslt, vals, event):
         tw = len(filtered_worm)
         CI = calc_chemotaxis_index(filtered_worm,image_dims)
         df_f.loc[index, 'File Name'] = image_fname
+        df_f.loc[index, 'Plate ID'] = plate_id
         df_f.loc[index, 'Chemotaxis'] = CI
         df_f.loc[index, 'Total Worms'] = tw
         df_f.loc[index, 'Compound'] = compound
         df_f.loc[index, 'Strain'] = strain
     return df_f
+
 
 
 
