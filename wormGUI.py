@@ -70,7 +70,7 @@ def make_single_win():
 	    [sg.Button('Analyze'), sg.Button('Back'), sg.Exit()]])]
 	])]]
 
-	single_im = sg.Window('Single Image Processing', layout3, size=(900,400))
+	single_im = sg.Window('Single Image Processing', layout3, size=(900,400), resizable=True, finalize=True)
 	return single_im
 
 def check_fpaths(ipath, rpath):
