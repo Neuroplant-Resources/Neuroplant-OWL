@@ -26,10 +26,10 @@ def calc_chemotaxis_index(filtered_worm, dims):
     right_area_boundary = int(5/9*dims[1])#int(3424*5/9)
     #print(right_area_boundary)
 
-    left_side_worms = filtered_worm[filtered_worm['centroid-1'] <= left_area_boundary]
-    middle_w = filtered_worm[filtered_worm['centroid-1'] < right_area_boundary]
-    middle_worms = middle_w[middle_w['centroid-1'] >left_area_boundary]
-    right_side_worms = filtered_worm[filtered_worm['centroid-1'] >= right_area_boundary]
+    left_side_worms = filtered_worm[filtered_worm['X'] <= left_area_boundary]
+    middle_w = filtered_worm[filtered_worm['X'] < right_area_boundary]
+    middle_worms = middle_w[middle_w['X'] >left_area_boundary]
+    right_side_worms = filtered_worm[filtered_worm['X'] >= right_area_boundary]
 
     ## Calculate chemotaxis index
     worms_in_left_region = len(left_side_worms)
@@ -123,6 +123,7 @@ def loopWell(df_f,image, im_path, path_rslt, vals, event):
         labeled_array, num_features = ndi.label(binarized)
         props_worm = regionprops_table(label_image=labeled_array, properties=('label','centroid', 'area'))
         worms=pd.DataFrame(props_worm)
+        worms = worms.rename(columns= {'centroid-0': 'Y', 'centroid-1':'X'})
         
         # label image regions
         filt_worm=worms[worms['area']<2500]
