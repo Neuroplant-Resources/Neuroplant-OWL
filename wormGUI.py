@@ -1,6 +1,7 @@
 import PySimpleGUI as sg
 import analyze_image as ai
 import pathlib as plb
+#import connect_metadata as cm
 sg.ChangeLookAndFeel('GreenTan') 
 
 ### Generates the first window that the user encounters.
@@ -13,7 +14,7 @@ def make_win1():
 	[sg.Radio('Single Image', "RADIO1", default=True, size=(15,1), key='_SINGLE_', enable_events=True, font=(14)), sg.Radio('Batch', "RADIO1", key='_BATCH_', enable_events=True, font=(14))]], title='Options',title_color='black', relief=sg.RELIEF_SUNKEN)],     
 	[sg.Text('_'  * 120)], [sg.Exit()]]
 
-	window1 = sg.Window('Worm Counter', layout1, default_element_size=(40, 1))
+	window1 = sg.Window('Worm Counter', layout1, default_element_size=(40, 1), resizable=True, finalize=True)
 	return window1
 
 ### Makes the window to process multiple images
@@ -23,9 +24,12 @@ def make_batch_win():
 	[sg.Text('Select the folder that contains the images to be analyzed: ',  size=(50, 1), font=(12),auto_size_text=False, justification='right'),sg.InputText('Default Folder', key='-image_folder-',), sg.FolderBrowse()],
 	[sg.Text('Name your file ', size=(50, 1), auto_size_text=False, justification='right', font=(12)),
 	sg.InputText('Batch_results', key='-name-') ],
+	[sg.Frame(layout=[
+	[sg.Text('Would you like to connect your results to a metadata sheet?', font=(14))],
+	[sg.Radio('Yes', "RADIO1", default=True, size=(15,1), key='_metadata_', enable_events=True, font=(14)), sg.Radio('No', "RADIO1", key='_nometadata_', enable_events=True, font=(14))]], title='Metadata')],
 	[sg.Button('Analyze'),sg.Button('Back'), sg.Exit()]]
 
-	batch_window = sg.Window('Batch Image Counter', layout2, default_element_size=(80, 1))
+	batch_window = sg.Window('Batch Image Counter', layout2, default_element_size=(80, 1), resizable=True, finalize=True)
 	return batch_window
 
 
@@ -103,6 +107,7 @@ def make_GUI():
 					rpath = (v2['-results_folder-'])
 					fpath = (v2['-image_folder-'])
 					results_name = (v2['-name-'])
+
 					im_path = plb.Path(fpath)
 					res_path = plb.Path(rpath)
 					if im_path.exists() and res_path.exists():
