@@ -19,14 +19,12 @@ def make_win1():
 
 ### Makes the window to process multiple images
 def make_batch_win():
-	layout2 = [      
+	layout2 = [     
+	[sg.Text('Select your metadata file: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='right', visible='False'), sg.InputText('Default Folder', key = 'md_file', visible='False'), sg.FileBrowse()],
 	[sg.Text('Select a folder to store your results: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='right'),sg.InputText('Default Folder', key = '-results_folder-'), sg.FolderBrowse()],      
 	[sg.Text('Select the folder that contains the images to be analyzed: ',  size=(50, 1), font=(12),auto_size_text=False, justification='right'),sg.InputText('Default Folder', key='-image_folder-',), sg.FolderBrowse()],
-	[sg.Text('Name your file ', size=(50, 1), auto_size_text=False, justification='right', font=(12)),
+	[sg.Text('Name your results file ', size=(50, 1), auto_size_text=False, justification='right', font=(12)),
 	sg.InputText('Batch_results', key='-name-') ],
-	[sg.Frame(layout=[
-	[sg.Text('Would you like to connect your results to a metadata sheet?', font=(14))],
-	[sg.Radio('Yes', "RADIO1", default=True, size=(15,1), key='_metadata_', enable_events=True, font=(14)), sg.Radio('No', "RADIO1", key='_nometadata_', enable_events=True, font=(14))]], title='Metadata')],
 	[sg.Button('Analyze'),sg.Button('Back'), sg.Exit()]]
 
 	batch_window = sg.Window('Batch Image Counter', layout2, default_element_size=(80, 1), resizable=True, finalize=True)
