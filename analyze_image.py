@@ -15,6 +15,7 @@ from skimage.filters import threshold_otsu, threshold_li
 from skimage.segmentation import clear_border
 from skimage.measure import label, regionprops, regionprops_table
 from skimage.morphology import closing, square, remove_small_objects
+import connect_metadata
 
 
 
@@ -67,9 +68,10 @@ def single_process(image_fpath, rslt_path, vals, event):
         
 
 ### This function is called when the user clicks the "Submit" button in the Batch Process window
-def batch_process(image_fpath, rslt_path, vals, event, results_name):
+def batch_process(image_fpath, rslt_path, mdpath, vals, event, results_name):
     image_folder = plb.Path(image_fpath)
     results_folder = plb.Path(rslt_path)
+
     results_df = pd.DataFrame()
     for image in image_folder.glob('[!._]*.tif*'):
         pattern = "^[a-zA-Z]"
@@ -79,6 +81,8 @@ def batch_process(image_fpath, rslt_path, vals, event, results_name):
         #image_data.to_csv(path_or_buf= results_folder.joinpath(fname + '.csv'))
         results_df = results_df.append(image_data)
         #results_df.head()
+
+    connected = connect_metadata.connect(mdpath, results_df)
     
     ### Ensuring that the file is named correctly
     substring = '.csv'
@@ -87,11 +91,11 @@ def batch_process(image_fpath, rslt_path, vals, event, results_name):
     else:
         results_file  = results_name + substring
 
-    if results_df.empty:
-        results_df.to_csv(path_or_buf= results_folder.joinpath(results_file))
+    if connected.empty:
+        connected.to_csv(path_or_buf= results_folder.joinpath(results_file))
     else:
-        results_df.drop(['centroid-0', 'centroid-1', 'bbox-0', 'bbox-1', 'bbox-2', 'bbox-3', 'area'], axis=1, inplace=True)
-        results_df.to_csv(path_or_buf= results_folder.joinpath(results_file))
+        connected.drop(['centroid-0', 'centroid-1', 'bbox-0', 'bbox-1', 'bbox-2', 'bbox-3'], axis=1, inplace=True)
+        connected.to_csv(path_or_buf= results_folder.joinpath(results_file))
 
 
 
