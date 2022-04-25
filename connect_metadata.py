@@ -34,7 +34,12 @@ def add_Compound(row, metadata):
     elif wellID == 'D':
         compound = metadata.loc[metadata['Plate ID']==row['Plate ID']]['Compound Well D']
     #print(compound)
-    return compound.values[0]
+
+    if len(compound) == 0:
+        return 'No data'
+        pass
+    else:
+        return compound.values[0]
 
 
 def add_Strain(row, metadata):
