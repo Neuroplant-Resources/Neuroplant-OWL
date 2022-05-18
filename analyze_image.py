@@ -106,6 +106,7 @@ def loopWell(df_f,image, im_path, path_rslt, vals, event):
         fin_image = image[ df_f['bbox-0'][index]:df_f['bbox-2'][index], df_f['bbox-1'][index]:df_f['bbox-3'][index]]
         wellno = df_f['WellNo'][index]
         image_dims = fin_image.shape
+        
         compound_key = '-Compound' + wellno[0] + '-'
         strain_key = '-Strain' + wellno[0] + '-'
         pid_key = '-PID' + wellno[0] + '-'
@@ -126,6 +127,8 @@ def loopWell(df_f,image, im_path, path_rslt, vals, event):
         worms = worms.rename(columns= {'centroid-0': 'Y', 'centroid-1':'X'})
         
         # label image regions
+        large_obj = worms['area'].between(1500, 3000).any()
+
         filt_worm=worms[worms['area']<2500]
         filtered_worm=filt_worm[filt_worm['area']>50]
         filtered_worm.to_csv(rslts_fldr.joinpath('loc_' + image_fname + '_' +  wellno + '.csv'))
@@ -138,10 +141,14 @@ def loopWell(df_f,image, im_path, path_rslt, vals, event):
         
         tw = len(filtered_worm)
         CI = calc_chemotaxis_index(filtered_worm,image_dims)
+
+
         df_f.loc[index, 'File Name'] = image_fname
+        df_f.loc[index, 'Well width'] = image_dims[1]
         df_f.loc[index, 'Plate ID'] = plate_id
         df_f.loc[index, 'Chemotaxis'] = CI
         df_f.loc[index, 'Total Worms'] = tw
+        df_f.loc[index, 'Large Object'] = large_obj
         df_f.loc[index, 'Compound'] = compound
         df_f.loc[index, 'Strain'] = strain
     return df_f
