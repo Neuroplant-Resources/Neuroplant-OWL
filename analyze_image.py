@@ -48,6 +48,12 @@ def calc_chemotaxis_index(filtered_worm, dims):
 
     except ZeroDivisionError:
         return 0
+
+def assay_qc(total_worms):
+    if total_worms < 150:
+        return 'N'
+    else:
+        return 'Y'
     
 def slots_wells(row):
     row['Slot'] = row['WellNo'][0]
@@ -131,7 +137,6 @@ def loopWell(df_f,image, im_path, path_rslt, vals, event):
         worms = worms.rename(columns= {'centroid-0': 'Y', 'centroid-1':'X'})
         
         # label image regions
-        large_obj = worms['area'].between(1500, 3000).any()
 
         filt_worm=worms[worms['area']<2500]
         filtered_worm=filt_worm[filt_worm['area']>50]
@@ -145,6 +150,7 @@ def loopWell(df_f,image, im_path, path_rslt, vals, event):
         
         tw = len(filtered_worm)
         CI = calc_chemotaxis_index(filtered_worm,image_dims)
+        qc = assay_qc(tw)
 
 
         df_f.loc[index, 'File Name'] = image_fname
@@ -152,7 +158,7 @@ def loopWell(df_f,image, im_path, path_rslt, vals, event):
         df_f.loc[index, 'Plate ID'] = plate_id
         df_f.loc[index, 'Chemotaxis'] = CI
         df_f.loc[index, 'Total Worms'] = tw
-        df_f.loc[index, 'Large Object'] = large_obj
+        df_f.loc[index, 'Passes QC'] = qc
         df_f.loc[index, 'Compound'] = compound
         df_f.loc[index, 'Strain'] = strain
     return df_f
