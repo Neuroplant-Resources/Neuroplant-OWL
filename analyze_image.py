@@ -15,6 +15,7 @@ from skimage.filters import threshold_otsu, threshold_li
 from skimage.segmentation import clear_border
 from skimage.measure import label, regionprops, regionprops_table
 from skimage.morphology import closing, square, remove_small_objects
+import connect_metadata
 
 
 
@@ -47,6 +48,12 @@ def calc_chemotaxis_index(filtered_worm, dims):
 
     except ZeroDivisionError:
         return 0
+
+def assay_qc(total_worms):
+    if total_worms < 150:
+        return 'N'
+    else:
+        return 'Y'
     
 def slots_wells(row):
     row['Slot'] = row['WellNo'][0]
@@ -67,9 +74,10 @@ def single_process(image_fpath, rslt_path, vals, event):
         
 
 ### This function is called when the user clicks the "Submit" button in the Batch Process window
-def batch_process(image_fpath, rslt_path, vals, event, results_name):
+def batch_process(image_fpath, rslt_path, mdpath, vals, event, results_name):
     image_folder = plb.Path(image_fpath)
     results_folder = plb.Path(rslt_path)
+
     results_df = pd.DataFrame()
     for image in image_folder.glob('[!._]*.tif*'):
         pattern = "^[a-zA-Z]"
@@ -79,6 +87,8 @@ def batch_process(image_fpath, rslt_path, vals, event, results_name):
         #image_data.to_csv(path_or_buf= results_folder.joinpath(fname + '.csv'))
         results_df = results_df.append(image_data)
         #results_df.head()
+
+    connected = connect_metadata.connect(mdpath, results_df)
     
     ### Ensuring that the file is named correctly
     substring = '.csv'
@@ -87,11 +97,11 @@ def batch_process(image_fpath, rslt_path, vals, event, results_name):
     else:
         results_file  = results_name + substring
 
-    if results_df.empty:
-        results_df.to_csv(path_or_buf= results_folder.joinpath(results_file))
+    if connected.empty:
+        connected.to_csv(path_or_buf= results_folder.joinpath(results_file))
     else:
-        results_df.drop(['centroid-0', 'centroid-1', 'bbox-0', 'bbox-1', 'bbox-2', 'bbox-3', 'area'], axis=1, inplace=True)
-        results_df.to_csv(path_or_buf= results_folder.joinpath(results_file))
+        connected.drop(['centroid-0', 'centroid-1', 'bbox-0', 'bbox-1', 'bbox-2', 'bbox-3'], axis=1, inplace=True)
+        connected.to_csv(path_or_buf= results_folder.joinpath(results_file))
 
 
 
@@ -127,7 +137,6 @@ def loopWell(df_f,image, im_path, path_rslt, vals, event):
         worms = worms.rename(columns= {'centroid-0': 'Y', 'centroid-1':'X'})
         
         # label image regions
-        large_obj = worms['area'].between(1500, 3000).any()
 
         filt_worm=worms[worms['area']<2500]
         filtered_worm=filt_worm[filt_worm['area']>50]
@@ -141,6 +150,7 @@ def loopWell(df_f,image, im_path, path_rslt, vals, event):
         
         tw = len(filtered_worm)
         CI = calc_chemotaxis_index(filtered_worm,image_dims)
+        qc = assay_qc(tw)
 
 
         df_f.loc[index, 'File Name'] = image_fname
@@ -148,7 +158,7 @@ def loopWell(df_f,image, im_path, path_rslt, vals, event):
         df_f.loc[index, 'Plate ID'] = plate_id
         df_f.loc[index, 'Chemotaxis'] = CI
         df_f.loc[index, 'Total Worms'] = tw
-        df_f.loc[index, 'Large Object'] = large_obj
+        df_f.loc[index, 'Passes QC'] = qc
         df_f.loc[index, 'Compound'] = compound
         df_f.loc[index, 'Strain'] = strain
     return df_f

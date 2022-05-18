@@ -20,7 +20,7 @@ def make_win1():
 ### Makes the window to process multiple images
 def make_batch_win():
 	layout2 = [     
-	[sg.Text('Select your metadata file: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='right', visible='False'), sg.InputText('Default Folder', key = 'md_file', visible='False'), sg.FileBrowse()],
+	[sg.Text('Select your metadata file: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='right', visible='False'), sg.InputText('Select file', key = 'md_file', visible='False'), sg.FileBrowse()],
 	[sg.Text('Select a folder to store your results: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='right'),sg.InputText('Default Folder', key = '-results_folder-'), sg.FolderBrowse()],      
 	[sg.Text('Select the folder that contains the images to be analyzed: ',  size=(50, 1), font=(12),auto_size_text=False, justification='right'),sg.InputText('Default Folder', key='-image_folder-',), sg.FolderBrowse()],
 	[sg.Text('Name your results file ', size=(50, 1), auto_size_text=False, justification='right', font=(12)),
@@ -102,14 +102,16 @@ def make_GUI():
 				if e2 in (None, 'Exit'):
 					break
 				if e2 == 'Analyze':
+					mdpath = (v2['md_file'])
 					rpath = (v2['-results_folder-'])
 					fpath = (v2['-image_folder-'])
 					results_name = (v2['-name-'])
 
 					im_path = plb.Path(fpath)
 					res_path = plb.Path(rpath)
+					
 					if im_path.exists() and res_path.exists():
-						ai.batch_process(fpath, rpath, v2, e2, results_name)
+						ai.batch_process(fpath, rpath, mdpath, v2, e2, results_name)
 						batch_win.close()
 						make_GUI()
 						break
