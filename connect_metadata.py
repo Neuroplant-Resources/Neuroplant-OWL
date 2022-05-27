@@ -8,11 +8,16 @@ import statistics
 
 
 
+
 def add_PlateID(row, metadata):
     slotID = row['WellNo'][0]
+    slotID = int(slotID)
+
+
     pid = metadata.loc[
         (metadata['Image ID']==row['File Name']) & 
         (metadata['Scanner Slot:']==slotID)]['Plate ID']
+
     if len(pid) == 0:
         return 'No data'
         pass
@@ -65,7 +70,9 @@ def connect(md_path, results):
 
     md_file_path = plb.Path(md_path)
     md = pd.read_csv(md_file_path)
-    md['Scanner Slot:'] = md['Scanner Slot:'].apply(str)
+    
+    #md['Scanner Slot:'] = md['Scanner Slot:'].astype(str)
+    #md['Scanner Slot:'] = md['Scanner Slot:'].apply(str)
 
 
     results['Plate ID'] = results.apply(
