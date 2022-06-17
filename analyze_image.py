@@ -4,6 +4,7 @@ import scipy.stats as stats
 from scipy import ndimage as ndi
 import numpy as np
 import pathlib as plb 
+from os import path
 import csv
 import numpy as np
 from skimage import feature
@@ -88,7 +89,10 @@ def batch_process(image_fpath, rslt_path, mdpath, vals, event, results_name):
         results_df = results_df.append(image_data)
         #results_df.head()
 
-    connected = connect_metadata.connect(mdpath, results_df)
+    if path.exists(mdpath):
+        connected = connect_metadata.connect(mdpath, results_df)
+    else:
+        connected = results_df
     
     ### Ensuring that the file is named correctly
     substring = '.csv'
