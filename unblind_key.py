@@ -1,0 +1,77 @@
+import pandas as pd
+import numpy as np
+import pathlib as plb
+from os import path
+
+
+def dict_key_compound(filename):
+    dict = {}
+    file = pd.read_csv(filename)
+    for index, row in file.iterrows():
+        dict[(row['Compound Blinded Name:']).lower()] = (row['Compound Actual Name:']).lower()
+        # add .trim()
+    return dict
+    
+def dict_key_strain(filename):
+    dict = {}
+    file = pd.read_csv(filename)
+    for index, row in file.iterrows():
+        dict[(row['Strain Blinded Name:']).lower()] = (row['Strain Actual Name:']).lower()
+        # add .trim()
+    return dict
+    
+    
+def unblind(char1, char2, di, data, input_text):
+    if str(char1) in di.keys():
+        data[input_text + char2] = data[input_text + char2].replace([char1],di[char1.lower()])
+
+
+def solve_compound_names(filename1, filename2, resultfolder, title):
+    results_folder = plb.Path(resultfolder)
+    data = pd.read_csv(filename1)
+    di = dict_key_compound(filename2)
+    for index, row in data.iterrows():
+        unblind(row['Compound Well A'], 'A', di, data, 'Compound Well ')
+        unblind(row['Compound Well B'], 'B', di, data, 'Compound Well ')
+        unblind(row['Compound Well C'], 'C', di, data, 'Compound Well ')
+        unblind(row['Compound Well D'], 'D', di, data, 'Compound Well ')
+    data.to_csv(path_or_buf= results_folder.joinpath(title +'.csv'))
+
+
+def solve_strain_names(filename1, filename2, resultfolder, title):
+    results_folder = plb.Path(resultfolder)
+    data = pd.read_csv(filename1)
+    di = dict_key_strain(filename2)
+    for index, row in data.iterrows():
+        unblind(row['Strain Well A'], 'A', di, data, 'Strain Well ')
+        unblind(row['Strain Well B'], 'B', di, data, 'Strain Well ')
+        unblind(row['Strain Well C'], 'C', di, data, 'Strain Well ')
+        unblind(row['Strain Well D'], 'D', di, data, 'Strain Well ')
+    data.to_csv(path_or_buf= results_folder.joinpath(title +'.csv'))
+
+def solve_both_strain_and_compound_names(filename1, filename2, resultfolder, title):
+    results_folder = plb.Path(resultfolder)
+    data = pd.read_csv(filename1)
+    di_c = dict_key_compound(filename2)
+    di_s = dict_key_strain(filename2)
+    for index, row in data.iterrows():
+        unblind(row['Compound Well A'], 'A', di_c, data, 'Compound Well ')
+        unblind(row['Compound Well B'], 'B', di_c, data, 'Compound Well ')
+        unblind(row['Compound Well C'], 'C', di_c, data, 'Compound Well ')
+        unblind(row['Compound Well D'], 'D', di_c, data, 'Compound Well ')
+        unblind(row['Strain Well A'], 'A', di_s, data, 'Strain Well ')
+        unblind(row['Strain Well B'], 'B', di_s, data, 'Strain Well ')
+        unblind(row['Strain Well C'], 'C', di_s, data, 'Strain Well ')
+        unblind(row['Strain Well D'], 'D', di_s, data, 'Strain Well ')
+    data.to_csv(path_or_buf= results_folder.joinpath(title +'.csv'))
+    
+    
+    
+    
+
+#if __name__ == '__main__':
+#    solve_compound_names('test-metadata.csv', 'test-key.csv')
+#    copy_of_original_input_metadata('test-metadata.csv')
+#    data.to_csv(path_or_buf= results_folder.joinpath('copy.csv'))
+
+

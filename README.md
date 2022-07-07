@@ -59,6 +59,14 @@ You can monitor the progress of your analysis in the Terminal or PowerShell/Comm
 #### Compare the results with your images
 It is always a good idea to check that the returned results are accurate. If the images don't appear to match the results, see below for common problems and troubleshooting tips.
 
+## Unblinding your Metadata Sheet
+The Worm Counter GUI allows users to unblind their metadata sheets. Rather than manually unblinding the metadata sheet, users can record their blinding information that consists of the blinded names and actual names into the 'blinding key' sheet that is provided below, enter the blinding key and the metadata sheet into the unblinding page of the GUI, and obtain the unblinded verison of their metadata. Depending on the users needs, the GUI gives the options to unblind the compound names, the strain names, or both. 
+The following link is the google sheet of the blinding key template. Users should make a copy of this template to make edits on their local device, enter the blinded names and actual names of the compounds and/or strains, and download it as csv file.
+The blinding key template: (https://docs.google.com/spreadsheets/d/1XUiqgqrw89kvR9hmZIWSK4jBfCoYfG0F9WB4e3YIkN0/edit?usp=sharing)
+The unblinding page is designed to have both the metadata sheet and the blinding key in csv format. Users should ensure that the type of their documents are csv files.
+
+
+
 ## Troubleshooting
 
 #### The number of worms counted during the analysis is less than the number on the assay plate.

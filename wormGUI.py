@@ -1,6 +1,9 @@
 import PySimpleGUI as sg
 import analyze_image as ai
 import pathlib as plb
+import unblind_key as un
+import tkinter as tk
+
 #import connect_metadata as cm
 sg.ChangeLookAndFeel('GreenTan') 
 
@@ -11,8 +14,9 @@ def make_win1():
 	[sg.Text('Welcome to the Worm Counter!', size=(60, 1), justification='center', font=("Helvetica", 25), relief=sg.RELIEF_RIDGE)],    
 	[sg.Text('Choose whether you would like to process a single image or a batch of images', font=(14))],     
 	[sg.Frame(layout=[            
-	[sg.Radio('Single Image', "RADIO1", default=True, size=(15,1), key='_SINGLE_', enable_events=True, font=(14)), sg.Radio('Batch', "RADIO1", key='_BATCH_', enable_events=True, font=(14))]], title='Options',title_color='black', relief=sg.RELIEF_SUNKEN)],     
-	[sg.Text('_'  * 120)], [sg.Exit()]]
+	[sg.Radio('Single Image', 'RADIO1', default=False, size=(15,1), key='_SINGLE_', enable_events=True, font=(14)), sg.Radio('Batch', 'RADIO1', key='_BATCH_', enable_events=True, font=(14))]], title='Options',title_color='black', relief=sg.RELIEF_SUNKEN)],
+     [sg.Text('Would you like to unblind your metadata sheet?',size=(40,1), font='Lucida', justification='left')], [sg.Radio('Yes', 'RADIO1', default=False, key='_Yes_', enable_events=True, font=(14))],
+    [sg.Text('_'  * 120)], [sg.Exit()]]
 
 	window1 = sg.Window('Worm Counter', layout1, default_element_size=(40, 1), resizable=True, finalize=True)
 	return window1
@@ -72,87 +76,153 @@ def make_single_win():
 	    [sg.Button('Analyze'), sg.Button('Back'), sg.Exit()]])]
 	])]]
 
-	single_im = sg.Window('Single Image Processing', layout3, size=(900,400), resizable=True, finalize=True)
+	single_im = sg.Window('Single Image Processing', layout3, default_element_size=(80, 1), resizable=True, finalize=True)
 	return single_im
+ 
 
+def unblind_window():
+    layout4 = [
+    [sg.Text('Select your metadata file: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'metadata_file', visible='False'), sg.FileBrowse()],
+    [sg.Text('Select your blinding key: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'key_file', visible='False'), sg.FileBrowse()],
+    [sg.Text('Select a folder to store your results: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left'),sg.InputText('Default Folder', key = '-results_folder-'), sg.FolderBrowse()],
+     [sg.Text('Name your unblinded metadata sheet:', size=(50, 1), auto_size_text=False, justification='left', font=(12)),
+    sg.InputText('Unblinded Metadata', key='-metadata_name-')],
+    [sg.Text('_'  * 140)],
+    [sg.Text('Would you like to unblind only the compound names, only the strain names, or both?',size=(100,1), font='Lucida', justification='left')],
+        [sg.Frame(layout=[
+            [sg.Radio('Compound', 'RADIO2', default=False, key='_Com_', enable_events=True, font=(14)), sg.Radio('Strain', 'RADIO2', key='_Strain_', enable_events=True, font=(14)), sg.Radio('Both', 'RADIO2', key='_Both_', enable_events=True, font=(14))]], title='Options',title_color='black', relief=sg.RELIEF_SUNKEN)],
+    [sg.Button('Back'), sg.Exit()]]
+    
+    u_win = sg.Window('Unblinding Metadata', layout4, size=(900,250), resizable=True, finalize=True)
+    return u_win
+    
+    
 def check_fpaths(ipath, rpath):
-	
-		return True
+        return True
 
 
 ### This funtion initiates the GUI
 def make_GUI():
-	win1 = make_win1()
-	while True:
-		event, values = win1.read()     
+    win1 = make_win1()
+    while True:
+        event, values = win1.read()
 		
 		### If exit button is clicked then the whole program is terminated
-		if event in (None, 'Exit'):
-			break
+        if event in (None, 'Exit'):
+            break
+              
 		
 
 		### Opens a window to analyze a batch of images
 		### Does not currently incorporate metadata for a batch of images but creates the fields to do so
 		### User is returned to the main page upon completion of analysis
-		if values['_BATCH_']:
-			win1.hide()
-			batch_win = make_batch_win()
-			while True:
-				e2, v2 = batch_win.read()
-				if e2 in (None, 'Exit'):
-					break
-				if e2 == 'Analyze':
-					mdpath = (v2['md_file'])
-					rpath = (v2['-results_folder-'])
-					fpath = (v2['-image_folder-'])
-					results_name = (v2['-name-'])
+        if values['_BATCH_']:
+            win1.hide()
+            batch_win = make_batch_win()
+            while True:
+                e2, v2 = batch_win.read()
+                if e2 in (None, 'Exit'):
+                    break
+                if e2 == 'Analyze':
+                    mdpath = (v2['md_file'])
+                    rpath = (v2['-results_folder-'])
+                    fpath = (v2['-image_folder-'])
+                    results_name = (v2['-name-'])
 
-					im_path = plb.Path(fpath)
-					res_path = plb.Path(rpath)
+                    im_path = plb.Path(fpath)
+                    res_path = plb.Path(rpath)
 					
-					if im_path.exists() and res_path.exists():
-						ai.batch_process(fpath, rpath, mdpath, v2, e2, results_name)
-						batch_win.close()
-						make_GUI()
-						break
-					else:
-						sg.popup('Please enter a valid file or folder path')
-				if e2 == 'Back':
-					batch_win.close()
-					make_GUI()
-					break
-			batch_win.close()
-			break
+                    if im_path.exists() and res_path.exists():
+                        ai.batch_process(fpath, rpath, mdpath, v2, e2, results_name)
+                        batch_win.close()
+                        make_GUI()
+                        break
+                    else:
+                        sg.popup('Please enter a valid file or folder path')
+                if e2 == 'Back':
+                    batch_win.close()
+                    make_GUI()
+                    break
+            batch_win.close()
+            break
 		
 		### Opens up a new window to analyze one image at a time.
 		### User can currently only add one strain and one compound to a plate
 		### User is not required to fill in a values for each plate
-		if values['_SINGLE_']:
-			win1.hide()
-			single_win = make_single_win()
-			while True:
-				e3, v3 = single_win.read()
-				if e3 == 'Analyze':
-					fpath = (v3['-file-'])
-					rpath = (v3['-results-'])
-					im_path = plb.Path(fpath)
-					res_path = plb.Path(rpath)
-					if im_path.exists() and res_path.exists():
-						ai.single_process(fpath, rpath, v3, e3)
-						single_win.close()
-						make_GUI()
-						break
-					else:
-						sg.popup('Please enter a valid file or folder path')
-				if e3 == 'Back':
-					single_win.close()
-					make_GUI()
-					break
-				if e3 in (None, 'Exit'):
-					break
-			single_win.close()
-			break
-	win1.close()
+        if values['_SINGLE_']:
+            win1.hide()
+            single_win = make_single_win()
+            while True:
+                e3, v3 = single_win.read()
+                if e3 == 'Analyze':
+                    fpath = (v3['-file-'])
+                    rpath = (v3['-results-'])
+                    im_path = plb.Path(fpath)
+                    res_path = plb.Path(rpath)
+                    if im_path.exists() and res_path.exists():
+                        ai.single_process(fpath, rpath, v3, e3)
+                        single_win.close()
+                        make_GUI()
+                        break
+                    else:
+                        sg.popup('Please enter a valid file or folder path')
+                if e3 == 'Back':
+                    single_win.close()
+                    make_GUI()
+                    break
+                if e3 in (None, 'Exit'):
+                    break
+            single_win.close()
+            break
+            
+
+        if values['_Yes_']:
+            win1.hide()
+            unblind = unblind_window()
+            while True:
+                e4, v4 = unblind.read()
+                if e4 == 'Back':
+                    unblind.close()
+                    make_GUI()
+                    break
+                if e4 in (None, 'Exit'):
+                    break
+                unblind_process(v4, unblind)
+                exit()
+    win1.close()
+    
+    
+    
+def unblind_process(v4, unblind):
+    metapath = (v4['metadata_file'])
+    keypath = (v4['key_file'])
+    rpath = (v4['-results_folder-'])
+    name = v4['-metadata_name-']
+    m_path = plb.Path(metapath)
+    r_path = plb.Path(keypath)
+    f_path = plb.Path(rpath)
+    if m_path.exists() and r_path.exists():
+        if v4['_Com_']:
+            un.solve_compound_names(metapath, keypath, rpath, name)
+        elif v4['_Strain_']:
+            un.solve_strain_names(metapath, keypath, rpath, name)
+        elif v4['_Both_']:
+            un.solve_both_strain_and_compound_names(metapath, keypath, rpath, name)
+    else:
+        sg.popup('Please enter a valid metadata and key file')
+    message_win()
+    unblind.close()
+
+
+
+def message_win():
+    layout = [[sg.Text('Unblinding Done!', size=(60, 1), justification='center', font=(14))], [sg.OK()]]
+    window = sg.Window('Message', layout, size=(400, 60))
+    while True:
+        event, values = window.read()
+        if event in (sg.WIN_CLOSED, 'OK'):
+            break
+
 
 def main():
 	make_GUI()
