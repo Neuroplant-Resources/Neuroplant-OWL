@@ -64,8 +64,48 @@ def solve_both_strain_and_compound_names(filename1, filename2, resultfolder, tit
         unblind(row['Strain Well C'], 'C', di_s, data, 'Strain Well ')
         unblind(row['Strain Well D'], 'D', di_s, data, 'Strain Well ')
     data.to_csv(path_or_buf= results_folder.joinpath(title +'.csv'))
-    
-    
+ 
+ 
+ 
+ 
+ 
+ 
+ ##############batch results file######################################
+ 
+def solve_compound_names_batchres(filename1, filename2, resultfolder, title):
+    results_folder = plb.Path(resultfolder)
+    data = pd.read_csv(filename1)
+    di = dict_key_compound(filename2)
+    for index, row in data.iterrows():
+        one = row['Compound']
+        if one in di.keys():
+            data['Compound'] = data['Compound'].replace([one], di[one.lower()])
+    data.to_csv(path_or_buf= results_folder.joinpath(title +'.csv'))
+
+
+def solve_strain_names_batchres(filename1, filename2, resultfolder, title):
+    results_folder = plb.Path(resultfolder)
+    data = pd.read_csv(filename1)
+    di = dict_key_strain(filename2)
+    for index, row in data.iterrows():
+        one = row['Strain']
+        if one in di.keys():
+            data['Strain'] = data['Strain'].replace([one], di[one.lower()])
+    data.to_csv(path_or_buf= results_folder.joinpath(title +'.csv'))
+
+def solve_both_strain_and_compound_names_batchres(filename1, filename2, resultfolder, title):
+    results_folder = plb.Path(resultfolder)
+    data = pd.read_csv(filename1)
+    di_c = dict_key_compound(filename2)
+    di_s = dict_key_strain(filename2)
+    for index, row in data.iterrows():
+        one = row['Compound']
+        one = row['Strain']
+        if one in di_c.keys():
+            data['Compound'] = data['Compound'].replace([one], di[one.lower()])
+        if one in di_s.keys():
+            data['Strain'] = data['Strain'].replace([one], di[one.lower()])
+    data.to_csv(path_or_buf= results_folder.joinpath(title +'.csv'))
     
     
 
