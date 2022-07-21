@@ -3,7 +3,7 @@ import time
 import scipy.stats as stats
 from scipy import ndimage as ndi
 import numpy as np
-import pathlib as plb 
+import pathlib as plb
 from os import path
 import csv
 import numpy as np
@@ -17,6 +17,13 @@ from skimage.segmentation import clear_border
 from skimage.measure import label, regionprops, regionprops_table
 from skimage.morphology import closing, square, remove_small_objects
 import connect_metadata
+import tkinter as tk
+import tkinter.ttk as ttk
+import time
+import threading
+import queue
+import glob
+
 
 
 
@@ -43,7 +50,7 @@ def calc_chemotaxis_index(filtered_worm, dims):
     
 
     try:
-        chemotaxis_index = ((worms_in_left_region - worms_in_right_region) 
+        chemotaxis_index = ((worms_in_left_region - worms_in_right_region)
                         / (worms_in_left_region + worms_in_right_region))
         return chemotaxis_index
 
@@ -69,30 +76,45 @@ def single_process(image_fpath, rslt_path, vals, event):
     results = crop_image(image_folder, results_folder, vals, event)
     if results.empty:
         results.to_csv(path_or_buf= results_folder.joinpath(fname + '.csv'))
-    else:  
+    else:
         results.drop(['centroid-0', 'centroid-1', 'bbox-0', 'bbox-1', 'bbox-2', 'bbox-3', 'area'], axis=1, inplace=True)
         results.to_csv(path_or_buf= results_folder.joinpath(fname + '.csv'))
         
 
+
+
+        
+
 ### This function is called when the user clicks the "Submit" button in the Batch Process window
 def batch_process(image_fpath, rslt_path, mdpath, vals, event, results_name):
+   
+   
+#    self1 = App()
+#    self1.mainloop()
     image_folder = plb.Path(image_fpath)
     results_folder = plb.Path(rslt_path)
 
     results_df = pd.DataFrame()
+ #   tasks = len(glob.glob1(image_folder,'*.tif'))
     for image in image_folder.glob('[!._]*.tif*'):
-        pattern = "^[a-zA-Z]"
-        
+        pattern = '^[a-zA-Z]'
         image_data = crop_image(image, rslt_path, vals, event)
+  #      image_data = crop_image(image, rslt_path, vals, event, self1)
         fname = image.stem
         #image_data.to_csv(path_or_buf= results_folder.joinpath(fname + '.csv'))
         results_df = results_df.append(image_data)
         #results_df.head()
+  #      time.sleep(1) #delay
+  #      self1.progressbar1['value'] += (100/tasks)
+  #      self1.update_idletasks() #updating the window each time to see the gradual progress
+
 
     if path.exists(mdpath):
         connected = connect_metadata.connect(mdpath, results_df)
+
     else:
         connected = results_df
+ 
     
     ### Ensuring that the file is named correctly
     substring = '.csv'
@@ -106,14 +128,27 @@ def batch_process(image_fpath, rslt_path, mdpath, vals, event, results_name):
     else:
         connected.drop(['centroid-0', 'centroid-1', 'bbox-0', 'bbox-1', 'bbox-2', 'bbox-3'], axis=1, inplace=True)
         connected.to_csv(path_or_buf= results_folder.joinpath(results_file))
+    #popup window when the analysis is done:
+#    if self1.progressbar1['value'] == 100:
+#        window_2 = tk.Tk()
+#        window_2.title('Message!')
+#        label2 = tk.Label(window_2, text = 'Analysis Done!', width = 50, height = 10, fg = 'yellow', bg = 'purple')
+#        label2.pack()
+#        button2 = tk.Button(window_2, text = 'OK', command = window_2.destroy).pack()
 
+
+
+
+   
 
 
 ### loopwell() is called after the image has been cropped
 ### This is when the worms are identified, counted and when the CI is calculated
 def loopWell(df_f,image, im_path, path_rslt, vals, event):
-
+#def loopWell(df_f,image, im_path, path_rslt, vals, event, self1):
     for index, row in df_f.iterrows():
+  #      if index == len(df_f.index) - 1:
+  #          update_progressbar(self1) #updating the window each time to see the gradual progress
 
 #     fin_image = image[ df_f[][]:Lower_boundary , Left_boundary:Right_boundary ]
         
@@ -165,12 +200,19 @@ def loopWell(df_f,image, im_path, path_rslt, vals, event):
         df_f.loc[index, 'Passes QC'] = qc
         df_f.loc[index, 'Compound'] = compound
         df_f.loc[index, 'Strain'] = strain
+#        if self1.progressbar2['value'] == 100:
+#            self1.progressbar2['value'] = 0
+            
+        
+
     return df_f
 
 
 
 
 def crop_image(flpath, rslt_path, vals, event):
+#def crop_image(flpath, rslt_path, vals, event, self1):
+ #   self1 = self1
     label_begin = time.time()
     image = imread(flpath)
     image_nvrt = np.invert(image)
@@ -179,18 +221,21 @@ def crop_image(flpath, rslt_path, vals, event):
     print('At threshold')
     thresh = threshold_otsu(image_nvrt)
     print('Threshold: ' + str(thresh))
+ #   update_progressbar(self1)
     bw = closing(image_nvrt > thresh, square(3))
-
+    
     # remove artifacts connected to image border
     cleared = clear_border(bw)
     #cleared = remove_small_objects(clear_border(bw))
     print('Clearing small objects took ', str(int(time.time() - label_begin)), 'seconds.')
+  #  update_progressbar(self1)
 
     # label image regions
     label_image = label(bw)
     print('Feature finding and labeling took ', str(int(time.time() - label_begin)), 'seconds.')
     #image_label_overlay = label2rgb(label_image, image=image, bg_label=0)
-
+  #  update_progressbar(self1)
+    
     props = regionprops_table(label_image, properties=('label','centroid', 'bbox', 'area'))
     dff=pd.DataFrame(props)
 
@@ -201,6 +246,7 @@ def crop_image(flpath, rslt_path, vals, event):
     wells = df_area[(df_area.area>= 2000000) & (df_area.area<=2500000)]
     wells=wells.sort_values(by=['bbox-1'])
     print('Number of wells: ' + str(len(wells)))
+#    update_progressbar(self1)
 
     wells.reset_index(drop=True, inplace=True)
 
@@ -255,12 +301,37 @@ def crop_image(flpath, rslt_path, vals, event):
 
     ### Append the dataframes
     df_f=df1.append(df2, ignore_index=True).append(df3, ignore_index=True).append(df4, ignore_index=True)
-    df_f["Total Worms"],df_f["Chemotaxis"], df_f["Compound"], df_f["Strain"] = [np.nan,np.nan,np.nan,np.nan] 
+    df_f["Total Worms"],df_f["Chemotaxis"], df_f["Compound"], df_f["Strain"] = [np.nan,np.nan,np.nan,np.nan]
 
     df_f = df_f.rename(columns={'label': 'WellNo'})
     df_f.apply(lambda row: slots_wells(row), axis=1)
 
     results_df = loopWell(df_f, image, flpath, rslt_path, vals, event)
+    #results_df = loopWell(df_f, image, flpath, rslt_path, vals, event, self1)
     return results_df
     
         #save_worm_locations(df_f,filtered_worm,path_rslt,label)
+        
+
+    
+
+#class App(tk.Tk):
+#
+#    def __init__(self):
+#        tk.Tk.__init__(self)
+#        self.title('Progress Bar')
+#        self.label1 = tk.Label(self, text = 'Processing Image Files', width = 20, height = 1, fg = 'yellow', bg = 'purple').pack(padx=10, pady = 10)
+#        self.progressbar1 = ttk.Progressbar(self, orient = 'horizontal', length = 400)
+#        self.progressbar1.pack(padx=10, pady=10)
+#        self.label2 = tk.Label(self, text = 'Analysing One Image', width = 20, height = 1, fg = 'yellow', bg = 'purple').pack(padx=10, pady = 10)
+#        self.progressbar2 = ttk.Progressbar(self, orient = 'horizontal', length = 400)
+#        self.progressbar2.pack(padx=10, pady=10)
+#        self.button = tk.Button(self, text = 'OK', command = self.destroy)
+#        self.button.pack(padx=10, pady=10)
+#
+#
+#
+#def update_progressbar(self):
+#    #time.sleep(1) #delay
+#    self.progressbar2['value'] += 20
+#    self.update_idletasks() #updating the window each time to see the gradual progress
