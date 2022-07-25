@@ -156,9 +156,92 @@ def do_data_visualisation_timelapse(filename, location_filesfolder, control_name
     new_object = db.load(data_frame, idx= lili)
     mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
     plt.show()
+    
+
         
+    ############################################shared control color#############################################
+    
+def do_data_visualisation_compound_color(filename, location_filesfolder, control_name, color_key):
+    dict = {}
+    batch_res = pd.read_csv(filename)
+    folder_of_loc_files = plb.Path(location_filesfolder)
+    
+    for index, row in batch_res.iterrows():
+        getting_location_collumns_compound(row, folder_of_loc_files, dict)
+    
+    df = pd.DataFrame.from_dict(dict, orient='index')
+    data_fr = df.transpose()
+    px_mm = 1200 / 25.4
+    data_frame = data_fr.apply(lambda x: -(x/px_mm)+32.5)
+    
+    control = control_name.lower()
+    list = []
+    for key in dict.keys():
+        if key.lower() != control:
+            list.append(key)
+    new_list = [control]
+    new_list.extend(list)
+    lili = tuple(new_list)
+    
+    new_object = db.load(data_frame, idx= lili)
+    mm_refs_plot = new_object.mean_diff.plot(custom_palette=color_key, raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
+    plt.show()
+    
+    
+    
+    
+def do_data_visualisation_strain_color(filename, location_filesfolder, control_name, color_key):
+    dict = {}
+    batch_res = pd.read_csv(filename)
+    folder_of_loc_files = plb.Path(location_filesfolder)
+    
+    for index, row in batch_res.iterrows():
+        getting_location_collumns_strain(row, folder_of_loc_files, dict)
+    
+    df = pd.DataFrame.from_dict(dict, orient='index')
+    data_fr = df.transpose()
+    px_mm = 1200 / 25.4
+    data_frame = data_fr.apply(lambda x: -(x/px_mm)+32.5)
+    control = control_name.lower()
+    list = []
+    for key in dict.keys():
+        if key.lower() != control:
+            list.append(key)
+    new_list = [control]
+    new_list.extend(list)
+    lili = tuple(new_list)
 
-
+    
+    new_object = db.load(data_frame, idx= lili)
+    mm_refs_plot = new_object.mean_diff.plot(custom_palette=color_key, raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
+    plt.show()
+    
+    
+    
+def do_data_visualisation_timelapse_color(filename, location_filesfolder, control_name, color_key):
+    dict = {}
+    batch_res = pd.read_csv(filename)
+    folder_of_loc_files = plb.Path(location_filesfolder)
+    
+    for index, row in batch_res.iterrows():
+        getting_location_collumns_timelapse(row, folder_of_loc_files, dict)
+    
+    df = pd.DataFrame.from_dict(dict, orient='index')
+    data_fr = df.transpose()
+    px_mm = 1200 / 25.4
+    data_frame = data_fr.apply(lambda x: -(x/px_mm)+32.5)
+    
+    control = str(control_name)
+    list = []
+    for key in dict.keys():
+        if key != control:
+            list.append(key)
+    new_list = [control]
+    new_list.extend(list)
+    lili = tuple(new_list)
+    new_object = db.load(data_frame, idx= lili)
+    mm_refs_plot = new_object.mean_diff.plot(custom_palette=color_key, raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
+    plt.show()
      ######################unpaired two group estimation plot##############################
      
 def do_data_visualisation_compound_2_group(filename, location_filesfolder, control_name, test_name):

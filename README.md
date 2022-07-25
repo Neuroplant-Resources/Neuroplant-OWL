@@ -59,12 +59,39 @@ You can monitor the progress of your analysis in the Terminal or PowerShell/Comm
 #### Compare the results with your images
 It is always a good idea to check that the returned results are accurate. If the images don't appear to match the results, see below for common problems and troubleshooting tips.
 
+
+
 ## Unblinding your Metadata Sheet
 The Worm Counter GUI allows users to unblind their metadata sheets. Rather than manually unblinding the metadata sheet, users can record their blinding information that consists of the blinded names and actual names into the 'blinding key' sheet that is provided below, enter the blinding key and the metadata sheet into the unblinding page of the GUI, and obtain the unblinded verison of their metadata. Depending on the users needs, the GUI gives the options to unblind the compound names, the strain names, or both. 
 The following link is the google sheet of the blinding key template. Users should make a copy of this template to make edits on their local device, enter the blinded names and actual names of the compounds and/or strains, and download it as csv file.
 The blinding key template: (https://docs.google.com/spreadsheets/d/1XUiqgqrw89kvR9hmZIWSK4jBfCoYfG0F9WB4e3YIkN0/edit?usp=sharing)
 The unblinding page is designed to have both the metadata sheet and the blinding key in csv format. Users should ensure that the type of their documents are csv files.
 
+##Adding Time Points to your Batch Results File
+If you have done time lapse analysis and would like to do data visualisations with the time points, you may add a time points collumn to your batch results file (the file that gets produced from the image analysis). To do so, please insert your batch results file, the time points key file, which matches the filename with the time point, and the name you would like the new batch results file which has a time points collumn to have. Users should make a copy of the time points key template to make edits on their local device, and enter the filename and the corresponding time point. 
+The time points key template: (https://docs.google.com/spreadsheets/d/1TMy_FJ-7xEaRHS1HiiJfOHE9yI8LHBTdbuKqjPxzTB8/edit?usp=sharing)
+
+##Data Visualisation
+The Worm Counter GUI allows users to do data visualisations using the location files and the batch results file that gets generated from the image analysis. Estimation plots gets generated and 2 options are offered for the user: shared control estimation plot and 2 group estimation plot. After choosing which plot the user would like to plot, a new window is created to select the files.
+1. shared control estimation plot:
+    - 3 options as an independent variable are offered for the user: compound, strain, timelapse. 
+    - Select your batch results file (the summary file that gets generated from image analysis)
+    - Select the folder that contains the corresponding location files (the location files get generated from image analysis)
+    - Input the name of your control variable (the rest of the variables in the batch results file are plotted as test variables in comparison with the control variable)
+    - If you prefer to select the colors of your estimation plot, you may use the color key. The color key matches the name of the variable with the color you select for it from the pull down bar. Please input all the variables that are in the batch results file that will be plotted into the color key (for example, if your independent variable is compound, please input all the compound types on your batch results file into the color key and select a color). If you would prefer not to select your colors, please leave the color key option as it is and continue.  
+The color key template: (https://docs.google.com/spreadsheets/d/1xdAJYOK26fsM8uFkZXIBNLxrziE9vB7q0AoK1pYCyWI/edit?usp=sharing)
+Color options on matplotlib: (https://matplotlib.org/2.0.2/mpl_examples/color/named_colors.pdf)
+    - Click 'Do Data Viz' to see your plot generated.
+    
+2. 2 group estimation plot:
+    - 3 options as an independent variable are offered for the user: compound, strain, timelapse. 
+    - Select your batch results file (the summary file that gets generated from image analysis)
+    - Select the folder that contains the corresponding location files (the location files get generated from image analysis)
+    - Input the name of your control variable 
+    - Input the name of your test variable 
+    - Click 'Do Data Viz' to see your plot generated.
+
+    
 
 
 ## Troubleshooting

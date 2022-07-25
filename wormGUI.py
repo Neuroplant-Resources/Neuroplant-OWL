@@ -5,7 +5,7 @@ import unblind_key as un
 import tkinter as tk
 import dataviz as dv
 import timepoint_add as tl
-
+import colors_key as ck
 
 #import connect_metadata as cm
 sg.ChangeLookAndFeel('GreenTan')
@@ -19,7 +19,7 @@ def make_win1():
     [sg.Frame(layout=[[sg.Radio('Single Image', 'RADIO1', default=False, size=(40,1), key='_SINGLE_', enable_events=True, font=(14)), sg.Radio('Batch', 'RADIO1', key='_BATCH_', enable_events=True, font=(14))]], title='Options',title_color='black', relief=sg.RELIEF_SUNKEN)],
     [sg.Text('_'  * 120)],
     [sg.Text('Would you like to perform data visualization?', font=(14))],
-    [sg.Frame(layout=[[sg.Radio('Yes, two group estimation plot (1 control)', 'RADIO1', default=False, size=(50,1), key='_DataVizTwoGroup_', enable_events=True, font=(14))], [sg.Radio('Yes,  shared control estimation plot (1 control)', 'RADIO1', key='_DataVizSharedControl_', enable_events=True, font=(14))]], title='Options',title_color='black', relief=sg.RELIEF_SUNKEN)],
+    [sg.Frame(layout=[[sg.Radio('Yes, two group estimation plot', 'RADIO1', default=False, size=(50,1), key='_DataVizTwoGroup_', enable_events=True, font=(14))], [sg.Radio('Yes,  shared control estimation plot', 'RADIO1', key='_DataVizSharedControl_', enable_events=True, font=(14))]], title='Options',title_color='black', relief=sg.RELIEF_SUNKEN)],
     #[sg.Radio('Yes, multi 2 group estimation plot (multiple controls)', 'RADIO1', key='_DataVizMultiTwo_', enable_events=True, font=(14))]], title='Options',title_color='black', relief=sg.RELIEF_SUNKEN)],
     [sg.Text('_'  * 120)],
      [sg.Text('Would you like to unblind your metadata sheet or your batch results file?',size=(80,1), font='Lucida', justification='left')], [sg.Radio('Yes', 'RADIO1', default=False, key='_Yes_', enable_events=True, font=(14))],
@@ -132,9 +132,9 @@ def dataviz_options_window():
     [sg.Text('Select the folder that contains your location files: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left'),sg.InputText('Default Folder', key = '-location_files_folder-'), sg.FolderBrowse()],
     [sg.Text('What is the name of your control variable:', size=(50, 1), auto_size_text=False, justification='left', font=(12)),
     sg.InputText('Control', key='-control_name-')],
-#    [sg.Text('If you prefer to select your colors, attach a colors key, otherwise leave blank:', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'color_key', visible='False'), sg.FileBrowse()],
+    [sg.Text('If you prefer to select your colors, attach a colors key, otherwise leave blank:', size=(50, 2),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'col_key', visible='False'), sg.FileBrowse()],
     [sg.Button('Do Data Vis'), sg.Button('Back')], [sg.Exit()]]
-    dataviz_options_win = sg.Window('Data Visualization Options', layout5, size=(900,250), resizable=True, finalize=True)
+    dataviz_options_win = sg.Window('Data Visualization Options', layout5, size=(900,300), resizable=True, finalize=True)
     return dataviz_options_win
     
     
@@ -296,14 +296,23 @@ def make_GUI():
                     batch_res = v5['batch_results_file']
                     loc_files_folder = v5['-location_files_folder-']
                     control_name = v5['-control_name-']
-                  #  if v5['color_key'] == 'Select file':
-                    if v5['_CompoundInfo_']:
-                        dv.do_data_visualisation_compound(batch_res, loc_files_folder, control_name)
-                    elif v5['_StrainInfo_']:
-                        dv.do_data_visualisation_strain(batch_res, loc_files_folder, control_name)
-                    elif v5['_TimeLapse_']:
-                        dv.do_data_visualisation_timelapse(batch_res, loc_files_folder, control_name)
-                    
+                    colors_key = v5['col_key']
+                    if colors_key == 'Select file':
+                        if v5['_CompoundInfo_']:
+                            dv.do_data_visualisation_compound(batch_res, loc_files_folder, control_name)
+                        elif v5['_StrainInfo_']:
+                            dv.do_data_visualisation_strain(batch_res, loc_files_folder, control_name)
+                        elif v5['_TimeLapse_']:
+                            dv.do_data_visualisation_timelapse(batch_res, loc_files_folder, control_name)
+                    else:
+                        colors_dict = ck.dict_color_key(colors_key)
+                        if v5['_CompoundInfo_']:
+                            dv.do_data_visualisation_compound_color(batch_res, loc_files_folder, control_name, colors_dict)
+                        elif v5['_StrainInfo_']:
+                            dv.do_data_visualisation_strain_color(batch_res, loc_files_folder, control_name, colors_dict)
+                        elif v5['_TimeLapse_']:
+                            dv.do_data_visualisation_timelapse_color(batch_res, loc_files_folder, control_name, colors_dict)
+                        
                         
         
         if values['_DataVizTwoGroup_']:
@@ -326,7 +335,7 @@ def make_GUI():
                         dv.do_data_visualisation_compound_2_group(batch_res, loc_files_folder, control_name, test_name)
                     elif v6['_StrainInfo_']:
                         dv.do_data_visualisation_strain_2_group(batch_res, loc_files_folder, control_name, test_name)
-                        
+                    
                         
 #        if values['_DataVizMultiTwo_']:
 #            win1.hide()
