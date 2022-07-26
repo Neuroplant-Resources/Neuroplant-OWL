@@ -147,17 +147,35 @@ def do_data_visualisation_timelapse(filename, location_filesfolder, control_name
     
     control = str(control_name)
     list = []
+    previous = 0
     for key in dict.keys():
-        if key != control:
-            list.append(key)
+        key2 = turn_to_number(key)
+
+        if key2.lower() != control:
+            if previous < int(key2):
+                list.append(key)
+            else:
+                for i in range(len(list)):
+                    num = turn_to_number(list[i])
+                    if int(key2) > int(num):
+                        list.insert(i+1, key)
+            previous = int(key2)
     new_list = [control]
     new_list.extend(list)
     lili = tuple(new_list)
+    
     new_object = db.load(data_frame, idx= lili)
     mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
     plt.show()
     
-
+def turn_to_number(string):
+    s2 = ''
+    for char in string:
+        if char.isdigit():
+            s2 += char
+    return s2
+    
+    
         
     ############################################shared control color#############################################
     
