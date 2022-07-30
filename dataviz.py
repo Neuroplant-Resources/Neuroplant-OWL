@@ -530,7 +530,7 @@ def multi2group_dataviz_1(filename, location_filesfolder, strain_control, compou
     
 def multi2group_dataviz_2(filename, location_filesfolder, compound_control, strain_1, strain_2):
     
-    file = pd.read_csv(filename)
+    file = pd.read_csv(filename, encoding= 'unicode_escape')
     folder = plb.Path(location_filesfolder)
     dict_1 = {}
     dict_2 = {}
@@ -579,7 +579,7 @@ def multi2group_dataviz_2(filename, location_filesfolder, compound_control, stra
                 name_1 = strain_1 + '_' + compound
                 name_2 = strain_2 + '_' + compound
                 multi2_list.append((name_1, name_2))
-            compounds_list.append(strain)
+            compounds_list.append(compound)
         else:
             pass
         
@@ -616,7 +616,6 @@ def multi2group_dataviz_2(filename, location_filesfolder, compound_control, stra
     new_list_2 = [control_variable_2]
     new_list_2.extend(list_2)
     lili_2 = tuple(new_list_2)
-
 
     first = db.load(total_df, idx= lili_1)
     second = db.load(total_df, idx= lili_2)
