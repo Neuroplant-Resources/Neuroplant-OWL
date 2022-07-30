@@ -19,8 +19,7 @@ def make_win1():
     [sg.Frame(layout=[[sg.Radio('Single Image', 'RADIO1', default=False, size=(40,1), key='_SINGLE_', enable_events=True, font=(14)), sg.Radio('Batch', 'RADIO1', key='_BATCH_', enable_events=True, font=(14))]], title='Options',title_color='black', relief=sg.RELIEF_SUNKEN)],
     [sg.Text('_'  * 120)],
     [sg.Text('Would you like to perform data visualization?', font=(14))],
-    [sg.Frame(layout=[[sg.Radio('Yes, two group estimation plot', 'RADIO1', default=False, size=(50,1), key='_DataVizTwoGroup_', enable_events=True, font=(14))], [sg.Radio('Yes,  shared control estimation plot', 'RADIO1', key='_DataVizSharedControl_', enable_events=True, font=(14))]], title='Options',title_color='black', relief=sg.RELIEF_SUNKEN)],
-    #[sg.Radio('Yes, multi 2 group estimation plot (multiple controls)', 'RADIO1', key='_DataVizMultiTwo_', enable_events=True, font=(14))]], title='Options',title_color='black', relief=sg.RELIEF_SUNKEN)],
+    [sg.Frame(layout=[[sg.Radio('Yes, two group estimation plot', 'RADIO1', default=False, size=(50,1), key='_DataVizTwoGroup_', enable_events=True, font=(14))], [sg.Radio('Yes,  shared control estimation plot', 'RADIO1', key='_DataVizSharedControl_', enable_events=True, font=(14))], [sg.Radio('Yes, multi 2 group estimation plot', 'RADIO1', key='_DataVizMultiTwo_', enable_events=True, font=(14))]], title='Options',title_color='black', relief=sg.RELIEF_SUNKEN)],
     [sg.Text('_'  * 120)],
      [sg.Text('Would you like to unblind your metadata sheet or your batch results file?',size=(80,1), font='Lucida', justification='left')], [sg.Radio('Yes', 'RADIO1', default=False, key='_Yes_', enable_events=True, font=(14))],
     [sg.Text('_'  * 120)],
@@ -167,23 +166,39 @@ def dataviz_twogroup_window():
 #    dataviz_multitwo_win = sg.Window('Data Visualization Options', layout7, size=(900,250), resizable=True, finalize=True)
 #    return dataviz_multitwo_win
     
+#def dataviz_multitwo_window():
+#    layout7 = [
+#    [sg.Text('What is your independent variable?',size=(100,1), font='Lucida', justification='left')],
+#        [sg.Frame(layout=[
+#            [sg.Radio('Compound', 'RADIO2', default=False, key='_CompoundInfo_', enable_events=True, font=(14)), sg.Radio('Strain', 'RADIO2', key='_StrainInfo_', enable_events=True, font=(14))]], title='Options',title_color='black', relief=sg.RELIEF_SUNKEN)],
+#    [sg.Text('Select your batch results file: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'batch_results_file', visible='False'), sg.FileBrowse()],
+#    [sg.Text('Select the folder that contains your location files: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left'),sg.InputText('Default Folder', key = '-location_files_folder-'), sg.FolderBrowse()],
+#    [sg.Text('Please input the control - test pairs below. If you have less pairs than the number of questions, please leave the extra questions as it is.', size=(100, 1), auto_size_text=False, justification='left', font=(12))],
+#    [sg.InputText('Control1', key='-control1_name-'), sg.InputText('Test1', key='-test1_name-')],
+#    [sg.InputText('Control2', key='-control2_name-'), sg.InputText('Test2', key='-test2_name-')],
+#    [sg.InputText('Control3', key='-control3_name-'), sg.InputText('Test3', key='-test3_name-')],
+#    [sg.InputText('Control4', key='-control4_name-'), sg.InputText('Test4', key='-test4_name-')],
+#    [sg.Button('Do Data Vis'), sg.Button('Back')], [sg.Exit()]]
+#    dataviz_multitwo_win = sg.Window('Data Visualization Options', layout7, size=(900,250), resizable=True, finalize=True)
+#    return dataviz_multitwo_win
+    
 def dataviz_multitwo_window():
     layout7 = [
-    [sg.Text('What is your independent variable?',size=(100,1), font='Lucida', justification='left')],
+    [sg.Text('What is your reference condition?',size=(100,1), font='Lucida', justification='left')],
         [sg.Frame(layout=[
-            [sg.Radio('Compound', 'RADIO2', default=False, key='_CompoundInfo_', enable_events=True, font=(14)), sg.Radio('Strain', 'RADIO2', key='_StrainInfo_', enable_events=True, font=(14))]], title='Options',title_color='black', relief=sg.RELIEF_SUNKEN)],
+            [sg.Radio('compound (I used 2 kinds of compounds)', 'RADIO2', default=False, key='_CompoundReference_', enable_events=True, font=(14)), sg.Radio('strains (I used 2 kinds of strains)', 'RADIO2', key='_StrainReference_', enable_events=True, font=(14))]], title='Options',title_color='black', relief=sg.RELIEF_SUNKEN)],
+    [sg.Text('What are the 2 reference condition types?', size=(30, 1), auto_size_text=False, justification='left', font=(12)),
+    sg.InputText('Reference 1', key='-ref1-'), sg.InputText('Reference 2', key='-ref2-')],
+    [sg.Text('What factor do you want to compare?',size=(100,1), font='Lucida', justification='left')],
+        [sg.Frame(layout=[
+            [sg.Radio('compound ', 'RADIO3', default=False, key='_CompoundComparison_', enable_events=True, font=(14)), sg.Radio('strain ', 'RADIO3', key='_StrainComparison_', enable_events=True, font=(14))]], title='Options',title_color='black', relief=sg.RELIEF_SUNKEN)],
+    [sg.Text('What is the name of your control variable in your comparison factor?', size=(50, 1), auto_size_text=False, justification='left', font=(12)),
+    sg.InputText('Control', key='-control_name-')],
     [sg.Text('Select your batch results file: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'batch_results_file', visible='False'), sg.FileBrowse()],
     [sg.Text('Select the folder that contains your location files: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left'),sg.InputText('Default Folder', key = '-location_files_folder-'), sg.FolderBrowse()],
-    [sg.Text('Please input the control - test pairs below. If you have less pairs than the number of questions, please leave the extra questions as it is.', size=(100, 1), auto_size_text=False, justification='left', font=(12))],
-    [sg.InputText('Control1', key='-control1_name-'), sg.InputText('Test1', key='-test1_name-')],
-    [sg.InputText('Control2', key='-control2_name-'), sg.InputText('Test2', key='-test2_name-')],
-    [sg.InputText('Control3', key='-control3_name-'), sg.InputText('Test3', key='-test3_name-')],
-    [sg.InputText('Control4', key='-control4_name-'), sg.InputText('Test4', key='-test4_name-')],
     [sg.Button('Do Data Vis'), sg.Button('Back')], [sg.Exit()]]
-    dataviz_multitwo_win = sg.Window('Data Visualization Options', layout7, size=(900,250), resizable=True, finalize=True)
+    dataviz_multitwo_win = sg.Window('Data Visualization Options', layout7, size=(900,350), resizable=True, finalize=True)
     return dataviz_multitwo_win
-    
-
     
     
 def check_fpaths(ipath, rpath):
@@ -337,20 +352,36 @@ def make_GUI():
                         dv.do_data_visualisation_strain_2_group(batch_res, loc_files_folder, control_name, test_name)
                     
                         
-#        if values['_DataVizMultiTwo_']:
-#            win1.hide()
-#            dataviz_multitwo = dataviz_multitwo_window()
-#            while True:
-#                e7, v7 = dataviz_multitwo.read()
-#                if e7 == 'Back':
-#                    dataviz_multitwo.close()
-#                    make_GUI()
-#                    break
-#                if e7 == sg.WIN_CLOSED or e7 == 'Exit':
-#                    break
-#                if e7 == 'Do Data Vis':
-#                    batch_res = v7['batch_results_file']
-#                    loc_files_folder = v7['-location_files_folder-']
+        if values['_DataVizMultiTwo_']:
+            win1.hide()
+            dataviz_multitwo = dataviz_multitwo_window()
+            while True:
+                e7, v7 = dataviz_multitwo.read()
+                if e7 == 'Back':
+                    dataviz_multitwo.close()
+                    make_GUI()
+                    break
+                if e7 == sg.WIN_CLOSED or e7 == 'Exit':
+                    break
+                if v7['_CompoundReference_'] or v7['_StrainComparison_']:
+                    v7['_StrainComparison_'] = True
+                    v7['_CompoundReference_'] = True
+                    
+                if v7['_StrainReference_'] or v7['_CompoundComparison_']:
+                    v7['_CompoundComparison_'] = True
+                    v7['_StrainReference_'] = True
+                
+                if e7 == 'Do Data Vis':
+                    batch_res = v7['batch_results_file']
+                    loc_files_folder = v7['-location_files_folder-']
+                    reference_1 = v7['-ref1-']
+                    reference_2 = v7['-ref2-']
+                    control_variable = v7['-control_name-']
+                    if v7['_CompoundReference_'] and v7['_StrainComparison_']:
+                        dv.multi2group_dataviz_1(batch_res, loc_files_folder, control_variable, reference_1, reference_2)
+                    elif v7['_StrainReference_'] and v7['_CompoundComparison_']:
+                        dv.multi2group_dataviz_2(batch_res, loc_files_folder, control_variable, reference_1, reference_2)
+                        
 #                    c1 = v7['-control1_name-']
 #                    t1 = v7['-test1_name-']
 #                    c2 = v7['-control2_name-']
