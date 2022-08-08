@@ -721,11 +721,9 @@ def data_viz_for_compound_under_1_strain(filename, location_filesfolder, compoun
     #loops through all the rows in the batch results data frame
     for index, row in batch_res.iterrows():
         if (row['Strain']).lower() == one_strain.lower():
-            print(row['WellNo'])
             getting_location_collumns_compound(row, folder_of_loc_files, dict, list_doesnt_pass_qc)
             
     dict = {key + '_' + one_strain: value for key, value in dict.items()}
-    print(dict.keys())
     
     data_frame = converting_dict_to_dataframe_and_ppi_to_mm(dict)
     
@@ -772,7 +770,6 @@ def data_viz_for_strain_under_1_compound(filename, location_filesfolder, strain_
     #loops through all the rows in the batch results data frame
     for index, row in batch_res.iterrows():
         if (row['Compound']).lower() == one_compound.lower():
-            print(row['WellNo'])
             getting_location_collumns_strain(row, folder_of_loc_files, dict, list_doesnt_pass_qc)
             
     dict = {key + '_' + one_compound: value for key, value in dict.items()}
@@ -813,7 +810,6 @@ def do_data_visualisation_timelapse_under_1compound(filename, location_filesfold
 
     for index, row in batch_res.iterrows():
         if (row['Compound']).lower() == compound_name.lower():
-            print(row['WellNo'])
             getting_location_collumns_timelapse(row, folder_of_loc_files, dict)
 
 
@@ -869,7 +865,6 @@ def do_data_visualisation_timelapse_under_1strain(filename, location_filesfolder
 
     for index, row in batch_res.iterrows():
         if (row['Strain']).lower() == strain_name.lower():
-            print(row['WellNo'])
             getting_location_collumns_timelapse(row, folder_of_loc_files, dict)
 
 
@@ -923,7 +918,6 @@ def do_data_visualisation_timelapse_under_1compound_and_1strain(filename, locati
 
     for index, row in batch_res.iterrows():
         if (row['Strain']).lower() == strain_name.lower() and (row['Compound']).lower() == compound_name.lower():
-            print(row['WellNo'])
             getting_location_collumns_timelapse(row, folder_of_loc_files, dict)
 
 
