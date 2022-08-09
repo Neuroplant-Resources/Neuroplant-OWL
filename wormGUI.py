@@ -132,7 +132,7 @@ def dataviz_options_window():
     [sg.Text('What is the name of your control variable:', size=(50, 1), auto_size_text=False, justification='left', font=(12)),
     sg.InputText('Control', key='-control_name-')],
     [sg.Text('_'  * 120)],
-    [sg.Text('If you would like to restrict the variable you are not plotting, please make selections, otherwise click "None" and leave the quesions that are asking for the name of the variable blank')],
+    [sg.Text('If you would like to restrict the variable you are not plotting, please make selections, otherwise click "None".')],
     [sg.Text('What type of variable would you like to restrict the independent variable under?',size=(100,1), font='Lucida', justification='left')],
         [sg.Frame(layout=[
             [sg.Radio('None', 'RADIO3', default=False, key='_none_select_', enable_events=True, font=(14)), sg.Radio('Compound', 'RADIO3', key='_compound_select_', enable_events=True, font=(14)), sg.Radio('Strain', 'RADIO3', key='_strain_select_', enable_events=True, font=(14)), sg.Radio('Both', 'RADIO3', default=False, key='_both_select_', enable_events=True, font=(14))]], title='Options',title_color='black', relief=sg.RELIEF_SUNKEN)],
@@ -140,6 +140,7 @@ def dataviz_options_window():
     sg.InputText('restricting compound', key='-compound-select-name-')],
     [sg.Text('Select the strain you want to restrict under:', size=(50, 1), auto_size_text=False, justification='left', font=(12)),
     sg.InputText('restricting strain', key='-strain-select-name-')],
+    [sg.Text('_'  * 120)],
     [sg.Text('If you prefer to select your colors, attach a colors key, otherwise leave blank:', size=(50, 2),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'col_key', visible='False'), sg.FileBrowse()],
     [sg.Button('Do Data Vis'), sg.Button('Back')], [sg.Exit()]]
     dataviz_options_win = sg.Window('Data Visualization Options', layout5, size=(900,450), resizable=True, finalize=True)
@@ -205,7 +206,7 @@ def dataviz_multitwo_window():
     sg.InputText('Control', key='-control_name-')],
     [sg.Text('Select your batch results file: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'batch_results_file', visible='False'), sg.FileBrowse()],
     [sg.Text('Select the folder that contains your location files: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left'),sg.InputText('Default Folder', key = '-location_files_folder-'), sg.FolderBrowse()],
-#    [sg.Text('If you prefer to select your colors, attach a colors key, otherwise leave blank:', size=(50, 2),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'col_key', visible='False'), sg.FileBrowse()],
+    [sg.Text('If you prefer to select your colors, attach a colors key, otherwise leave blank:', size=(50, 2),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'col_key', visible='False'), sg.FileBrowse()],
     [sg.Button('Do Data Vis'), sg.Button('Back')], [sg.Exit()]]
     dataviz_multitwo_win = sg.Window('Data Visualization Options', layout7, size=(900,350), resizable=True, finalize=True)
     return dataviz_multitwo_win
@@ -323,37 +324,36 @@ def make_GUI():
                     control_name = v5['-control_name-']
                     colors_key = v5['col_key']
                     if v5['_none_select_']:
-                        if colors_key == 'Select file':
-                            if v5['_CompoundInfo_']:
-                                dv.do_data_visualisation_compound(batch_res, loc_files_folder, control_name)
-                            elif v5['_StrainInfo_']:
-                                dv.do_data_visualisation_strain(batch_res, loc_files_folder, control_name)
-                            elif v5['_TimeLapse_']:
-                                dv.do_data_visualisation_timelapse(batch_res, loc_files_folder, control_name)
+                        if colors_key != 'Select file':
+                            colors = ck.dict_color_key(colors_key)
                         else:
-                            colors_dict = ck.dict_color_key(colors_key)
-                            if v5['_CompoundInfo_']:
-                                dv.do_data_visualisation_compound_color(batch_res, loc_files_folder, control_name, colors_dict)
-                            elif v5['_StrainInfo_']:
-                                dv.do_data_visualisation_strain_color(batch_res, loc_files_folder, control_name, colors_dict)
-                            elif v5['_TimeLapse_']:
-                                dv.do_data_visualisation_timelapse_color(batch_res, loc_files_folder, control_name, colors_dict)
+                            colors = 'Select file'
+                        if v5['_CompoundInfo_']:
+                            dv.do_data_visualisation_compound(batch_res, loc_files_folder, control_name, colors)
+                        elif v5['_StrainInfo_']:
+                            dv.do_data_visualisation_strain(batch_res, loc_files_folder, control_name, colors)
+                        elif v5['_TimeLapse_']:
+                            dv.do_data_visualisation_timelapse(batch_res, loc_files_folder, control_name, colors)
+                    if colors_key != 'Select file':
+                        colors = ck.dict_color_key_mutli2(colors_key)
+                    else:
+                        colors = 'Select file'
                     if v5['_StrainInfo_'] and v5['_compound_select_']:
                         selected_compound = v5['-compound-select-name-']
-                        dv.data_viz_for_strain_under_1_compound(batch_res, loc_files_folder, control_name, selected_compound)
+                        dv.data_viz_for_strain_under_1_compound(batch_res, loc_files_folder, control_name, selected_compound, colors)
                     if v5['_CompoundInfo_'] and v5['_strain_select_']:
                         selected_strain = v5['-strain-select-name-']
-                        dv.data_viz_for_compound_under_1_strain(batch_res, loc_files_folder, control_name, selected_strain)
+                        dv.data_viz_for_compound_under_1_strain(batch_res, loc_files_folder, control_name, selected_strain, colors)
                     if v5['_TimeLapse_'] and v5['_compound_select_']:
                         selected_compound = v5['-compound-select-name-']
-                        dv.do_data_visualisation_timelapse_under_1compound(batch_res, loc_files_folder, control_name, selected_compound)
+                        dv.do_data_visualisation_timelapse_under_1compound(batch_res, loc_files_folder, control_name, selected_compound, colors)
                     if v5['_TimeLapse_'] and v5['_strain_select_']:
                         selected_strain = v5['-strain-select-name-']
-                        dv.do_data_visualisation_timelapse_under_1strain(batch_res, loc_files_folder, control_name, selected_strain)
+                        dv.do_data_visualisation_timelapse_under_1strain(batch_res, loc_files_folder, control_name, selected_strain, colors)
                     if v5['_TimeLapse_'] and v5['_both_select_']:
                         selected_compound = v5['-compound-select-name-']
                         selected_strain = v5['-strain-select-name-']
-                        dv.do_data_visualisation_timelapse_under_1compound_and_1strain(batch_res, loc_files_folder, control_name, selected_compound, selected_strain)
+                        dv.do_data_visualisation_timelapse_under_1compound_and_1strain(batch_res, loc_files_folder, control_name, selected_compound, selected_strain, colors)
                 
                     
                         
@@ -405,12 +405,14 @@ def make_GUI():
                     loc_files_folder = v7['-location_files_folder-']
                     reference_1 = v7['-ref1-']
                     reference_2 = v7['-ref2-']
-                 #   colors_key = v7['col_key']
+                    colors_key = v7['col_key']
                     control_variable = v7['-control_name-']
+                    if colors_key != 'Select file':
+                        colors_key = ck.dict_color_key_mutli2(colors_key)
                     if v7['_CompoundReference_'] and v7['_StrainComparison_']:
-                        dv.multi2group_dataviz_1(batch_res, loc_files_folder, control_variable, reference_1, reference_2)
+                        dv.multi2group_dataviz_1(batch_res, loc_files_folder, control_variable, reference_1, reference_2, colors_key)
                     elif v7['_StrainReference_'] and v7['_CompoundComparison_']:
-                        dv.multi2group_dataviz_2(batch_res, loc_files_folder, control_variable, reference_1, reference_2)
+                        dv.multi2group_dataviz_2(batch_res, loc_files_folder, control_variable, reference_1, reference_2, colors_key)
                         
 #                    c1 = v7['-control1_name-']
 #                    t1 = v7['-test1_name-']
