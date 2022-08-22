@@ -418,7 +418,7 @@ def timelapse_qc_check_total_worms(batchresults_dataframe):
         mean_worm_count = sum(all_worms_count) / len(all_worms_count)
         
         #if the mean worm counts of the well is 150 plus or minus 10%, it passes quality control
-        if mean_worm_count >= 150:
+        if mean_worm_count >= 135:
             dict_2[key] = 'Y'
             
         #if it doesn't, qc for that well fails

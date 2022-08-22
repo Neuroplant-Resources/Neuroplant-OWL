@@ -141,11 +141,12 @@ def dataviz_options_window():
     [sg.Text('Select the strain you want to restrict under:', size=(50, 1), auto_size_text=False, justification='left', font=(12)),
     sg.InputText('restricting strain', key='-strain-select-name-')],
     [sg.Text('_'  * 120)],
-    [sg.Text('If you prefer to select your colors, attach a colors key, otherwise leave the question as it is:', size=(50, 2),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'col_key', visible='False'), sg.FileBrowse()],
+    [sg.Text('Would you like to select your colors?'), sg.Radio('Yes',  'RADIO4', default=False, key='yes_for_col_key', enable_events=True), sg.Radio('No', 'RADIO4', default=False, key='no_for_col_key', enable_events=True), sg.Text('If yes, please attach a colors key:', justification='left'), sg.InputText('Select file', key = 'col_key', justification='left', visible='False'), sg.FileBrowse()],
     [sg.Text('_'  * 120)],
-    [sg.Text('Select the folder in which you want to save your plot as a pdf file, otherwise leave the question as it is:', size=(50, 2),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'pdf_key', visible='False'), sg.FolderBrowse()],
-    [sg.Text('If you would like to save your plot as a pdf file, please input a name for it:', size=(50, 1), auto_size_text=False, justification='left', font=(12)),
+    [sg.Text('Would you like to save your plot as a pdf file?', font=(9)), sg.Radio('Yes',  'RADIO5', default=False, key='yes_for_saving_pdf', enable_events=True), sg.Radio('No', 'RADIO5', default=False, key='no_for_saving_pdf', enable_events=True)], [sg.Text('If yes, select the folder in which you want to save your plot as a pdf file:', justification='left', visible='False', size=(50, 1), font=(9)),  sg.InputText('Select file', key = 'pdf_key', visible='False'), sg.FolderBrowse()],
+    [sg.Text('If yes, please input a name for the pdf file:', auto_size_text=False, justification='left', size=(50, 1), font=(9)),
     sg.InputText('Data visualisation', key='-pdf_name_plot-')],
+    [sg.Text(' '  * 120)],
     [sg.Button('Do Data Vis'), sg.Button('Back')], [sg.Exit()]]
     dataviz_options_win = sg.Window('Data Visualization Options', layout5, size=(900,600), resizable=True, finalize=True)
     return dataviz_options_win
@@ -212,7 +213,7 @@ def dataviz_multitwo_window():
     [sg.Text('Select the folder that contains your location files: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left'),sg.InputText('Default Folder', key = '-location_files_folder-'), sg.FolderBrowse()],
     [sg.Text('If you prefer to select your colors, attach a colors key, otherwise leave blank:', size=(50, 2),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'col_key', visible='False'), sg.FileBrowse()],
     [sg.Button('Do Data Vis'), sg.Button('Back')], [sg.Exit()]]
-    dataviz_multitwo_win = sg.Window('Data Visualization Options', layout7, size=(900,350), resizable=True, finalize=True)
+    dataviz_multitwo_win = sg.Window('Data Visualization Options', layout7, size=(900,400), resizable=True, finalize=True)
     return dataviz_multitwo_win
     
     
@@ -326,11 +327,17 @@ def make_GUI():
                     batch_res = v5['batch_results_file']
                     loc_files_folder = v5['-location_files_folder-']
                     control_name = v5['-control_name-']
-                    colors_key = v5['col_key']
-                    pdf_store_folder = v5['pdf_key']
+                    if v5['yes_for_saving_pdf']:
+                        pdf_store_folder = v5['pdf_key']
+                    else:
+                        pdf_store_folder = 'Select file'
                     pdf_file_name = v5['-pdf_name_plot-']
+                    if v5['yes_for_col_key']:
+                        colors_key = v5['col_key']
+                    else:
+                        colors_key = 'None'
                     if v5['_none_select_']:
-                        if colors_key != 'Select file':
+                        if colors_key != 'None':
                             colors = ck.dict_color_key(colors_key)
                         else:
                             colors = 'Select file'
@@ -340,7 +347,7 @@ def make_GUI():
                             dv.do_data_visualisation_strain(batch_res, loc_files_folder, control_name, colors, pdf_store_folder, pdf_file_name)
                         elif v5['_TimeLapse_']:
                             dv.do_data_visualisation_timelapse(batch_res, loc_files_folder, control_name, colors, pdf_store_folder, pdf_file_name)
-                    if colors_key != 'Select file':
+                    if colors_key != 'None':
                         colors = ck.dict_color_key_mutli2(colors_key)
                     else:
                         colors = 'Select file'
