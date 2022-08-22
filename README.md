@@ -67,30 +67,41 @@ The following link is the google sheet of the blinding key template. Users shoul
 The blinding key template: (https://docs.google.com/spreadsheets/d/1XUiqgqrw89kvR9hmZIWSK4jBfCoYfG0F9WB4e3YIkN0/edit?usp=sharing)
 The unblinding page is designed to have both the metadata sheet and the blinding key in csv format. Users should ensure that the type of their documents are csv files.
 
-##Adding Time Points to your Batch Results File
+## Adding Time Points to your Batch Results File
 If you have done time lapse analysis and would like to do data visualisations with the time points, you may add a time points collumn to your batch results file (the file that gets produced from the image analysis). To do so, please insert your batch results file, the time points key file, which matches the filename with the time point, and the name you would like the new batch results file which has a time points collumn to have. Users should make a copy of the time points key template to make edits on their local device, and enter the filename and the corresponding time point. 
 The time points key template: (https://docs.google.com/spreadsheets/d/1TMy_FJ-7xEaRHS1HiiJfOHE9yI8LHBTdbuKqjPxzTB8/edit?usp=sharing)
 
-##Data Visualisation
-The Worm Counter GUI allows users to do data visualisations using the location files and the batch results file that gets generated from the image analysis. Estimation plots gets generated and 2 options are offered for the user: shared control estimation plot and 2 group estimation plot. After choosing which plot the user would like to plot, a new window is created to select the files.
-1. shared control estimation plot:
+## Data Visualisation
+
+The Worm Counter GUI allows users to do data visualisations using the location files and the batch results file that gets generated from the image analysis. Estimation plots gets generated and 3 options are offered for the user: shared control estimation plot, 2 group estimation plot, and multi 2 group plots. After choosing which plot the user would like to plot, a new window is created to select the files.
+## 1. shared control estimation plot:
+
     - 3 options as an independent variable are offered for the user: compound, strain, timelapse. 
     - Select your batch results file (the summary file that gets generated from image analysis)
     - Select the folder that contains the corresponding location files (the location files get generated from image analysis)
     - Input the name of your control variable (the rest of the variables in the batch results file are plotted as test variables in comparison with the control variable)
-    - If you prefer to select the colors of your estimation plot, you may use the color key. The color key matches the name of the variable with the color you select for it from the pull down bar. Please input all the variables that are in the batch results file that will be plotted into the color key (for example, if your independent variable is compound, please input all the compound types on your batch results file into the color key and select a color). If you would prefer not to select your colors, please leave the color key option as it is and continue. If your visualisation labels include both strain and compound, please name your variables in the format: compound_strain in the colors key.
+    - If the variable that is not being plotted is also tested with different kinds, you may restrict this variable under one of its conditions. Otherwise please click 'None', if this variable is the same across all rows. For example, if compound is your independent variable where DMSO is tested with different compounds, and the only strain that is used is N2, you should click 'None'. However, if different strains are also used while testing the different compounds, and if you would like to restrict the visualisation under one type of strain, please click strain, and input the name of the strain variable. There are 4 options to restrict under: None, Compound, Strain, Both. A user must click an option to continue. 
+    - If you prefer to select the colors of your estimation plot, you may use the color key. Please click 'Yes' and input a colors key. The color key matches the name of the variable with the color you select for it from the pull down bar. Please input all the variables that are in the batch results file that will be plotted into the color key (for example, if your independent variable is compound, please input all the compound types on your batch results file into the color key and select a color). If you would prefer not to select your colors, you may click 'No'. If your visualisation labels include both strain and compound, please name your variables in the format: compound_strain in the colors key. compound_strain names appear when restircting a variable. please make sure that the inpendent variable is written in lowercase in the colors key and the restricted variable in the way it appears in the batch results file. For example, if compound is the independent variable, and the strain is restricted under Tax-4 strain, please input the compound names as lowercase and Tax-4 as it appears in the file while inputting the names into the colors key in compound_strain format.
+    - If you would like to save your plot as a pdf file, you may click 'Yes' and make the selections for which file to save the plot and the name of the plot. 
+    - the number of wells that didnt pass quality control and the number of wells that pass quality control that are used in data visualisation get printed in the terminal.
     
 The color key template: (https://docs.google.com/spreadsheets/d/1xdAJYOK26fsM8uFkZXIBNLxrziE9vB7q0AoK1pYCyWI/edit?usp=sharing)
 Color options on matplotlib: (https://matplotlib.org/2.0.2/mpl_examples/color/named_colors.pdf)
     - Click 'Do Data Viz' to see your plot generated.
     
 2. 2 group estimation plot:
+
     - 3 options as an independent variable are offered for the user: compound, strain, timelapse. 
     - Select your batch results file (the summary file that gets generated from image analysis)
     - Select the folder that contains the corresponding location files (the location files get generated from image analysis)
     - Input the name of your control variable 
     - Input the name of your test variable 
     - Click 'Do Data Viz' to see your plot generated.
+    
+3. Multi 2 group plots:
+
+- If you have a reference condition that has 2 changing variables, and a comparison factor that is the indepdendent variable, you may use this option. This option generates 2 plots: 2 shared control plots next to each other, where the comparison factor (the indepdent variable) is restricted under each reference condition, and a multi-2 group plot that compares each of the comparison factor under the 2 reference conditions. If you have compound as your indepdent variable, and you have used 2 kinds of strains, if you would like to see how the compounds behave under each strain and if you would like to compare a compound under the 2 strain conditions, you can use this option. 
+- IMPORTANT NOTE FOR MULTI-2 GROUP PLOTS: please input the names of the variables into the GUI as they appear in the batch results file. Please input the names into the colors key as compound_strain format and keep the names as they are in the batch results file. If dmso and N2 appear as DMSO and N2 in the batch results file, you should input the name as DMSO_N2 into the colors key. 
 
     
 
