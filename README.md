@@ -75,7 +75,7 @@ The time points key template: (https://docs.google.com/spreadsheets/d/1TMy_FJ-7x
 
 The Worm Counter GUI allows users to do data visualisations using the location files and the batch results file that gets generated from the image analysis. Estimation plots gets generated and 3 options are offered for the user: shared control estimation plot, 2 group estimation plot, and multi 2 group plots. After choosing which plot the user would like to plot, a new window is created to select the files.
 
-### 1. shared control estimation plot:
+1. shared control estimation plot:
 
     - 3 options as an independent variable are offered for the user: compound, strain, timelapse. 
     - Select your batch results file (the summary file that gets generated from image analysis)
