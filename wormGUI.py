@@ -309,7 +309,10 @@ def make_GUI():
                     break
                 if e4 == 'Unblind':
                     unblind_process(v4, unblind)
-                    exit()
+                    make_GUI()
+                    break
+            unblind.close()
+            break
             
                 
         if values['_DataVizSharedControl_']:
@@ -367,7 +370,8 @@ def make_GUI():
                         selected_compound = v5['-compound-select-name-']
                         selected_strain = v5['-strain-select-name-']
                         dv.do_data_visualisation_timelapse_under_1compound_and_1strain(batch_res, loc_files_folder, control_name, selected_compound, selected_strain, colors, pdf_store_folder, pdf_file_name)
-                
+            dataviz_options.close()
+            break
                     
                         
                         
@@ -392,6 +396,8 @@ def make_GUI():
                         dv.do_data_visualisation_compound_2_group(batch_res, loc_files_folder, control_name, test_name)
                     elif v6['_StrainInfo_']:
                         dv.do_data_visualisation_strain_2_group(batch_res, loc_files_folder, control_name, test_name)
+            dataviz_twogroup.close()
+            break
                     
                         
         if values['_DataVizMultiTwo_']:
@@ -426,20 +432,8 @@ def make_GUI():
                         dv.multi2group_dataviz_1(batch_res, loc_files_folder, control_variable, reference_1, reference_2, colors_key)
                     elif v7['_StrainReference_'] and v7['_CompoundComparison_']:
                         dv.multi2group_dataviz_2(batch_res, loc_files_folder, control_variable, reference_1, reference_2, colors_key)
-                        
-#                    c1 = v7['-control1_name-']
-#                    t1 = v7['-test1_name-']
-#                    c2 = v7['-control2_name-']
-#                    t2 = v7['-test2_name-']
-#                    c3 = v7['-control3_name-']
-#                    t3 = v7['-test3_name-']
-#                    c4 = v7['-control4_name-']
-#                    t4 = v7['-test4_name-']
-#                    if v7['_CompoundInfo_']:
-#                        dv.do_data_visualisation_compound_multi2_group(batch_res, loc_files_folder, c1, t1, c2, t2, c3, t3, c4, t4)
-#                    elif v7['_StrainInfo_']:
-#                        dv.do_data_visualisation_strain_multi2_group(batch_res, loc_files_folder, c1, t1, c2, t2, c3, t3, c4, t4)
-        
+            dataviz_multitwo.close()
+            break
         
         if values['_TimeLapseCollumn_']:
             win1.hide()
@@ -459,7 +453,7 @@ def make_GUI():
                     tl.timelapse_collumn_addition(file, key, folder, name)
                     message_win()
                     tl_window.close()
-                    exit()
+
                     
                     
                     
@@ -503,8 +497,9 @@ def message_win():
     while True:
         event, values = window.read()
         if event in (sg.WIN_CLOSED, 'OK'):
+            window.close()
             break
-
+        break
 
 def main():
     make_GUI()
