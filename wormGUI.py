@@ -16,8 +16,7 @@ sg.ChangeLookAndFeel('GreenTan')
 def make_win1():
     layout1 = [
     [sg.Text('Welcome to Our Worm Locator!', size=(60, 1), justification='center', font=("Helvetica", 25), relief=sg.RELIEF_RIDGE)],
-    [sg.Frame(layout=[[sg.Text('Click on the button below to access the image analysis functionalities of the OWL', font=(14))], [sg.Button('Analyze images', key='_IMG_ANALYSIS_', enable_events=True, font=(14))]], title='Image analysis',title_color='black', relief=sg.RELIEF_SUNKEN)],
-    [sg.Text('_'  * 120)],
+    [sg.Combo(('Image analysis', 'Unblind data', 'Data visualization', 'Timelapse'), size=(20, 1)), sg.Button('Go')],
     [sg.Text('Would you like to perform data visualization?', font=(14))],
     [sg.Frame(layout=[[sg.Radio('Yes, two group estimation plot', 'RADIO1', default=False, size=(50,1), key='_DataVizTwoGroup_', enable_events=True, font=(14))], [sg.Radio('Yes,  shared control estimation plot', 'RADIO1', key='_DataVizSharedControl_', enable_events=True, font=(14))], [sg.Radio('Yes, multi 2 group estimation plot', 'RADIO1', key='_DataVizMultiTwo_', enable_events=True, font=(14))]], title='Options',title_color='black', relief=sg.RELIEF_SUNKEN)],
     [sg.Text('_'  * 120)],
@@ -75,50 +74,7 @@ def make_batch_win():
     return batch_window
 
 
-### Creates the GUI window to process one image at a time
-# def make_single_win():
-#     layout3 = [
-#     [sg.Frame('Single Pic', key = '_test_', font=(14), layout=[
 
-#     [sg.Frame('Worm Strains in Each Well', visible = False, key='-4Strains-', font=(14),layout=[
-#     [sg.Text('Strain in Well A', size=(15,1), font=(12)), sg.InputText(key='-StrainA-')],
-#     [sg.Text('Strain in Well B', size=(15,1), font=(12)), sg.InputText(key='-StrainB-')],
-#     [sg.Text('Strain in Well C', size=(15,1), font=(12)), sg.InputText(key='-StrainC-')],
-#     [sg.Text('Strain in Well D', size=(15,1), font=(12)), sg.InputText(key='-StrainD-')]])],
-
-#     [sg.Frame('Slot 1 Data', visible = True, font=(14), layout=[
-#     #[sg.Checkbox('Check this box if you there are multiple strains on this plate', enable_events=True ,key='-show_strains-', size=(10,1))],
-#     [sg.Text('Plate ID', size=(15,1), font=(12)), sg.InputText(key='-PID1-')],
-#     [sg.Text('Strain on Plate 1', size=(15,1), font=(12)), sg.InputText(key='-Strain1-')],
-#     [sg.Text('Compound', size=(15,1), font=(12)), sg.InputText(key='-Compound1-')]]
-#     ),
-#     sg.Frame('Slot 2 Data',visible = True, font=(12), layout=[
-#     [sg.Text('Plate ID', size=(15,1), font=(12)), sg.InputText(key='-PID2-')],
-#     [sg.Text('Strain on Plate 2', size=(15,1), font=(12)), sg.InputText(key='-Strain2-')],
-#     [sg.Text('Compound', size=(15,1), font=(12)), sg.InputText(key='-Compound2-')]
-#     ])],
-
-#     [sg.Frame('Slot 3 Data',visible = True, font=(14), layout=[
-#     [sg.Text('Plate ID', size=(15,1), font=(12)), sg.InputText(key='-PID3-')],
-#     [sg.Text('Strain on Plate 3', size=(15,1), font=(12)), sg.InputText(key='-Strain3-')],
-#     [sg.Text('Compound', size=(15,1), font=(12)), sg.InputText(key='-Compound3-')]]
-#     ),
-#     sg.Frame('Slot 4 Data',visible = True,  font=(14), layout=[
-#     [sg.Text('Plate ID', size=(15,1), font=(12)), sg.InputText(key='-PID4-')],
-#     [sg.Text('Strain on Plate 4', size=(15,1), font=(12)), sg.InputText(key='-Strain4-')],
-#     [sg.Text('Compound', size=(15,1), font=(12)), sg.InputText(key='-Compound4-')]
-#     ])],
-
-#     [sg.Frame('Choose the image file to be analyzed', visible=True, font=(12),layout=[
-#     [sg.Text('Choose a folder to save your results in: ', size=(40, 1), auto_size_text=False, font=(12), justification='right'),
-#         sg.InputText('Results folder', key='-results-'), sg.FolderBrowse()],
-#     [sg.Text('Select the image to be analyzed', size=(40, 1), auto_size_text=False, font=(12), justification='right'), sg.InputText('Image file', key='-file-'), sg.FileBrowse()],
-#         [sg.Button('Analyze'), sg.Button('Back'), sg.Exit()]])]
-#     ])]]
-
-#     single_im = sg.Window('Single Image Processing', layout3, default_element_size=(80, 1), resizable=True, finalize=True)
-#     return single_im
- 
 
 def unblind_window():
     layout4 = [
@@ -258,7 +214,7 @@ def make_GUI():
     win1 = make_win1()
     while True:
         event, values = win1.read()
-        print(event)
+        print(values)
         
         ### If exit button is clicked then the whole program is terminated
         if event in (None, 'Exit'):
@@ -269,7 +225,7 @@ def make_GUI():
         ### Opens a window to analyze a batch of images
         ### Does not currently incorporate metadata for a batch of images but creates the fields to do so
         ### User is returned to the main page upon completion of analysis
-        if event == '_IMG_ANALYSIS_':
+        if (event == 'Go') and (values[0]=='Image analysis') :
             win1.hide()
             batch_win = make_batch_win()
             while True:
@@ -334,7 +290,7 @@ def make_GUI():
         #     break
             
 
-        if values['_Yes_']:
+        if (event == 'Go') and (values[0] == 'Unblind data'):
             win1.hide()
             unblind = unblind_window()
             while True:
