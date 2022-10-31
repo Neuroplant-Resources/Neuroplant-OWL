@@ -6,6 +6,7 @@ import tkinter as tk
 import dataviz as dv
 import timepoint_add as tl
 import colors_key as ck
+import webbrowser
 
 #import connect_metadata as cm
 sg.ChangeLookAndFeel('GreenTan')
@@ -14,9 +15,8 @@ sg.ChangeLookAndFeel('GreenTan')
 ### Opens upon running the program
 def make_win1():
     layout1 = [
-    [sg.Text('Welcome to the Worm Counter!', size=(60, 1), justification='center', font=("Helvetica", 25), relief=sg.RELIEF_RIDGE)],
-    [sg.Text('Choose whether you would like to process a single image or a batch of images', font=(14))],
-    [sg.Frame(layout=[[sg.Radio('Single Image', 'RADIO1', default=False, size=(40,1), key='_SINGLE_', enable_events=True, font=(14)), sg.Radio('Batch', 'RADIO1', key='_BATCH_', enable_events=True, font=(14))]], title='Options',title_color='black', relief=sg.RELIEF_SUNKEN)],
+    [sg.Text('Welcome to Our Worm Locator!', size=(60, 1), justification='center', font=("Helvetica", 25), relief=sg.RELIEF_RIDGE)],
+    [sg.Frame(layout=[[sg.Text('Click on the button below to access the image analysis functionalities of the OWL', font=(14))], [sg.Button('Analyze images', key='_IMG_ANALYSIS_', enable_events=True, font=(14))]], title='Image analysis',title_color='black', relief=sg.RELIEF_SUNKEN)],
     [sg.Text('_'  * 120)],
     [sg.Text('Would you like to perform data visualization?', font=(14))],
     [sg.Frame(layout=[[sg.Radio('Yes, two group estimation plot', 'RADIO1', default=False, size=(50,1), key='_DataVizTwoGroup_', enable_events=True, font=(14))], [sg.Radio('Yes,  shared control estimation plot', 'RADIO1', key='_DataVizSharedControl_', enable_events=True, font=(14))], [sg.Radio('Yes, multi 2 group estimation plot', 'RADIO1', key='_DataVizMultiTwo_', enable_events=True, font=(14))]], title='Options',title_color='black', relief=sg.RELIEF_SUNKEN)],
@@ -30,62 +30,94 @@ def make_win1():
     return window1
 
 ### Makes the window to process multiple images
-def make_batch_win():
-    layout2 = [
-    [sg.Text('Select your metadata file: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='right', visible='False'), sg.InputText('Select file', key = 'md_file', visible='False'), sg.FileBrowse()],
-    [sg.Text('Select a folder to store your results: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='right'),sg.InputText('Default Folder', key = '-results_folder-'), sg.FolderBrowse()],
-    [sg.Text('Select the folder that contains the images to be analyzed: ',  size=(50, 1), font=(12),auto_size_text=False, justification='right'),sg.InputText('Default Folder', key='-image_folder-',), sg.FolderBrowse()],
-    [sg.Text('Name your results file ', size=(50, 1), auto_size_text=False, justification='right', font=(12)),
-    sg.InputText('Batch_results', key='-name-') ],
-    [sg.Button('Analyze'),sg.Button('Back')], [sg.Exit()]]
 
-    batch_window = sg.Window('Batch Image Counter', layout2, default_element_size=(80, 1), resizable=True, finalize=True)
+text_style = {
+    'size': (40, 1),
+    'justification': 'right'
+}
+box_style = {
+    'size': (25, 1)
+}
+
+RM_URL = 'https://github.com/wormsenseLab/Neuroplant-OWL'
+MD_URL = 'https://docs.google.com/spreadsheets/d/1u8PN5a5s7SFurxspXNJSq5FKKNKTdzFmCgwjjsEf4XE/edit?usp=sharing'
+ttip = 'Link to Metadata template'
+
+
+def make_batch_win():
+
+    ia_inupt_column = [
+    [sg.Text('Folder containing images to analyze: ',  **text_style),sg.In(**box_style, enable_events=True, key='-image_folder-',), sg.FolderBrowse()],
+    [sg.Text('Metadata file (Optional): ', **text_style), sg.In(**box_style, key = 'md_file'), sg.FileBrowse(),],
+    [sg.Text('Select a folder to store your results: ', **text_style),sg.In(**box_style, key = '-results_folder-'), sg.FolderBrowse()],
+    [sg.Text('Name your summary file: ', **text_style),
+    sg.In( **box_style, key='-name-') ],
+    [sg.Button('Analyze'), sg.Button('Back'), sg.Exit()]]
+
+    ia_text_column = [
+    [sg.Text('1. The OWL will process ALL images contained in a single folder.')],
+    [sg.Text('2. Inputing a metadata sheet will allow you to connect experimental\nconditions to the corresponding wells of an image.')],
+    [sg.Text('Link to download the accepted Metadata Template', key='_mdTemplate_', tooltip=ttip, enable_events=True, text_color='blue')],
+    [sg.Text('3. The OWL will return the results as .csv files to the folder specified.')],
+    [sg.Text('4. The returned results will include multiple files containing the location\ndata for each well and a summary file.')],
+    [sg.Text('Link to Documentation', key='_README_', tooltip=RM_URL, enable_events=True, text_color='blue'),]
+    ]
+
+
+
+    layout2 = [
+    [sg.Column(ia_text_column),
+    sg.VSeperator(),
+    sg.Column(ia_inupt_column),]
+    ]
+
+    batch_window = sg.Window('OWL', layout2, default_element_size=(80, 1), resizable=True, finalize=True)
     return batch_window
 
 
 ### Creates the GUI window to process one image at a time
-def make_single_win():
-    layout3 = [
-    [sg.Frame('Single Pic', key = '_test_', font=(14), layout=[
+# def make_single_win():
+#     layout3 = [
+#     [sg.Frame('Single Pic', key = '_test_', font=(14), layout=[
 
-    [sg.Frame('Worm Strains in Each Well', visible = False, key='-4Strains-', font=(14),layout=[
-    [sg.Text('Strain in Well P', size=(15,1), font=(12)), sg.InputText(key='-StrainP-')],
-    [sg.Text('Strain in Well Q', size=(15,1), font=(12)), sg.InputText(key='-StrainQ-')],
-    [sg.Text('Strain in Well R', size=(15,1), font=(12)), sg.InputText(key='-StrainR-')],
-    [sg.Text('Strain in Well S', size=(15,1), font=(12)), sg.InputText(key='-StrainS-')]])],
+#     [sg.Frame('Worm Strains in Each Well', visible = False, key='-4Strains-', font=(14),layout=[
+#     [sg.Text('Strain in Well A', size=(15,1), font=(12)), sg.InputText(key='-StrainA-')],
+#     [sg.Text('Strain in Well B', size=(15,1), font=(12)), sg.InputText(key='-StrainB-')],
+#     [sg.Text('Strain in Well C', size=(15,1), font=(12)), sg.InputText(key='-StrainC-')],
+#     [sg.Text('Strain in Well D', size=(15,1), font=(12)), sg.InputText(key='-StrainD-')]])],
 
-    [sg.Frame('Slot 1 Data', visible = True, font=(14), layout=[
-    #[sg.Checkbox('Check this box if you there are multiple strains on this plate', enable_events=True ,key='-show_strains-', size=(10,1))],
-    [sg.Text('Plate ID', size=(15,1), font=(12)), sg.InputText(key='-PID1-')],
-    [sg.Text('Strain on Plate 1', size=(15,1), font=(12)), sg.InputText(key='-Strain1-')],
-    [sg.Text('Compound', size=(15,1), font=(12)), sg.InputText(key='-Compound1-')]]
-    ),
-    sg.Frame('Slot 2 Data',visible = True, font=(12), layout=[
-    [sg.Text('Plate ID', size=(15,1), font=(12)), sg.InputText(key='-PID2-')],
-    [sg.Text('Strain on Plate 2', size=(15,1), font=(12)), sg.InputText(key='-Strain2-')],
-    [sg.Text('Compound', size=(15,1), font=(12)), sg.InputText(key='-Compound2-')]
-    ])],
+#     [sg.Frame('Slot 1 Data', visible = True, font=(14), layout=[
+#     #[sg.Checkbox('Check this box if you there are multiple strains on this plate', enable_events=True ,key='-show_strains-', size=(10,1))],
+#     [sg.Text('Plate ID', size=(15,1), font=(12)), sg.InputText(key='-PID1-')],
+#     [sg.Text('Strain on Plate 1', size=(15,1), font=(12)), sg.InputText(key='-Strain1-')],
+#     [sg.Text('Compound', size=(15,1), font=(12)), sg.InputText(key='-Compound1-')]]
+#     ),
+#     sg.Frame('Slot 2 Data',visible = True, font=(12), layout=[
+#     [sg.Text('Plate ID', size=(15,1), font=(12)), sg.InputText(key='-PID2-')],
+#     [sg.Text('Strain on Plate 2', size=(15,1), font=(12)), sg.InputText(key='-Strain2-')],
+#     [sg.Text('Compound', size=(15,1), font=(12)), sg.InputText(key='-Compound2-')]
+#     ])],
 
-    [sg.Frame('Slot 3 Data',visible = True, font=(14), layout=[
-    [sg.Text('Plate ID', size=(15,1), font=(12)), sg.InputText(key='-PID3-')],
-    [sg.Text('Strain on Plate 3', size=(15,1), font=(12)), sg.InputText(key='-Strain3-')],
-    [sg.Text('Compound', size=(15,1), font=(12)), sg.InputText(key='-Compound3-')]]
-    ),
-    sg.Frame('Slot 4 Data',visible = True,  font=(14), layout=[
-    [sg.Text('Plate ID', size=(15,1), font=(12)), sg.InputText(key='-PID4-')],
-    [sg.Text('Strain on Plate 4', size=(15,1), font=(12)), sg.InputText(key='-Strain4-')],
-    [sg.Text('Compound', size=(15,1), font=(12)), sg.InputText(key='-Compound4-')]
-    ])],
+#     [sg.Frame('Slot 3 Data',visible = True, font=(14), layout=[
+#     [sg.Text('Plate ID', size=(15,1), font=(12)), sg.InputText(key='-PID3-')],
+#     [sg.Text('Strain on Plate 3', size=(15,1), font=(12)), sg.InputText(key='-Strain3-')],
+#     [sg.Text('Compound', size=(15,1), font=(12)), sg.InputText(key='-Compound3-')]]
+#     ),
+#     sg.Frame('Slot 4 Data',visible = True,  font=(14), layout=[
+#     [sg.Text('Plate ID', size=(15,1), font=(12)), sg.InputText(key='-PID4-')],
+#     [sg.Text('Strain on Plate 4', size=(15,1), font=(12)), sg.InputText(key='-Strain4-')],
+#     [sg.Text('Compound', size=(15,1), font=(12)), sg.InputText(key='-Compound4-')]
+#     ])],
 
-    [sg.Frame('Choose the image file to be analyzed', visible=True, font=(12),layout=[
-    [sg.Text('Choose a folder to save your results in: ', size=(40, 1), auto_size_text=False, font=(12), justification='right'),
-        sg.InputText('Results folder', key='-results-'), sg.FolderBrowse()],
-    [sg.Text('Select the image to be analyzed', size=(40, 1), auto_size_text=False, font=(12), justification='right'), sg.InputText('Image file', key='-file-'), sg.FileBrowse()],
-        [sg.Button('Analyze'), sg.Button('Back'), sg.Exit()]])]
-    ])]]
+#     [sg.Frame('Choose the image file to be analyzed', visible=True, font=(12),layout=[
+#     [sg.Text('Choose a folder to save your results in: ', size=(40, 1), auto_size_text=False, font=(12), justification='right'),
+#         sg.InputText('Results folder', key='-results-'), sg.FolderBrowse()],
+#     [sg.Text('Select the image to be analyzed', size=(40, 1), auto_size_text=False, font=(12), justification='right'), sg.InputText('Image file', key='-file-'), sg.FileBrowse()],
+#         [sg.Button('Analyze'), sg.Button('Back'), sg.Exit()]])]
+#     ])]]
 
-    single_im = sg.Window('Single Image Processing', layout3, default_element_size=(80, 1), resizable=True, finalize=True)
-    return single_im
+#     single_im = sg.Window('Single Image Processing', layout3, default_element_size=(80, 1), resizable=True, finalize=True)
+#     return single_im
  
 
 def unblind_window():
@@ -226,6 +258,7 @@ def make_GUI():
     win1 = make_win1()
     while True:
         event, values = win1.read()
+        print(event)
         
         ### If exit button is clicked then the whole program is terminated
         if event in (None, 'Exit'):
@@ -236,13 +269,18 @@ def make_GUI():
         ### Opens a window to analyze a batch of images
         ### Does not currently incorporate metadata for a batch of images but creates the fields to do so
         ### User is returned to the main page upon completion of analysis
-        if values['_BATCH_']:
+        if event == '_IMG_ANALYSIS_':
             win1.hide()
             batch_win = make_batch_win()
             while True:
                 e2, v2 = batch_win.read()
                 if e2 in (None, 'Exit'):
+                    batch_win.close()
                     break
+                if e2 == '_README_':
+                    webbrowser.open(RM_URL)
+                if e2 == '_mdTemplate_':
+                    webbrowser.open(MD_URL)
                 if e2 == 'Analyze':
                     mdpath = (v2['md_file'])
                     rpath = (v2['-results_folder-'])
@@ -269,31 +307,31 @@ def make_GUI():
         ### Opens up a new window to analyze one image at a time.
         ### User can currently only add one strain and one compound to a plate
         ### User is not required to fill in a values for each plate
-        if values['_SINGLE_']:
-            win1.hide()
-            single_win = make_single_win()
-            while True:
-                e3, v3 = single_win.read()
-                if e3 == 'Analyze':
-                    fpath = (v3['-file-'])
-                    rpath = (v3['-results-'])
-                    im_path = plb.Path(fpath)
-                    res_path = plb.Path(rpath)
-                    if im_path.exists() and res_path.exists():
-                        ai.single_process(fpath, rpath, v3, e3)
-                        single_win.close()
-                        make_GUI()
-                        break
-                    else:
-                        sg.popup('Please enter a valid file or folder path')
-                if e3 == 'Back':
-                    single_win.close()
-                    make_GUI()
-                    break
-                if e3 in (None, 'Exit'):
-                    break
-            single_win.close()
-            break
+        # if values['_SINGLE_']:
+        #     win1.hide()
+        #     single_win = make_single_win()
+        #     while True:
+        #         e3, v3 = single_win.read()
+        #         if e3 == 'Analyze':
+        #             fpath = (v3['-file-'])
+        #             rpath = (v3['-results-'])
+        #             im_path = plb.Path(fpath)
+        #             res_path = plb.Path(rpath)
+        #             if im_path.exists() and res_path.exists():
+        #                 ai.single_process(fpath, rpath, v3, e3)
+        #                 single_win.close()
+        #                 make_GUI()
+        #                 break
+        #             else:
+        #                 sg.popup('Please enter a valid file or folder path')
+        #         if e3 == 'Back':
+        #             single_win.close()
+        #             make_GUI()
+        #             break
+        #         if e3 in (None, 'Exit'):
+        #             break
+        #     single_win.close()
+        #     break
             
 
         if values['_Yes_']:
@@ -309,7 +347,10 @@ def make_GUI():
                     break
                 if e4 == 'Unblind':
                     unblind_process(v4, unblind)
-                    exit()
+                    make_GUI()
+                    break
+            unblind.close()
+            break
             
                 
         if values['_DataVizSharedControl_']:
@@ -367,7 +408,8 @@ def make_GUI():
                         selected_compound = v5['-compound-select-name-']
                         selected_strain = v5['-strain-select-name-']
                         dv.do_data_visualisation_timelapse_under_1compound_and_1strain(batch_res, loc_files_folder, control_name, selected_compound, selected_strain, colors, pdf_store_folder, pdf_file_name)
-                
+            dataviz_options.close()
+            break
                     
                         
                         
@@ -392,6 +434,8 @@ def make_GUI():
                         dv.do_data_visualisation_compound_2_group(batch_res, loc_files_folder, control_name, test_name)
                     elif v6['_StrainInfo_']:
                         dv.do_data_visualisation_strain_2_group(batch_res, loc_files_folder, control_name, test_name)
+            dataviz_twogroup.close()
+            break
                     
                         
         if values['_DataVizMultiTwo_']:
@@ -426,20 +470,8 @@ def make_GUI():
                         dv.multi2group_dataviz_1(batch_res, loc_files_folder, control_variable, reference_1, reference_2, colors_key)
                     elif v7['_StrainReference_'] and v7['_CompoundComparison_']:
                         dv.multi2group_dataviz_2(batch_res, loc_files_folder, control_variable, reference_1, reference_2, colors_key)
-                        
-#                    c1 = v7['-control1_name-']
-#                    t1 = v7['-test1_name-']
-#                    c2 = v7['-control2_name-']
-#                    t2 = v7['-test2_name-']
-#                    c3 = v7['-control3_name-']
-#                    t3 = v7['-test3_name-']
-#                    c4 = v7['-control4_name-']
-#                    t4 = v7['-test4_name-']
-#                    if v7['_CompoundInfo_']:
-#                        dv.do_data_visualisation_compound_multi2_group(batch_res, loc_files_folder, c1, t1, c2, t2, c3, t3, c4, t4)
-#                    elif v7['_StrainInfo_']:
-#                        dv.do_data_visualisation_strain_multi2_group(batch_res, loc_files_folder, c1, t1, c2, t2, c3, t3, c4, t4)
-        
+            dataviz_multitwo.close()
+            break
         
         if values['_TimeLapseCollumn_']:
             win1.hide()
@@ -459,7 +491,7 @@ def make_GUI():
                     tl.timelapse_collumn_addition(file, key, folder, name)
                     message_win()
                     tl_window.close()
-                    exit()
+
                     
                     
                     
@@ -503,8 +535,9 @@ def message_win():
     while True:
         event, values = window.read()
         if event in (sg.WIN_CLOSED, 'OK'):
+            window.close()
             break
-
+        break
 
 def main():
     make_GUI()
