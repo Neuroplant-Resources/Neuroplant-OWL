@@ -78,19 +78,16 @@ def make_batch_win():
 
 def unblind_window():
     layout4 = [
-    [sg.Text('Would you like to unblind your batch results file or your metadata sheet?',size=(100,1), font='Lucida', justification='left')],
-        [sg.Frame(layout=[
-            [sg.Radio('Batch Results File', 'RADIO2', default=False, key='_BatchFile_', enable_events=True, font=(14)), sg.Radio('Metadata Sheet', 'RADIO2', key='_Metadata_Sheet_', enable_events=True, font=(14))]], title='Options',title_color='black', relief=sg.RELIEF_SUNKEN)],
-    [sg.Text('Select the file you would like to unblind: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'metadata_file', visible='False'), sg.FileBrowse()],
+    [sg.Text('Select the type of file you would like to unblind:',size=(100,1), font='Lucida', justification='left')],
+    [sg.Combo(('Metadata sheet', 'Image analysis summary'), key = '_data_2UB_',size=(20, 1))],
+    [sg.Text('What data would you like to unblind?',size=(100,1), font='Lucida', justification='left')],
+    [sg.Combo(('Strain name', 'Test compound'), key='_conditions_',size=(20, 1))],
+    [sg.Text('Select the file you would like to unblind: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = '_to_unblind_', visible='False'), sg.FileBrowse()],
     [sg.Text('Select your blinding key: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'key_file', visible='False'), sg.FileBrowse()],
     [sg.Text('Select a folder to store your results: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left'),sg.InputText('Default Folder', key = '-results_folder-'), sg.FolderBrowse()],
-     [sg.Text('Name your unblinded metadata sheet:', size=(50, 1), auto_size_text=False, justification='left', font=(12)),
-    sg.InputText('Unblinded Metadata', key='-metadata_name-')],
-    [sg.Text('_'  * 140)],
-    [sg.Text('Would you like to unblind only the compound names, only the strain names, or both?',size=(100,1), font='Lucida', justification='left')],
-        [sg.Frame(layout=[
-            [sg.Radio('Compound', 'RADIO3', default=False, key='_Com_', enable_events=True, font=(14)), sg.Radio('Strain', 'RADIO3', key='_Strain_', enable_events=True, font=(14)), sg.Radio('Both', 'RADIO3', key='_Both_', enable_events=True, font=(14))]], title='Options',title_color='black', relief=sg.RELIEF_SUNKEN)],
-        [sg.Button('Unblind'), sg.Button('Back')], [sg.Exit()]]
+    [sg.Text('Name your unblinded metadata sheet:', size=(50, 1), auto_size_text=False, justification='left', font=(12)), sg.InputText('Unblinded Metadata', key='-metadata_name-')],
+    
+    [sg.Button('Unblind'), sg.Button('Back'), sg.Exit()]]
     
     u_win = sg.Window('Unblinding Metadata', layout4, size=(900,350), resizable=True, finalize=True)
     return u_win
@@ -214,7 +211,7 @@ def make_GUI():
     win1 = make_win1()
     while True:
         event, values = win1.read()
-        print(values)
+        #print(values)
         
         ### If exit button is clicked then the whole program is terminated
         if event in (None, 'Exit'):
@@ -260,34 +257,6 @@ def make_GUI():
             batch_win.close()
             break
         
-        ### Opens up a new window to analyze one image at a time.
-        ### User can currently only add one strain and one compound to a plate
-        ### User is not required to fill in a values for each plate
-        # if values['_SINGLE_']:
-        #     win1.hide()
-        #     single_win = make_single_win()
-        #     while True:
-        #         e3, v3 = single_win.read()
-        #         if e3 == 'Analyze':
-        #             fpath = (v3['-file-'])
-        #             rpath = (v3['-results-'])
-        #             im_path = plb.Path(fpath)
-        #             res_path = plb.Path(rpath)
-        #             if im_path.exists() and res_path.exists():
-        #                 ai.single_process(fpath, rpath, v3, e3)
-        #                 single_win.close()
-        #                 make_GUI()
-        #                 break
-        #             else:
-        #                 sg.popup('Please enter a valid file or folder path')
-        #         if e3 == 'Back':
-        #             single_win.close()
-        #             make_GUI()
-        #             break
-        #         if e3 in (None, 'Exit'):
-        #             break
-        #     single_win.close()
-        #     break
             
 
         if (event == 'Go') and (values[0] == 'Unblind data'):
@@ -302,7 +271,7 @@ def make_GUI():
                 if e4 in (None, 'Exit'):
                     break
                 if e4 == 'Unblind':
-                    unblind_process(v4, unblind)
+                    un.unblind(v4)
                     make_GUI()
                     break
             unblind.close()
@@ -452,38 +421,9 @@ def make_GUI():
                     
                     
     win1.close()
-    
-    
-    
-def unblind_process(v4, unblind):
-    metapath = (v4['metadata_file'])
-    keypath = (v4['key_file'])
-    rpath = (v4['-results_folder-'])
-    name = v4['-metadata_name-']
-    m_path = plb.Path(metapath)
-    r_path = plb.Path(keypath)
-    f_path = plb.Path(rpath)
-    if m_path.exists() and r_path.exists():
-        if v4['_Metadata_Sheet_']:
-            if v4['_Com_']:
-                un.solve_compound_names(metapath, keypath, rpath, name)
-            elif v4['_Strain_']:
-                un.solve_strain_names(metapath, keypath, rpath, name)
-            elif v4['_Both_']:
-                un.solve_both_strain_and_compound_names(metapath, keypath, rpath, name)
-        if v4['_BatchFile_']:
-            if v4['_Com_']:
-                un.solve_compound_names_batchres(metapath, keypath, rpath, name)
-            elif v4['_Strain_']:
-                un.solve_strain_names_batchres(metapath, keypath, rpath, name)
-            elif v4['_Both_']:
-                un.solve_both_strain_and_compound_names_batchres(metapath, keypath, rpath, name)
-    else:
-        sg.popup('Please enter valid files')
-    message_win()
-    unblind.close()
+   
 
-
+ 
 
 def message_win():
     layout = [[sg.Text('Done!', size=(60, 1), justification='center', font=(14))], [sg.OK()]]
