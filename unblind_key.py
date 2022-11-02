@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import pathlib as plb
+import PySimpleGUI as sg
 
 
 
@@ -23,29 +24,45 @@ def solve_metadata(di, mdat, v):
         x = 'Compound Well '
         ubx = 'UB Compound Well '
     
+    missing = {}
+
     for index, row in mdat.iterrows():
         for w in wells:
             blind_header = x + w
             ub_header = ubx + w
+            #print(ub_header)
             blinded = row[blind_header]
-            mdat.loc[index, ub_header] = di[blinded]
+            ub = di.get(blinded)
+            if ub != None:
+                mdat.loc[index, ub_header] = ub
+            else: 
+                missing.update({blinded: [index, blind_header]})
+    if missing:
+        unmatched = ["Not matched: {}  Row: {} Column: {} ".format(key, missing[key][0], missing[key][1]) for key in missing]
+        print(unmatched)        #print(str(unmatched).split(','))#.join('\n')
+        s = '\n'.join([str(i) for i in unmatched])
+        sg.PopupScrolled(s, title='Unmasked conditions')
+
+               
     return mdat
 
 def unblind(values):
-    b = pd.read_csv(values['_to_unblind_'], index_col=0)
+    
     results_folder = plb.Path(values['-results_folder-'])
     bkey = pd.read_csv(values['key_file'])
     bkey_dict = dict(zip(bkey['Blind'], bkey['Actual']))
     condition = values['_conditions_']
 
     if values['_data_2UB_'] == 'Metadata sheet':
+        b = pd.read_csv(values['_to_unblind_'])
         md = solve_metadata(bkey_dict, b, condition)
         md.to_csv(results_folder.joinpath(values['-metadata_name-'] + '.csv')) 
     elif values['_data_2UB_'] == 'Image analysis summary':
+        b = pd.read_csv(values['_to_unblind_'], index_col=0)
         if condition == 'Strain name':
-            b['UB_Strain'] =  [bkey_dict[x] for x in b['Strain']]
+            b['UB_Strain'] =  [bkey_dict.get(x) for x in b['Strain']]
         elif condition == 'Test compound':
-            b['UB_Compound'] =  [bkey_dict[x] for x in b['Compound']]
+            b['UB_Compound'] =  [bkey_dict.get(x) for x in b['Compound']]
         b.to_csv(results_folder.joinpath(values['-metadata_name-'] + '.csv'))
 
 
