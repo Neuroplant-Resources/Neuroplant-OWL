@@ -1,9 +1,7 @@
 import pandas as pd
 import numpy as np
 import pathlib as plb
-from os import path
 
-wells = ['A', 'B', 'C', 'D']
 
 
 
@@ -34,7 +32,7 @@ def solve_metadata(di, mdat, v):
     return mdat
 
 def unblind(values):
-    b = pd.read_csv(values['_to_unblind_'])
+    b = pd.read_csv(values['_to_unblind_'], index_col=0)
     results_folder = plb.Path(values['-results_folder-'])
     bkey = pd.read_csv(values['key_file'])
     bkey_dict = dict(zip(bkey['Blind'], bkey['Actual']))
@@ -44,48 +42,12 @@ def unblind(values):
         md = solve_metadata(bkey_dict, b, condition)
         md.to_csv(results_folder.joinpath(values['-metadata_name-'] + '.csv')) 
     elif values['_data_2UB_'] == 'Image analysis summary':
-        print('Ooops')
+        if condition == 'Strain name':
+            b['UB_Strain'] =  [bkey_dict[x] for x in b['Strain']]
+        elif condition == 'Test compound':
+            b['UB_Compound'] =  [bkey_dict[x] for x in b['Compound']]
+        b.to_csv(results_folder.joinpath(values['-metadata_name-'] + '.csv'))
+
+
  
- 
- ##############batch results file######################################
- 
-def solve_compound_names_batchres(filename1, filename2, resultfolder, title):
-    for index, row in data.iterrows():
-        one = row['Compound']
-        if one in di.keys():
-            data['Compound'] = data['Compound'].replace([one], di[one])
-    data.to_csv(path_or_buf= results_folder.joinpath(title +'.csv'))
-
-
-def solve_strain_names_batchres(filename1, filename2, resultfolder, title):
-    results_folder = plb.Path(resultfolder)
-    data = pd.read_csv(filename1)
-    di = dict_key_strain(filename2)
-    for index, row in data.iterrows():
-        one = row['Strain']
-        if one in di.keys():
-            data['Strain'] = data['Strain'].replace([one], di[one])
-    data.to_csv(path_or_buf= results_folder.joinpath(title +'.csv'))
-
-def solve_both_strain_and_compound_names_batchres(filename1, filename2, resultfolder, title):
-    results_folder = plb.Path(resultfolder)
-    data = pd.read_csv(filename1)
-    di_c = dict_key_compound(filename2)
-    di_s = dict_key_strain(filename2)
-    for index, row in data.iterrows():
-        one = row['Compound']
-        one = row['Strain']
-        if one in di_c.keys():
-            data['Compound'] = data['Compound'].replace([one], di[one])
-        if one in di_s.keys():
-            data['Strain'] = data['Strain'].replace([one], di[one])
-    data.to_csv(path_or_buf= results_folder.joinpath(title +'.csv'))
-    
-    
-
-#if __name__ == '__main__':
-#    solve_compound_names('test-metadata.csv', 'test-key.csv')
-#    copy_of_original_input_metadata('test-metadata.csv')
-#    data.to_csv(path_or_buf= results_folder.joinpath('copy.csv'))
-
 

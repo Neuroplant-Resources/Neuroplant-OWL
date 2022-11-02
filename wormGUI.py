@@ -38,9 +38,18 @@ box_style = {
     'size': (25, 1)
 }
 
+link_style = {
+    'text_color' : 'blue',
+    'enable_events' : True
+}
+
 RM_URL = 'https://github.com/wormsenseLab/Neuroplant-OWL'
 MD_URL = 'https://docs.google.com/spreadsheets/d/1u8PN5a5s7SFurxspXNJSq5FKKNKTdzFmCgwjjsEf4XE/edit?usp=sharing'
-ttip = 'Link to Metadata template'
+blind_key_template = ''
+ttips = {
+ 'mdt' : 'Link to Metadata template',
+ 'bkt' : 'Link to Blinding Key Template'
+}
 
 
 def make_batch_win():
@@ -56,40 +65,54 @@ def make_batch_win():
     ia_text_column = [
     [sg.Text('1. The OWL will process ALL images contained in a single folder.')],
     [sg.Text('2. Inputing a metadata sheet will allow you to connect experimental\nconditions to the corresponding wells of an image.')],
-    [sg.Text('Link to download the accepted Metadata Template', key='_mdTemplate_', tooltip=ttip, enable_events=True, text_color='blue')],
+    [sg.Text('Link to download the accepted Metadata Template', key='_mdTemplate_', tooltip=ttips['mdt'], **link_style)],
     [sg.Text('3. The OWL will return the results as .csv files to the folder specified.')],
     [sg.Text('4. The returned results will include multiple files containing the location\ndata for each well and a summary file.')],
-    [sg.Text('Link to Documentation', key='_README_', tooltip=RM_URL, enable_events=True, text_color='blue'),]
+    [sg.Text('Link to Documentation', key='_README_', tooltip=RM_URL, **link_style),]
     ]
 
 
 
-    layout2 = [
+    img_analysis_layout = [
     [sg.Column(ia_text_column),
     sg.VSeperator(),
     sg.Column(ia_inupt_column),]
     ]
 
-    batch_window = sg.Window('OWL', layout2, default_element_size=(80, 1), resizable=True, finalize=True)
+    batch_window = sg.Window('OWL', img_analysis_layout, default_element_size=(80, 1), resizable=True, finalize=True)
     return batch_window
 
 
 
 
 def unblind_window():
-    layout4 = [
-    [sg.Text('Select the type of file you would like to unblind:',size=(100,1), font='Lucida', justification='left')],
-    [sg.Combo(('Metadata sheet', 'Image analysis summary'), key = '_data_2UB_',size=(20, 1))],
-    [sg.Text('What data would you like to unblind?',size=(100,1), font='Lucida', justification='left')],
+
+    ub_inupt_column = [
+    [sg.Text('Select the type of file you would like to unblind:',size=(100,1), font='Lucida')],
+    [sg.Combo(('Metadata sheet', 'Image analysis summary'), key = '_data_2UB_', size=(20, 1))],
+    [sg.Text('What test condition would you like to unblind?',size=(100,1), font='Lucida')],
     [sg.Combo(('Strain name', 'Test compound'), key='_conditions_',size=(20, 1))],
-    [sg.Text('Select the file you would like to unblind: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = '_to_unblind_', visible='False'), sg.FileBrowse()],
-    [sg.Text('Select your blinding key: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'key_file', visible='False'), sg.FileBrowse()],
-    [sg.Text('Select a folder to store your results: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left'),sg.InputText('Default Folder', key = '-results_folder-'), sg.FolderBrowse()],
-    [sg.Text('Name your unblinded metadata sheet:', size=(50, 1), auto_size_text=False, justification='left', font=(12)), sg.InputText('Unblinded Metadata', key='-metadata_name-')],
-    
+    [sg.Text('Select the file you would like to unblind: ', size=(50, 1),font=(12) ,auto_size_text=False, visible='False')], [sg.InputText('Select file', key = '_to_unblind_', visible='False'), sg.FileBrowse()],
+    [sg.Text('Select your blinding key: ', size=(50, 1),font=(12) ,auto_size_text=False, visible='False')], [sg.InputText('Select file', key = 'key_file', visible='False'), sg.FileBrowse()],
+    [sg.Text('Select a folder to store your results: ', size=(50, 1),font=(12) ,auto_size_text=False)], [sg.InputText('Default Folder', key = '-results_folder-'), sg.FolderBrowse()],
+    [sg.Text('Name your unblinded data sheet:', size=(50, 1), auto_size_text=False, font=(12))], [sg.InputText('Unblinded Metadata', key='-metadata_name-')],
     [sg.Button('Unblind'), sg.Button('Back'), sg.Exit()]]
+
+    ub_text_column = [
+    [sg.Text('1. You can choose to unblind a metadata sheet or a summary file\nreturned from image analysis.')],
+    [sg.Text('2. Unblinding will only work if you are using the metadata, the returned\nsummary file from image analysis or the blinding key templates')],
+    [sg.Text('Metadata Template', key='_mdTemplate_', tooltip=ttips['mdt'], **link_style), sg.Text('Blinding Key Template', key='_bkey_temp_', tooltip=ttips['bkt'], **link_style)],
+    [sg.Text('3. Check that your blinded data is consistent. Errors in data entry\nmay result in incomplete unmasking of blinded datasets')],
+    [sg.Text('Link to blinding documentation for troubleshooting:', key='_README_', tooltip=RM_URL, **link_style),]
+    ]
     
-    u_win = sg.Window('Unblinding Metadata', layout4, size=(900,350), resizable=True, finalize=True)
+    unblinding_layout = [
+    [sg.Column(ub_text_column, element_justification='left' ),
+    sg.VSeperator(),
+    sg.Column(ub_inupt_column, element_justification='left')]
+    ]
+
+    u_win = sg.Window('Unblinding Metadata', unblinding_layout, size=(900,450), resizable=True, finalize=True)
     return u_win
     
 def timelapse_window():
