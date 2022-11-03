@@ -8,27 +8,7 @@ import timepoint_add as tl
 import colors_key as ck
 import webbrowser
 
-#import connect_metadata as cm
 sg.ChangeLookAndFeel('GreenTan')
-
-### Generates the first window that the user encounters.
-### Opens upon running the program
-def make_win1():
-    layout1 = [
-    [sg.Text('Welcome to Our Worm Locator!', size=(60, 1), justification='center', font=("Helvetica", 25), relief=sg.RELIEF_RIDGE)],
-    [sg.Combo(('Image analysis', 'Unblind data', 'Data visualization', 'Timelapse'), size=(20, 1)), sg.Button('Go')],
-    [sg.Text('Would you like to perform data visualization?', font=(14))],
-    [sg.Frame(layout=[[sg.Radio('Yes, two group estimation plot', 'RADIO1', default=False, size=(50,1), key='_DataVizTwoGroup_', enable_events=True, font=(14))], [sg.Radio('Yes,  shared control estimation plot', 'RADIO1', key='_DataVizSharedControl_', enable_events=True, font=(14))], [sg.Radio('Yes, multi 2 group estimation plot', 'RADIO1', key='_DataVizMultiTwo_', enable_events=True, font=(14))]], title='Options',title_color='black', relief=sg.RELIEF_SUNKEN)],
-    [sg.Text('_'  * 120)],
-     [sg.Text('Would you like to unblind your metadata sheet or your batch results file?',size=(80,1), font='Lucida', justification='left')], [sg.Radio('Yes', 'RADIO1', default=False, key='_Yes_', enable_events=True, font=(14))],
-    [sg.Text('_'  * 120)],
-    [sg.Text('If you have timelapse scans, would you like to add time points collumn to your batch results file?',size=(100,1), font='Lucida', justification='left')], [sg.Radio('Yes', 'RADIO1', default=False, key='_TimeLapseCollumn_', enable_events=True, font=(14))]
-    , [sg.Exit()]]
-
-    window1 = sg.Window('Worm Counter', layout1, default_element_size=(60, 2), resizable=True, finalize=True)
-    return window1
-
-### Makes the window to process multiple images
 
 text_style = {
     'size': (40, 1),
@@ -45,11 +25,28 @@ link_style = {
 
 RM_URL = 'https://github.com/wormsenseLab/Neuroplant-OWL'
 MD_URL = 'https://docs.google.com/spreadsheets/d/1u8PN5a5s7SFurxspXNJSq5FKKNKTdzFmCgwjjsEf4XE/edit?usp=sharing'
-blind_key_template = ''
+bkey_URL = ''
 ttips = {
  'mdt' : 'Link to Metadata template',
  'bkt' : 'Link to Blinding Key Template'
 }
+
+### Generates the first window that the user encounters.
+### Opens upon running the program
+def make_win1():
+    layout1 = [
+    [sg.Text('Welcome to Our Worm Locator!', size=(60, 1), justification='center', font=("Helvetica", 25), relief=sg.RELIEF_RIDGE)],
+    [sg.Combo(('Image analysis', 'Unblind data', 'Data visualization', 'Timelapse'), size=(20, 1), default_value= 'Image analysis'), sg.Button('Go')],
+    [sg.Text('Would you like to perform data visualization?', font=(14))],
+    [sg.Frame(layout=[[sg.Radio('Yes, two group estimation plot', 'RADIO1', default=False, size=(50,1), key='_DataVizTwoGroup_', enable_events=True, font=(14))], [sg.Radio('Yes,  shared control estimation plot', 'RADIO1', key='_DataVizSharedControl_', enable_events=True, font=(14))], [sg.Radio('Yes, multi 2 group estimation plot', 'RADIO1', key='_DataVizMultiTwo_', enable_events=True, font=(14))]], title='Options',title_color='black', relief=sg.RELIEF_SUNKEN)],
+    [sg.Text('_'  * 120)],
+    [sg.Text('If you have timelapse scans, would you like to add time points collumn to your batch results file?',size=(100,1), font='Lucida', justification='left')], [sg.Radio('Yes', 'RADIO1', default=False, key='_TimeLapseCollumn_', enable_events=True, font=(14))]
+    , [sg.Exit()]]
+
+    window1 = sg.Window('Worm Counter', layout1, default_element_size=(60, 2), resizable=True, finalize=True)
+    return window1
+
+### Makes the window to process multiple images
 
 
 def make_batch_win():
@@ -115,20 +112,7 @@ def unblind_window():
     u_win = sg.Window('Unmasking data', unblinding_layout, size=(900,450), resizable=True, finalize=True)
     return u_win
     
-def timelapse_window():
-    layout4 = [
-    [sg.Text('If you have time lapse analysis, you may add a time point collumn to your batch results file by using the time lapse key template that matches the file name to the time point',size=(120,1), font='Lucida', justification='left')],
-    [sg.Text('Select your batch results file that you would like the time points collumn to be added to: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'filefortimelapse_', visible='False'), sg.FileBrowse()],
-    [sg.Text('Select your time lapse key: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'timelapsekey_', visible='False'), sg.FileBrowse()],
-    [sg.Text('Select a folder to store the new file: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left'),sg.InputText('Default Folder', key = '-tl_folder-'), sg.FolderBrowse()],
-     [sg.Text('Name your file with the time points collumn:', size=(50, 1), auto_size_text=False, justification='left', font=(12)),
-    sg.InputText('File with Time Points', key='-filenamewithtimelapse-')],
-    [sg.Text('_'  * 140)],
-        [sg.Button('Add TimePoints'), sg.Button('Back')], [sg.Exit()]]
-    
-    tl_win = sg.Window('Time Lapse Analysis Collumn', layout4, size=(900,250), resizable=True, finalize=True)
-    return tl_win
-    
+
 
 def dataviz_options_window():
     layout5 = [
@@ -175,35 +159,6 @@ def dataviz_twogroup_window():
     dataviz_twogroup_win = sg.Window('Data Visualization Options', layout6, size=(900,250), resizable=True, finalize=True)
     return dataviz_twogroup_win
 
-
-#def dataviz_multitwo_window():
-#    layout7 = [
-#    [sg.Text('Are you doing a pairwise comparison between compounds or strains?',size=(100,1), font='Lucida', justification='left')],
-#        [sg.Frame(layout=[
-#            [sg.Radio('2 kinds of compounds', 'RADIO2', default=False, key='_CompoundInfo_', enable_events=True, font=(14)), sg.Radio('2 kinds of strains', 'RADIO2', key='_StrainInfo_', enable_events=True, font=(14))]], title='Options',title_color='black', relief=sg.RELIEF_SUNKEN)],
-#    [sg.Text('Select your batch results file: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'batch_results_file', visible='False'), sg.FileBrowse()],
-#    [sg.Text('Select the folder that contains your location files: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left'),sg.InputText('Default Folder', key = '-location_files_folder-'), sg.FolderBrowse()],
-#    [sg.Text('What is the name of your control variable:', size=(50, 1), auto_size_text=False, justification='left', font=(12)),
-#    sg.InputText('Control', key='-control_name-')],
-#    [sg.Button('Do Data Vis'), sg.Button('Back')], [sg.Exit()]]
-#    dataviz_multitwo_win = sg.Window('Data Visualization Options', layout7, size=(900,250), resizable=True, finalize=True)
-#    return dataviz_multitwo_win
-    
-#def dataviz_multitwo_window():
-#    layout7 = [
-#    [sg.Text('What is your independent variable?',size=(100,1), font='Lucida', justification='left')],
-#        [sg.Frame(layout=[
-#            [sg.Radio('Compound', 'RADIO2', default=False, key='_CompoundInfo_', enable_events=True, font=(14)), sg.Radio('Strain', 'RADIO2', key='_StrainInfo_', enable_events=True, font=(14))]], title='Options',title_color='black', relief=sg.RELIEF_SUNKEN)],
-#    [sg.Text('Select your batch results file: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'batch_results_file', visible='False'), sg.FileBrowse()],
-#    [sg.Text('Select the folder that contains your location files: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left'),sg.InputText('Default Folder', key = '-location_files_folder-'), sg.FolderBrowse()],
-#    [sg.Text('Please input the control - test pairs below. If you have less pairs than the number of questions, please leave the extra questions as it is.', size=(100, 1), auto_size_text=False, justification='left', font=(12))],
-#    [sg.InputText('Control1', key='-control1_name-'), sg.InputText('Test1', key='-test1_name-')],
-#    [sg.InputText('Control2', key='-control2_name-'), sg.InputText('Test2', key='-test2_name-')],
-#    [sg.InputText('Control3', key='-control3_name-'), sg.InputText('Test3', key='-test3_name-')],
-#    [sg.InputText('Control4', key='-control4_name-'), sg.InputText('Test4', key='-test4_name-')],
-#    [sg.Button('Do Data Vis'), sg.Button('Back')], [sg.Exit()]]
-#    dataviz_multitwo_win = sg.Window('Data Visualization Options', layout7, size=(900,250), resizable=True, finalize=True)
-#    return dataviz_multitwo_win
     
 def dataviz_multitwo_window():
     layout7 = [
@@ -223,7 +178,21 @@ def dataviz_multitwo_window():
     [sg.Button('Do Data Vis'), sg.Button('Back')], [sg.Exit()]]
     dataviz_multitwo_win = sg.Window('Data Visualization Options', layout7, size=(900,400), resizable=True, finalize=True)
     return dataviz_multitwo_win
+   
+def timelapse_window():
+    layout4 = [
+    [sg.Text('If you have time lapse analysis, you may add a time point collumn to your batch results file by using the time lapse key template that matches the file name to the time point',size=(120,1), font='Lucida', justification='left')],
+    [sg.Text('Select your batch results file that you would like the time points collumn to be added to: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'filefortimelapse_', visible='False'), sg.FileBrowse()],
+    [sg.Text('Select your time lapse key: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'timelapsekey_', visible='False'), sg.FileBrowse()],
+    [sg.Text('Select a folder to store the new file: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left'),sg.InputText('Default Folder', key = '-tl_folder-'), sg.FolderBrowse()],
+     [sg.Text('Name your file with the time points collumn:', size=(50, 1), auto_size_text=False, justification='left', font=(12)),
+    sg.InputText('File with Time Points', key='-filenamewithtimelapse-')],
+    [sg.Text('_'  * 140)],
+        [sg.Button('Add TimePoints'), sg.Button('Back')], [sg.Exit()]]
     
+    tl_win = sg.Window('Time Lapse Analysis Collumn', layout4, size=(900,250), resizable=True, finalize=True)
+    return tl_win
+     
     
 def check_fpaths(ipath, rpath):
         return True
@@ -239,11 +208,7 @@ def make_GUI():
         ### If exit button is clicked then the whole program is terminated
         if event in (None, 'Exit'):
             break
-              
-        
-
         ### Opens a window to analyze a batch of images
-        ### Does not currently incorporate metadata for a batch of images but creates the fields to do so
         ### User is returned to the main page upon completion of analysis
         if (event == 'Go') and (values[0]=='Image analysis') :
             win1.hide()
@@ -266,13 +231,14 @@ def make_GUI():
                     im_path = plb.Path(fpath)
                     res_path = plb.Path(rpath)
                     
-                    if im_path.exists() and res_path.exists():
-                        ai.batch_process(fpath, rpath, mdpath, v2, e2, results_name)
+                    if im_path.exists() and res_path.exists() and (len(rpath) != 0) and (len(fpath) !=0 ) and (len(results_name) != 0):
+
+                        ai.batch_process(im_path, res_path, mdpath, v2, e2, results_name)
                         batch_win.close()
                         make_GUI()
                         break
                     else:
-                        sg.popup('Please enter a valid file or folder path')
+                        sg.popup('Please enter a valid file name or folder path')
                 if e2 == 'Back':
                     batch_win.close()
                     make_GUI()
@@ -287,6 +253,12 @@ def make_GUI():
             unblind = unblind_window()
             while True:
                 e4, v4 = unblind.read()
+                if e4 == '_README_':
+                    webbrowser.open(RM_URL)
+                if e4 == '_mdTemplate_':
+                    webbrowser.open(MD_URL)
+                if e4 == '_bkey_temp_':
+                    webbrowser.open(bkey_URL)
                 if e4 == 'Back':
                     unblind.close()
                     make_GUI()

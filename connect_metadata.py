@@ -1,11 +1,5 @@
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
 import pathlib as plb
-import seaborn as sns
-from scipy import stats
-import statistics
-
 
 
 
@@ -16,7 +10,7 @@ def add_PlateID(row, metadata):
 
     pid = metadata.loc[
         (metadata['Image ID']==row['File Name']) & 
-        (metadata['Scanner Slot:']==slotID)]['Plate ID']
+        (metadata['Scanner Slot:']==slotID)].get('Plate ID', default = "Plate ID column not matched")
 
     if len(pid) == 0:
         return 'No data'
@@ -29,39 +23,31 @@ def add_PlateID(row, metadata):
 
 def add_Compound(row, metadata):
     wellID = row['WellNo'][1]
+    well_val = 'Compound Well ' + wellID 
 
-    if wellID == 'A':
-        compound = metadata.loc[metadata['Plate ID']==row['Plate ID']]['Compound Well A']
-    elif wellID == 'B':
-        compound = metadata.loc[metadata['Plate ID']==row['Plate ID']]['Compound Well B']
-    elif wellID == 'C':
-        compound = metadata.loc[metadata['Plate ID']==row['Plate ID']]['Compound Well C']
-    elif wellID == 'D':
-        compound = metadata.loc[metadata['Plate ID']==row['Plate ID']]['Compound Well D']
-    print(compound)
-
+    compound = metadata.loc[metadata['Plate ID']==row['Plate ID']].get(well_val, default = "Compound column not matched")
+ 
     if len(compound) == 0:
         return 'No data'
         pass
+    elif isinstance(compound, str):
+        return compound
     else:
         return compound.values[0]
 
 
 def add_Strain(row, metadata):
     wellID = row['WellNo'][1]
-    if wellID == 'A':
-        strain = metadata.loc[metadata['Plate ID']==row['Plate ID']]['Strain Well A']
-    elif wellID == 'B':
-        strain = metadata.loc[metadata['Plate ID']==row['Plate ID']]['Strain Well B']
-    elif wellID == 'C':
-        strain = metadata.loc[metadata['Plate ID']==row['Plate ID']]['Strain Well C']
-    elif wellID == 'D':
-        strain = metadata.loc[metadata['Plate ID']==row['Plate ID']]['Strain Well D']
+    well_val = 'Strain Well ' + wellID 
+
+    strain = metadata.loc[metadata['Plate ID']==row['Plate ID']].get(well_val, default = "Strain column not matched")
 
 
     if len(strain) == 0:
         return 'No data'
         pass
+    elif isinstance(strain, str):
+        return strain
     else:
         return strain.values[0]    
 

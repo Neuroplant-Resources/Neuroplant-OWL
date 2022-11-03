@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 import pathlib as plb
 import PySimpleGUI as sg
 
@@ -60,9 +59,9 @@ def unblind(values):
     elif values['_data_2UB_'] == 'Image analysis summary':
         b = pd.read_csv(values['_to_unblind_'], index_col=0)
         if condition == 'Strain name':
-            b['UB_Strain'] =  [bkey_dict.get(x) for x in b['Strain']]
+            b['UB_Strain'] =  [bkey_dict.get(x, 'Strain column not matched') for x in b['Strain']]
         elif condition == 'Test compound':
-            b['UB_Compound'] =  [bkey_dict.get(x) for x in b['Compound']]
+            b['UB_Compound'] =  [bkey_dict.get(x, 'Compound column not matched') for x in b['Compound']]
         b.to_csv(results_folder.joinpath(values['-metadata_name-'] + '.csv'))
 
 
