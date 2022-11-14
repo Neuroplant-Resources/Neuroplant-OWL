@@ -38,10 +38,12 @@ def make_win1():
     [sg.Text('Welcome to Our Worm Locator!', size=(60, 1), justification='center', font=("Helvetica", 25), relief=sg.RELIEF_RIDGE)],
     [sg.Combo(('Image analysis', 'Unblind data', 'Data visualization', 'Timelapse'), size=(20, 1), default_value= 'Image analysis'), sg.Button('Go')],
     [sg.Text('Would you like to perform data visualization?', font=(14))],
-    [sg.Frame(layout=[[sg.Radio('Yes, two group estimation plot', 'RADIO1', default=False, size=(50,1), key='_DataVizTwoGroup_', enable_events=True, font=(14))], [sg.Radio('Yes,  shared control estimation plot', 'RADIO1', key='_DataVizSharedControl_', enable_events=True, font=(14))], [sg.Radio('Yes, multi 2 group estimation plot', 'RADIO1', key='_DataVizMultiTwo_', enable_events=True, font=(14))]], title='Options',title_color='black', relief=sg.RELIEF_SUNKEN)],
-    [sg.Text('_'  * 120)],
-    [sg.Text('If you have timelapse scans, would you like to add time points collumn to your batch results file?',size=(100,1), font='Lucida', justification='left')], [sg.Radio('Yes', 'RADIO1', default=False, key='_TimeLapseCollumn_', enable_events=True, font=(14))]
-    , [sg.Exit()]]
+    [sg.Frame(layout=[[sg.Radio('Yes, two group estimation plot', 'RADIO1', default=False, size=(50,1), key='_DataVizTwoGroup_', enable_events=True, font=(14))], [sg.Radio('Yes,  shared control estimation plot', 'RADIO1', key='_DataVizSharedControl_', enable_events=True, font=(14))],
+     [sg.Radio('Yes, multi 2 group estimation plot', 'RADIO1', key='_DataVizMultiTwo_', enable_events=True, font=(14))]], title='Options',title_color='black', relief=sg.RELIEF_SUNKEN)],
+#    [sg.Text('If you have timelapse scans, would you like to add time points collumn to your batch results file?',size=(100,1), font='Lucida', justification='left')], [sg.Radio('Yes', 'RADIO1', default=False, key='_TimeLapseCollumn_', enable_events=True, font=(14))],
+    [sg.Exit()]]
+
+
 
     window1 = sg.Window('Worm Counter', layout1, default_element_size=(60, 2), resizable=True, finalize=True)
     return window1
@@ -114,7 +116,7 @@ def unblind_window():
     
 
 
-def dataviz_options_window():
+def shared_control_window():
     layout5 = [
     [sg.Text('What is your independent variable?',size=(100,1), font='Lucida', justification='left')],
         [sg.Frame(layout=[
@@ -179,19 +181,19 @@ def dataviz_multitwo_window():
     dataviz_multitwo_win = sg.Window('Data Visualization Options', layout7, size=(900,400), resizable=True, finalize=True)
     return dataviz_multitwo_win
    
-def timelapse_window():
-    layout4 = [
-    [sg.Text('If you have time lapse analysis, you may add a time point collumn to your batch results file by using the time lapse key template that matches the file name to the time point',size=(120,1), font='Lucida', justification='left')],
-    [sg.Text('Select your batch results file that you would like the time points collumn to be added to: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'filefortimelapse_', visible='False'), sg.FileBrowse()],
-    [sg.Text('Select your time lapse key: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'timelapsekey_', visible='False'), sg.FileBrowse()],
-    [sg.Text('Select a folder to store the new file: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left'),sg.InputText('Default Folder', key = '-tl_folder-'), sg.FolderBrowse()],
-     [sg.Text('Name your file with the time points collumn:', size=(50, 1), auto_size_text=False, justification='left', font=(12)),
-    sg.InputText('File with Time Points', key='-filenamewithtimelapse-')],
-    [sg.Text('_'  * 140)],
-        [sg.Button('Add TimePoints'), sg.Button('Back')], [sg.Exit()]]
+# def timelapse_window():
+#     layout4 = [
+#     [sg.Text('If you have time lapse analysis, you may add a time point collumn to your batch results file by using the time lapse key template that matches the file name to the time point',size=(120,1), font='Lucida', justification='left')],
+#     [sg.Text('Select your batch results file that you would like the time points collumn to be added to: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'filefortimelapse_', visible='False'), sg.FileBrowse()],
+#     [sg.Text('Select your time lapse key: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'timelapsekey_', visible='False'), sg.FileBrowse()],
+#     [sg.Text('Select a folder to store the new file: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left'),sg.InputText('Default Folder', key = '-tl_folder-'), sg.FolderBrowse()],
+#      [sg.Text('Name your file with the time points collumn:', size=(50, 1), auto_size_text=False, justification='left', font=(12)),
+#     sg.InputText('File with Time Points', key='-filenamewithtimelapse-')],
+#     [sg.Text('_'  * 140)],
+#         [sg.Button('Add TimePoints'), sg.Button('Back')], [sg.Exit()]]
     
-    tl_win = sg.Window('Time Lapse Analysis Collumn', layout4, size=(900,250), resizable=True, finalize=True)
-    return tl_win
+#     tl_win = sg.Window('Time Lapse Analysis Collumn', layout4, size=(900,250), resizable=True, finalize=True)
+#     return tl_win
      
     
 def check_fpaths(ipath, rpath):
@@ -278,7 +280,7 @@ def make_GUI():
                 
         if values['_DataVizSharedControl_']:
             win1.hide()
-            dataviz_options = dataviz_options_window()
+            dataviz_options = shared_control_window()
             while True:
                 e5, v5 = dataviz_options.read()
                 if e5 == 'Back':
@@ -286,6 +288,7 @@ def make_GUI():
                     make_GUI()
                     break
                 if e5 == sg.WIN_CLOSED or e5 == 'Exit':
+                    dataviz_options.close()
                     break
                 if e5 == 'Do Data Vis':
                     batch_res = v5['batch_results_file']

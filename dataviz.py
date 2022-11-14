@@ -24,35 +24,30 @@ def getting_location_collumns_compound(row, folder_of_loc_files, dict, list_qc_n
     #finding the location file in the given folder that contains it
     location = folder_of_loc_files.joinpath(loc_file)
     
-    #checks if the well passes quality control
-    if row['Passes QC'] == 'Y':
+
+
+    if location.is_file():
     
-        if location.is_file():
+        #incrementing the number of wells that pass quality control since this well is being used in data visualisation
+        number_of_wells_that_pass_qc += 1
+    
+        #converts the location file into a pandas data frame
+        location_file = pd.read_csv(location)
         
-            #incrementing the number of wells that pass quality control since this well is being used in data visualisation
-            number_of_wells_that_pass_qc += 1
+        #gets the location of the worms, converts it into a list
+        x_pos = location_file['X']
+        x_pos_list = x_pos.tolist()
+    
+        #if the compound is not in the dictionary, creates its key and adds the locations as its value
+        if compound_name not in dict:
+            dict[compound_name] = x_pos_list
         
-            #converts the location file into a pandas data frame
-            location_file = pd.read_csv(location)
-            
-            #gets the location of the worms, converts it into a list
-            x_pos = location_file['X']
-            x_pos_list = x_pos.tolist()
-        
-            #if the compound is not in the dictionary, creates its key and adds the locations as its value
-            if compound_name not in dict:
-                dict[compound_name] = x_pos_list
-            
-            #if the compound is in the dictionary, appends the locations to its value
-            else:
-                dict[compound_name].extend(x_pos_list)
-            
+        #if the compound is in the dictionary, appends the locations to its value
         else:
-            pass
-    
-    #if the well doesn't pass quality control, adds the wellno to the list of the wells that don't pass qc
-    elif row['Passes QC'] == 'N':
-        list_qc_nopass.append(well_name)
+            dict[compound_name].extend(x_pos_list)
+        
+    else:
+        pass
         
     return number_of_wells_that_pass_qc
         
@@ -170,7 +165,24 @@ def do_data_visualisation_compound(filename, location_filesfolder, control_name,
     plt.show()
     
 
+def get_worm_locs(row, wrms, result_dict): 
+
+    fname = row['File Name']
+    wellnum = row['WellNo']
+    loc_fname =  wrms.joinpath('loc_' + fname + '_' + wellnum + '.csv')
+    temp = pd.read_csv(loc_fname)
+    compound = row['Compound']
+    xs = temp['X']
+    #xs = list(temp['centroid-1'])
+    if compound in result_dict:
+        result_dict[compound] = result_dict[compound].append(xs)
+        result_dict[compound].reset_index(inplace=True, drop=True)
+        
+        #result_dict[compound] = result_dict[compound]+xs
+    else:
+        result_dict[compound]=xs
     
+    return result_dict
     
 
 
@@ -178,7 +190,7 @@ def do_data_visualisation_compound(filename, location_filesfolder, control_name,
 
     
 #accessing the location files of each well, and putting the location values of each strain into a dictionary
-def getting_location_collumns_strain(row, folder_of_loc_files, dict, list_qc_nopass, number_of_wells_that_pass_qc):
+def getting_location_collumns_strain(row, folder_of_loc_files, dic):
 
     #name of the strain, filename, wellno on that row, in which each row is a well
     name_s = row['Strain']
@@ -192,45 +204,38 @@ def getting_location_collumns_strain(row, folder_of_loc_files, dict, list_qc_nop
     #finding the location file in the given folder that contains it
     location = folder_of_loc_files.joinpath(loc_file)
     
-    #checks if the well passes quality control
-    if row['Passes QC'] == 'Y':
-        if location.is_file():
-                
-            #incrementing the number of wells that pass quality control since this well is being used in data visualisation
-            number_of_wells_that_pass_qc += 1
+    if location.is_file():
+    
+        #converts the location file into a pandas data frame
+        location_file = pd.read_csv(location)
         
-            #converts the location file into a pandas data frame
-            location_file = pd.read_csv(location)
-            
-            #gets the location of the worms, converts it into a list
-            x_pos = location_file['X']
-            x_pos_list = x_pos.tolist()
+        #gets the location of the worms, converts it into a list
+        x_pos = location_file['X']
+
+        #x_pos_list = x_pos.tolist()
+    
+        #if the strain is not in the dictionary, creates its key and adds the locations as its value
+        if strain_name not in dic:
+            dic[strain_name] = x_pos
         
-            #if the strain is not in the dictionary, creates its key and adds the locations as its value
-            if strain_name not in dict:
-                dict[strain_name] = x_pos_list
-            
-            #if the strain is in the dictionary, appends the locations to its value
-            else:
-                dict[strain_name].extend(x_pos_list)
-            
+        #if the strain is in the dictionary, appends the locations to its value
         else:
-            pass
-        
-    #if the well doesn't pass quality control, adds the wellno to the list of the wells that don't pass qc
-    elif row['Passes QC'] == 'N':
-        list_qc_nopass.append(well_name)
+            dic[strain_name].append(x_pos)
+            dic[strain_name].reset_index(inplace=True, drop=True)
+    else:
+        pass
             
-    return number_of_wells_that_pass_qc
+    
+    return dic
             
 
-        
+
     
 #data visualisation for strain shared control estimation plot
 def do_data_visualisation_strain(filename, location_filesfolder, control_name, colors_key, save_folder, save_name):
 
     #creates the dictionary that will keep strain as key, and its value as all the location values of worms under that strain
-    dict = {}
+    
     
     #converts the batch results file from a csv to a pandas data frame
     batch_res = pd.read_csv(filename)
@@ -238,41 +243,33 @@ def do_data_visualisation_strain(filename, location_filesfolder, control_name, c
     #converts the folder that contains the location values from a string to a pathlib object
     folder_of_loc_files = plb.Path(location_filesfolder)
     
-    #the list for storing the well nos that don't pass qc
-    list_nopass_qc = []
-    
-    #keeping track of the number of wells that pass quality control
-    number_of_wells_that_pass_qc = 0
-    
+
+    d = {}
     #loops through all the rows in the batch results data frame
     for index, row in batch_res.iterrows():
         #adding strains as keys and locations of the worms as values to the dictionary
-        number_of_wells_that_pass_qc = getting_location_collumns_strain(row, folder_of_loc_files, dict, list_nopass_qc, number_of_wells_that_pass_qc)
-    
+        dc = getting_location_collumns_strain(row, folder_of_loc_files, d)
+  
+
     #converting the dictionary into a data frame where collumn titles are time points and converting the location units from pixel per inch to mm
-    data_frame = converting_dict_to_dataframe_and_ppi_to_mm(dict)
-    
+    data_frame = pd.DataFrame.from_dict(dc)
+    #data_frame = converting_dict_to_dataframe_and_ppi_to_mm(d)    
     control = control_name.lower()
-    list = []
-    
-    #loops over all the compounds in the dictionary, to distinguish the control (can find a solution without a loop)
-    for key in dict.keys():
-        if key.lower() != control:
-            list.append(key)
-            
+
+    strain_list = data_frame.columns.tolist()
+    strain_list.remove(control)
+    strain_list.insert(0, control)
     #creates the list where the control is the first variable, then converts it into a tuple
-    new_list = [control]
-    new_list.extend(list)
-    lili = tuple(new_list)
+
 
     #prints that wellnos that didn't pass qc
-    print('wells that didnt pass quality control', list_nopass_qc)
+    #print('wells that didnt pass quality control', list_nopass_qc)
     
     #prints the number of wells that pass quality control
-    print('number of wells that pass quality control that are used in data visualisation:', number_of_wells_that_pass_qc)
+    #print('number of wells that pass quality control that are used in data visualisation:', number_of_wells_that_pass_qc)
     
     #loads the data frame and the tuple to dabest
-    new_object = db.load(data_frame, idx= lili)
+    new_object = db.load(data_frame, idx= strain_list)
     
     #if no colors key is attached
     if colors_key == 'Select file' or colors_key == '':
