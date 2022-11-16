@@ -165,24 +165,24 @@ def do_data_visualisation_compound(filename, location_filesfolder, control_name,
     plt.show()
     
 
-def get_worm_locs(row, wrms, result_dict): 
+# def get_worm_locs(row, wrms, result_dict): 
 
-    fname = row['File Name']
-    wellnum = row['WellNo']
-    loc_fname =  wrms.joinpath('loc_' + fname + '_' + wellnum + '.csv')
-    temp = pd.read_csv(loc_fname)
-    compound = row['Compound']
-    xs = temp['X']
-    #xs = list(temp['centroid-1'])
-    if compound in result_dict:
-        result_dict[compound] = result_dict[compound].append(xs)
-        result_dict[compound].reset_index(inplace=True, drop=True)
+#     fname = row['File Name']
+#     wellnum = row['WellNo']
+#     loc_fname =  wrms.joinpath('loc_' + fname + '_' + wellnum + '.csv')
+#     temp = pd.read_csv(loc_fname)
+#     compound = row['Compound']
+#     xs = temp['X']
+#     #xs = list(temp['centroid-1'])
+#     if compound in result_dict:
+#         result_dict[compound] = result_dict[compound].append(xs)
+#         result_dict[compound].reset_index(inplace=True, drop=True)
         
-        #result_dict[compound] = result_dict[compound]+xs
-    else:
-        result_dict[compound]=xs
+#         #result_dict[compound] = result_dict[compound]+xs
+#     else:
+#         result_dict[compound]=xs
     
-    return result_dict
+#     return result_dict
     
 
 
@@ -249,7 +249,7 @@ def do_data_visualisation_strain(filename, location_filesfolder, control_name, c
     for index, row in batch_res.iterrows():
         #adding strains as keys and locations of the worms as values to the dictionary
         dc = getting_location_collumns_strain(row, folder_of_loc_files, d)
-  
+    print(dc)
 
     #converting the dictionary into a data frame where collumn titles are time points and converting the location units from pixel per inch to mm
     data_frame = pd.DataFrame.from_dict(dc)
