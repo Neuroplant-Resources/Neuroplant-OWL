@@ -262,8 +262,9 @@ def dataviz_window():
             dv_layout = event       
             dv_window[f'-{dv_layout}-'].update(visible=True)
         if event == 'Do Data Vis' and dv_layout == 'Shared Control':
-        if event == 'Do Data Vis' and dv_layout == 'Multi':
-        if event == 'Do Data Vis' and dv_layout == 'Two Groups':
+            dv.do_data_visualisation_strain(values)
+        #if event == 'Do Data Vis' and dv_layout == 'Multi':
+        #if event == 'Do Data Vis' and dv_layout == 'Two Groups':
                 
 
     return dv_window, event, values

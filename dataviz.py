@@ -232,16 +232,16 @@ def getting_location_collumns_strain(row, folder_of_loc_files, dic):
 
     
 #data visualisation for strain shared control estimation plot
-def do_data_visualisation_strain(filename, location_filesfolder, control_name, colors_key, save_folder, save_name):
+def do_data_visualisation_strain(vals):
 
     #creates the dictionary that will keep strain as key, and its value as all the location values of worms under that strain
     
     
     #converts the batch results file from a csv to a pandas data frame
-    batch_res = pd.read_csv(filename)
+    batch_res = pd.read_csv(vals['_sumfile_sc_'])
     
     #converts the folder that contains the location values from a string to a pathlib object
-    folder_of_loc_files = plb.Path(location_filesfolder)
+    folder_of_loc_files = plb.Path(vals['_locfile_sc_'])
     
 
     d = {}
@@ -254,7 +254,7 @@ def do_data_visualisation_strain(filename, location_filesfolder, control_name, c
     #converting the dictionary into a data frame where collumn titles are time points and converting the location units from pixel per inch to mm
     data_frame = pd.DataFrame.from_dict(dc)
     #data_frame = converting_dict_to_dataframe_and_ppi_to_mm(d)    
-    control = control_name.lower()
+    control = vals['_control_sc_'].lower()
 
     strain_list = data_frame.columns.tolist()
     strain_list.remove(control)
@@ -271,19 +271,19 @@ def do_data_visualisation_strain(filename, location_filesfolder, control_name, c
     #loads the data frame and the tuple to dabest
     new_object = db.load(data_frame, idx= strain_list)
     
-    #if no colors key is attached
-    if colors_key == 'Select file' or colors_key == '':
+    # #if no colors key is attached
+    # if colors_key == 'Select file' or colors_key == '':
         
-        #shared control visualisation
-        mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
+    #     #shared control visualisation
+    #     mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
     
-    else:
-        #checking if all the colors in the key are present in the data frame
-        dict_colors = {}
-        for color in colors_key.keys():
-            if color in new_list:
-                color_match = colors_key[color]
-                dict_colors[color] = color_match
+    # else:
+    #     #checking if all the colors in the key are present in the data frame
+    #     dict_colors = {}
+    #     for color in colors_key.keys():
+    #         if color in new_list:
+    #             color_match = colors_key[color]
+    #             dict_colors[color] = color_match
                 
         #shared control visualisation with color
         mm_refs_plot = new_object.mean_diff.plot(custom_palette=dict_colors, raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
