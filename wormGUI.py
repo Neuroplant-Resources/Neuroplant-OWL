@@ -203,7 +203,7 @@ def dataviz_window():
         [sg.Text('Select your Image Analysis Summary file: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = '_sumfile_sc_', visible='False'), sg.FileBrowse()],
         [sg.Text('Select the folder that contains your location files: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left'),sg.InputText('Default Folder', key = '_locfile_sc_'), sg.FolderBrowse()],
         [sg.Text('What is your control condition?', size=(50, 1), auto_size_text=False, justification='left', font=(12)), sg.InputText('Control', key='_control_sc_')],
-        [sg.Text('Would you like to save your plot as a PDF ors SVG file?', font=(9)), sg.Combo(('PDF', 'SVG' , 'PNG'), default_value='PDF', key='_filetype_sg_', enable_events=True)],
+        [sg.Text('Would type of file would you like to save your plot as?', font=(9)), sg.Combo(('PDF', 'SVG' , 'PNG'), default_value='PDF', key='_filetype_sc_', enable_events=True)],
         [sg.Text('Where would you like to save your file?', justification='left', visible='False', size=(50, 1), font=(9)),  sg.InputText('Select folder', key = '_save_loc_sc_', visible='False'), sg.FolderBrowse()],
         [sg.Text('File name:', auto_size_text=False, justification='left', size=(50, 1), font=(9)),
         sg.InputText('Data visualisation', key='_fname_sc_')],

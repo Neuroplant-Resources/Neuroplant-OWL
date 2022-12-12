@@ -53,18 +53,14 @@ def getting_location_collumns_compound(row, folder_of_loc_files, dict, list_qc_n
         
 # function for converting the dictionary that has the variable as keys and the the corresponding locations as values into a data frame, and arranging the unit from pixel per inch to mm
 def converting_dict_to_dataframe_and_ppi_to_mm(di):
-   
-    #converts the dictionary into a data frame
-    df = pd.DataFrame.from_dict(di, orient='index')
-    data_fr = df.transpose()
     
     #conversion factor from pixel per inch to mm
     px_mm = 1200 / 25.4
     
     #converts all location values in the data frame from ppi to mm, and orients them to the starting position of middle from left.
-    data_frame = data_fr.apply(lambda x: -(x/px_mm)+32.5)
+    df = di.apply(lambda x: -(x/px_mm)+32.5)
     
-    return data_frame
+    return df
     
 #looping over the dictionary keys to put the control to the start and the rest of the variables next to it as test conditions
 def creating_the_input_tuple(dict, control):
@@ -249,11 +245,11 @@ def do_data_visualisation_strain(vals):
     for index, row in batch_res.iterrows():
         #adding strains as keys and locations of the worms as values to the dictionary
         dc = getting_location_collumns_strain(row, folder_of_loc_files, d)
-    print(dc)
+
 
     #converting the dictionary into a data frame where collumn titles are time points and converting the location units from pixel per inch to mm
-    data_frame = pd.DataFrame.from_dict(dc)
-    #data_frame = converting_dict_to_dataframe_and_ppi_to_mm(d)    
+    d = pd.DataFrame.from_dict(dc)
+    data_frame = converting_dict_to_dataframe_and_ppi_to_mm(d)    
     control = vals['_control_sc_'].lower()
 
     strain_list = data_frame.columns.tolist()
@@ -286,14 +282,14 @@ def do_data_visualisation_strain(vals):
     #             dict_colors[color] = color_match
                 
         #shared control visualisation with color
-        mm_refs_plot = new_object.mean_diff.plot(custom_palette=dict_colors, raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
+    mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
     
     
-    if save_folder != 'Select file':
+    if vals['_save_loc_sc_'] != 'Select file':
         #saving the pdf of the plot
-        my_path = os.path.abspath(save_folder)
-        title = save_name + '.pdf'
-        plt.savefig(os.path.join(my_path, title))
+        save_path = plb.Path(vals['_save_loc_sc_'])
+        title = vals['_fname_sc_'] + '.' + vals['_filetype_sc_'].lower()
+        plt.savefig(save_path.joinpath(title))
     
     #to show the plot
     plt.show()
