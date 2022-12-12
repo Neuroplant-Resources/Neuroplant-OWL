@@ -262,12 +262,15 @@ def dataviz_window():
             dv_layout = event       
             dv_window[f'-{dv_layout}-'].update(visible=True)
         if event == 'Do Data Vis' and dv_layout == 'Shared Control':
-            dv.do_data_visualisation_strain(values)
+            dv.do_data_visualisation(values)
+            dv_window.close()
+            make_GUI()
+            break
         #if event == 'Do Data Vis' and dv_layout == 'Multi':
         #if event == 'Do Data Vis' and dv_layout == 'Two Groups':
                 
-
-    return dv_window, event, values
+    return dv_window, event, values, dv_layout
+            #break
 
 def check_fpaths(ipath, rpath):
         return True
@@ -352,17 +355,24 @@ def make_GUI():
             
         if (event == 'Go') and (values[0]=='Data visualization'):
             win1.hide()
-            dv_win, e, v = dataviz_window()
-            if e == sg.WIN_CLOSED or e == 'Exit':
-                print(e)
-                dv_win.close()
-                break
-            elif e == 'Back':
-                dv_win.close()
-                make_GUI()
-                break
-            #elif e == ''
-            #dv_win.close()
+            dv_win, e, v, l = dataviz_window()
+            while True:
+                if e == sg.WIN_CLOSED or e == 'Exit':
+                    print(e)
+                    dv_win.close()
+                    break
+                elif e == 'Back':
+                    dv_win.close()
+                    make_GUI()
+                    break
+                if e == 'Do Data Vis' and l == 'Shared Control':
+
+                    dv.do_data_visualisation(v)
+                    dv_win.close()
+                    make_GUI()
+                    break
+            dv_win.close()
+            break
 
 
         if values['_DataVizSharedControl_']:

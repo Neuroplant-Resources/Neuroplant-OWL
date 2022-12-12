@@ -7,7 +7,7 @@ import dabest as db
 import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib.ticker as ticker
-
+import PySimpleGUI as sg
 
 #accessing the location files of each well, and putting the location values of each compound into a dictionary
 def getting_location_collumns_compound(row, folder_of_loc_files, dict, list_qc_nopass, number_of_wells_that_pass_qc):
@@ -186,11 +186,14 @@ def do_data_visualisation_compound(filename, location_filesfolder, control_name,
 
     
 #accessing the location files of each well, and putting the location values of each strain into a dictionary
-def getting_location_collumns_strain(row, folder_of_loc_files, dic):
+def getting_location_collumns(row, folder_of_loc_files, c, dic):
 
     #name of the strain, filename, wellno on that row, in which each row is a well
-    name_s = row['Strain']
-    strain_name = name_s.lower()
+    if c == 'Strain':
+        name = row['Strain']
+    elif c == 'Compound':
+        name = row['Compound']
+    cname = name.lower()
     file_name = row['File Name']
     well_name = row['WellNo']
     
@@ -211,13 +214,13 @@ def getting_location_collumns_strain(row, folder_of_loc_files, dic):
         #x_pos_list = x_pos.tolist()
     
         #if the strain is not in the dictionary, creates its key and adds the locations as its value
-        if strain_name not in dic:
-            dic[strain_name] = x_pos
+        if cname not in dic:
+            dic[cname] = x_pos
         
         #if the strain is in the dictionary, appends the locations to its value
         else:
-            dic[strain_name].append(x_pos)
-            dic[strain_name].reset_index(inplace=True, drop=True)
+            dic[cname].append(x_pos)
+            dic[cname].reset_index(inplace=True, drop=True)
     else:
         pass
             
@@ -228,23 +231,23 @@ def getting_location_collumns_strain(row, folder_of_loc_files, dic):
 
     
 #data visualisation for strain shared control estimation plot
-def do_data_visualisation_strain(vals):
+def do_data_visualisation(vals):
 
-    #creates the dictionary that will keep strain as key, and its value as all the location values of worms under that strain
-    
-    
+    condition = vals['_IV_sc_']
+
     #converts the batch results file from a csv to a pandas data frame
     batch_res = pd.read_csv(vals['_sumfile_sc_'])
     
     #converts the folder that contains the location values from a string to a pathlib object
     folder_of_loc_files = plb.Path(vals['_locfile_sc_'])
     
+    #creates the dictionary that will keep strain as key, and its value as all the location values of worms under that strain
 
     d = {}
     #loops through all the rows in the batch results data frame
     for index, row in batch_res.iterrows():
         #adding strains as keys and locations of the worms as values to the dictionary
-        dc = getting_location_collumns_strain(row, folder_of_loc_files, d)
+        dc = getting_location_collumns(row, folder_of_loc_files, condition, d)
 
 
     #converting the dictionary into a data frame where collumn titles are time points and converting the location units from pixel per inch to mm
@@ -252,48 +255,51 @@ def do_data_visualisation_strain(vals):
     data_frame = converting_dict_to_dataframe_and_ppi_to_mm(d)    
     control = vals['_control_sc_'].lower()
 
-    strain_list = data_frame.columns.tolist()
-    strain_list.remove(control)
-    strain_list.insert(0, control)
-    #creates the list where the control is the first variable, then converts it into a tuple
+    condition_list = data_frame.columns.tolist()
+    if control in condition_list:
+        condition_list.remove(control)
+        condition_list.insert(0, control)
+
+        #creates the list where the control is the first variable, then converts it into a tuple
 
 
-    #prints that wellnos that didn't pass qc
-    #print('wells that didnt pass quality control', list_nopass_qc)
-    
-    #prints the number of wells that pass quality control
-    #print('number of wells that pass quality control that are used in data visualisation:', number_of_wells_that_pass_qc)
-    
-    #loads the data frame and the tuple to dabest
-    new_object = db.load(data_frame, idx= strain_list)
-    
-    # #if no colors key is attached
-    # if colors_key == 'Select file' or colors_key == '':
+        #prints that wellnos that didn't pass qc
+        #print('wells that didnt pass quality control', list_nopass_qc)
         
-    #     #shared control visualisation
-    #     mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
-    
-    # else:
-    #     #checking if all the colors in the key are present in the data frame
-    #     dict_colors = {}
-    #     for color in colors_key.keys():
-    #         if color in new_list:
-    #             color_match = colors_key[color]
-    #             dict_colors[color] = color_match
-                
-        #shared control visualisation with color
-    mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
-    
-    
-    if vals['_save_loc_sc_'] != 'Select file':
-        #saving the pdf of the plot
-        save_path = plb.Path(vals['_save_loc_sc_'])
-        title = vals['_fname_sc_'] + '.' + vals['_filetype_sc_'].lower()
-        plt.savefig(save_path.joinpath(title))
-    
-    #to show the plot
-    plt.show()
+        #prints the number of wells that pass quality control
+        #print('number of wells that pass quality control that are used in data visualisation:', number_of_wells_that_pass_qc)
+        
+        #loads the data frame and the tuple to dabest
+        new_object = db.load(data_frame, idx= condition_list)
+        
+        # #if no colors key is attached
+        # if colors_key == 'Select file' or colors_key == '':
+            
+        #     #shared control visualisation
+        #     mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
+        
+        # else:
+        #     #checking if all the colors in the key are present in the data frame
+        #     dict_colors = {}
+        #     for color in colors_key.keys():
+        #         if color in new_list:
+        #             color_match = colors_key[color]
+        #             dict_colors[color] = color_match
+                    
+            #shared control visualisation with color
+        mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
+        
+        
+        if vals['_save_loc_sc_'] != 'Select file':
+            #saving the pdf of the plot
+            save_path = plb.Path(vals['_save_loc_sc_'])
+            title = vals['_fname_sc_'] + '.' + vals['_filetype_sc_'].lower()
+            plt.savefig(save_path.joinpath(title))
 
+
+    else:
+            sg.popup('Control not found in the data, please recheck column values')
+            pass
     
 #accesing the location files of each well, putting the locations into a dictionary where time points are keys and the corresponding values are the locations of worms under that time point
 def getting_location_collumns_timelapse(row, folder_of_loc_files, dict, number_of_wells_that_pass_qc):
@@ -326,11 +332,12 @@ def getting_location_collumns_timelapse(row, folder_of_loc_files, dict, number_o
         #if the time point is in the dictionary, appends the locations to its value
         else:
             dict[time].extend(x_pos_list)
+        return number_of_wells_that_pass_qc
             
     else:
         pass
         
-    return number_of_wells_that_pass_qc
+
  
 #putting time points in ascending order
 def putting_time_points_in_ascending_order(dict, control):
