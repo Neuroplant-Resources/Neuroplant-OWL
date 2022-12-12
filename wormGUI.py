@@ -194,8 +194,80 @@ def dataviz_multitwo_window():
     
 #     tl_win = sg.Window('Time Lapse Analysis Collumn', layout4, size=(900,250), resizable=True, finalize=True)
 #     return tl_win
-     
-    
+
+def dataviz_window():     
+    sharedcontrol = [
+        [sg.Text('Shared control plot', justification='center', key='_shared_control_')],
+        [sg.Text('What is your independent variable?',size=(100,1), font='Lucida', justification='left')],
+        [sg.Combo(('Compound', 'Strain', 'Time lapse'), default_value='Compound', key='_IV_sc_', enable_events=True)],
+        [sg.Text('Select your Image Analysis Summary file: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = '_sumfile_sc_', visible='False'), sg.FileBrowse()],
+        [sg.Text('Select the folder that contains your location files: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left'),sg.InputText('Default Folder', key = '_locfile_sc_'), sg.FolderBrowse()],
+        [sg.Text('What is your control condition?', size=(50, 1), auto_size_text=False, justification='left', font=(12)), sg.InputText('Control', key='_control_sc_')],
+        [sg.Text('Would you like to save your plot as a PDF ors SVG file?', font=(9)), sg.Combo(('PDF', 'SVG' , 'PNG'), default_value='PDF', key='_filetype_sg_', enable_events=True)],
+        [sg.Text('Where would you like to save your file?', justification='left', visible='False', size=(50, 1), font=(9)),  sg.InputText('Select folder', key = '_save_loc_sc_', visible='False'), sg.FolderBrowse()],
+        [sg.Text('File name:', auto_size_text=False, justification='left', size=(50, 1), font=(9)),
+        sg.InputText('Data visualisation', key='_fname_sc_')],
+        [sg.Button('Do Data Vis'), sg.Button('Back')], [sg.Exit()]]
+        
+        #dataviz_options_win = sg.Window('Data Visualization Options', layout1, size=(900,600), resizable=True, finalize=True)
+        #return dataviz_options_win
+
+    multigroups = [
+        [sg.Text('What is your independent variable?',size=(100,1), font='Lucida', justification='left')],
+        [sg.Combo(('Compound','Strain'), default_value='Compound', key='_IV_comp_')],
+        [sg.Text('Select your Image Analysis Summary file: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'batch_results_file', visible='False'), sg.FileBrowse()],
+        [sg.Text('Select the folder that contains your location files: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left'),sg.InputText('Default Folder', key = '-location_files_folder-'), sg.FolderBrowse()],
+        [sg.Text('Control condition:', size=(50, 1), auto_size_text=False, justification='left', font=(12)),
+        sg.InputText('Control', key='-control_name-')],
+        [sg.Text('Test condition:', size=(50, 1), auto_size_text=False, justification='left', font=(12)),
+        sg.InputText('Test', key='-test_name-')],
+        [sg.Button('Do Data Vis'), sg.Button('Back')], [sg.Exit()]]
+        #dataviz_twogroup_win = sg.Window('Data Visualization Options', layout6, size=(900,250), resizable=True, finalize=True)
+        #return dataviz_twogroup_win
+
+    twogroups = [
+        [sg.Text('What is your reference condition?',size=(100,1), font='Lucida', justification='left')],
+        [sg.Combo(('Compound','Strain'), default_value='Compound', key='_Reference_', enable_events=True)],
+        [sg.Text('What are the 2 reference condition types?', size=(30, 1), auto_size_text=False, justification='left', font=(12)),
+        sg.InputText('Reference 1', key='-ref1-'), sg.InputText('Reference 2', key='-ref2-')],
+        [sg.Text('What factor do you want to compare?',size=(100,1), font='Lucida', justification='left')],
+        [sg.Combo(('Compound ', 'Strain'), default_value='Compound', key='_Comparison_', enable_events=True)],
+        [sg.Text('What is the name of your control variable in your comparison factor?', size=(50, 1), auto_size_text=False, justification='left', font=(12)),
+        sg.InputText('Control', key='-control_name-')],
+        [sg.Text('Select your batch results file: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'batch_results_file', visible='False'), sg.FileBrowse()],
+        [sg.Text('Select the folder that contains your location files: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left'),sg.InputText('Default Folder', key = '-location_files_folder-'), sg.FolderBrowse()],
+        [sg.Text('If you prefer to select your colors, attach a colors key, otherwise leave blank:', size=(50, 2),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'col_key', visible='False'), sg.FileBrowse()],
+        [sg.Button('Do Data Vis'), sg.Button('Back')], [sg.Exit()]]
+        #dataviz_multitwo_win = sg.Window('Data Visualization Options', layout7, size=(900,400), resizable=True, finalize=True)
+        #return dataviz_multitwo_win
+       
+
+    # ----------- Create actual layout using Columns and a row of Buttons
+    dv_layout = [[sg.Button('Shared Control'), sg.Button('Multi'), sg.Button('Two Groups')],
+    [sg.Column(sharedcontrol, key='-Shared Control-'), sg.Column(multigroups, visible=False, key='-Multi-'), sg.Column(twogroups, visible=False, key='-Two Groups-')]]
+
+    dv_window = sg.Window('Data visualization', dv_layout)
+    dv_layout = 'Shared Control'  # The currently visible layout
+
+    while True:
+        event, values = dv_window.read()
+        #print(event, values)
+        if event in (None, 'Exit'):
+            break
+        if event == 'Back':
+            break
+
+        if event in ['Shared Control', 'Multi', 'Two Groups']:
+            dv_window[f'-{dv_layout}-'].update(visible=False)
+            dv_layout = event       
+            dv_window[f'-{dv_layout}-'].update(visible=True)
+        if event == 'Do Data Vis' and dv_layout == 'Shared Control':
+        if event == 'Do Data Vis' and dv_layout == 'Multi':
+        if event == 'Do Data Vis' and dv_layout == 'Two Groups':
+                
+
+    return dv_window, event, values
+
 def check_fpaths(ipath, rpath):
         return True
 
@@ -277,7 +349,21 @@ def make_GUI():
             unblind.close()
             break
             
-                
+        if (event == 'Go') and (values[0]=='Data visualization'):
+            win1.hide()
+            dv_win, e, v = dataviz_window()
+            if e == sg.WIN_CLOSED or e == 'Exit':
+                print(e)
+                dv_win.close()
+                break
+            elif e == 'Back':
+                dv_win.close()
+                make_GUI()
+                break
+            #elif e == ''
+            #dv_win.close()
+
+
         if values['_DataVizSharedControl_']:
             win1.hide()
             dataviz_options = shared_control_window()
@@ -399,24 +485,24 @@ def make_GUI():
             dataviz_multitwo.close()
             break
         
-        if values['_TimeLapseCollumn_']:
-            win1.hide()
-            tl_window = timelapse_window()
-            while True:
-                e8, v8 = tl_window.read()
-                if e8 == 'Back':
-                    tl_window.hide()
-                    make_GUI()
-                if e8 in ('Exit', None):
-                    break
-                if e8 == 'Add TimePoints':
-                    file = v8['filefortimelapse_']
-                    key = v8['timelapsekey_']
-                    name = v8['-filenamewithtimelapse-']
-                    folder = v8['-tl_folder-']
-                    tl.timelapse_collumn_addition(file, key, folder, name)
-                    message_win()
-                    tl_window.close()
+        # if values['_TimeLapseCollumn_']:
+        #     win1.hide()
+        #     tl_window = timelapse_window()
+        #     while True:
+        #         e8, v8 = tl_window.read()
+        #         if e8 == 'Back':
+        #             tl_window.hide()
+        #             make_GUI()
+        #         if e8 in ('Exit', None):
+        #             break
+        #         if e8 == 'Add TimePoints':
+        #             file = v8['filefortimelapse_']
+        #             key = v8['timelapsekey_']
+        #             name = v8['-filenamewithtimelapse-']
+        #             folder = v8['-tl_folder-']
+        #             tl.timelapse_collumn_addition(file, key, folder, name)
+        #             message_win()
+        #             tl_window.close()
 
                     
                     

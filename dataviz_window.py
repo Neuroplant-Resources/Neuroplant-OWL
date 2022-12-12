@@ -1,6 +1,6 @@
 import PySimpleGUI as sg
 
-layout2 = [
+sharedcontrol = [
     [sg.Text('What is your independent variable?',size=(100,1), font='Lucida', justification='left')],
     [sg.Combo(('Compound', 'Strain', 'Time lapse'), default_value='Compound', key='_IV_2_', enable_events=True)],
     [sg.Text('Select your Image Analysis Summary file: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'batch_results_file', visible='False'), sg.FileBrowse()],
@@ -15,7 +15,7 @@ layout2 = [
     #dataviz_options_win = sg.Window('Data Visualization Options', layout1, size=(900,600), resizable=True, finalize=True)
     #return dataviz_options_win
 
-layout1 = [
+multigroups = [
     [sg.Text('What is your independent variable?',size=(100,1), font='Lucida', justification='left')],
     [sg.Combo(('Compound','Strain'), default_value='Compound', key='_IV_comp_')],
     [sg.Text('Select your Image Analysis Summary file: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'batch_results_file', visible='False'), sg.FileBrowse()],
@@ -28,7 +28,7 @@ layout1 = [
     #dataviz_twogroup_win = sg.Window('Data Visualization Options', layout6, size=(900,250), resizable=True, finalize=True)
     #return dataviz_twogroup_win
 
-layout3 = [
+twogroups = [
     [sg.Text('What is your reference condition?',size=(100,1), font='Lucida', justification='left')],
     [sg.Combo(('Compound','Strain'), default_value='Compound', key='_Reference_', enable_events=True)],
     [sg.Text('What are the 2 reference condition types?', size=(30, 1), auto_size_text=False, justification='left', font=(12)),
@@ -46,20 +46,19 @@ layout3 = [
    
 
 # ----------- Create actual layout using Columns and a row of Buttons
-layout = [[sg.Button('Shared Control'), sg.Button('Multi'), sg.Button('Two Groups')],
-[sg.Column(layout1, key='-Shared Control-'), sg.Column(layout2, visible=False, key='-Multi-'), sg.Column(layout3, visible=False, key='-Two Groups-')]]
+dv_layout = [[sg.Button('Shared Control'), sg.Button('Multi'), sg.Button('Two Groups')],
+[sg.Column(sharedcontrol, key='-Shared Control-'), sg.Column(multigroups, visible=False, key='-Multi-'), sg.Column(twogroups, visible=False, key='-Two Groups-')]]
 
-window = sg.Window('Swapping the contents of a window', layout)
-
-layout = 'Shared Control'  # The currently visible layout
+dv_window = sg.Window('Data visualization', dv_layout)
+dv_layout = 'Shared Control'  # The currently visible layout
 while True:
-    event, values = window.read()
-    print(event, values)
+    event, values = dv_window.read()
+    #print(event, values)
     if event in (None, 'Exit'):
         break
     if event in ['Shared Control', 'Multi', 'Two Groups']:
-        window[f'-{layout}-'].update(visible=False)
-        layout = event
-        print(layout)
-        window[f'-{layout}-'].update(visible=True)
-window.close()
+        dv_window[f'-{dv_layout}-'].update(visible=False)
+        dv_layout = event
+        print(dv_layout)
+        dv_window[f'-{dv_layout}-'].update(visible=True)
+dv_window.close()

@@ -1,8 +1,5 @@
-# Neuroplant
-Analysis code for the lab's neuroplant project. This code analyzes images of chemotaxis assays as part of the [Neuroplant project](http://www.neuroplant.org/). There are 2 python files and a .yml file:
-* wormGUI.py: Generates the graphic user interface to analyze chemotaxis images
-* analyze_image.py: This is the code that automatically crops the images, identifies and counts worms, and calculates the chemotaxis index.
-* simplified_conda_env.yml: Creates the the virtual environment that contains all of the packages needed to run the image analysis code.
+# Neuroplant - Our Worm Locator (OWL)
+A graphic user interface for analyzing images associated with the neuroplant project. This code analyzes images of chemotaxis assays as part of the [Neuroplant project](http://www.neuroplant.org/). 
 
 ## Getting started
 Installing and running the code requires some knowledge of using github, conda, jupyter notebook, and python.
@@ -27,18 +24,14 @@ Installing and running the code requires some knowledge of using github, conda, 
 	conda deactivate
 	```
 
-## Using the Worm Counter GUI
-The Worm Counter GUI allows users to automate the counting of C. elegans on a 4 well plate. The algorithm will detect up to 4 assay plates in any configuration. To ensure that the algorithm provides accurate counts for your images, be sure to follow the instructuions in the [image capture workflow](https://docs.google.com/document/d/1WqvyStj1oJBW2A7Xqlo0mq0W0xOidGS7VAgk4tvFv_Y/edit?usp=sharing). Additionally, be sure to set up a metadata sheet so that you can link the data (compound, strain, plate ID, etc.) that is respective to both the plate and the image. Most importantly, be sure to note the plate ID and it's location on the scanner. See the example below:
+## Using the OWL GUI
+The Worm Counter GUI allows users to automate the counting of C. elegans on a 4 well plate. In addition to counting and locating the worms in an image, the GUI provides data visualization tools for the Neuroplant project.
 
-| Date   | Plate ID     | Compound Well A | Compound Well B | Compound Well C | Compound Well D | Strain | Scanner Location |
-|------  |-------       |-----------------|-----------------|-----------------|-----------------|--------|------------------|
-|07/21/21|NPP_202108_003| Diacetyl        | DMSO            | 2-nonanone      | Empty           | N2     | 1                  
+ The algorithm will detect up to 4 assay plates. To ensure that the algorithm provides accurate counts for your images, be sure to follow the instructuions in the [image capture workflow](https://docs.google.com/document/d/1WqvyStj1oJBW2A7Xqlo0mq0W0xOidGS7VAgk4tvFv_Y/edit?usp=sharing). 
 
 
-#### Welcome Window: This is where you will choose to process a single image or a batch of images. 
-Just click on the radio button that matches your needs:
-* Single Image 
-* Batch
+#### Welcome Window: This is where you will choose to analyze images, unblind your data or generate data visualizations
+Select the tool you would like to use from the dropdown menu:
 
 #### Single Image Processing
 1. Metadata: There are text fields to enter some of metadata to be included in the results that are returned to the user. These text fields are ...not mandatory... 
