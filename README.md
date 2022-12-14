@@ -30,8 +30,11 @@ The Worm Counter GUI allows users to automate the counting of C. elegans on a 4 
  The algorithm will detect up to 4 assay plates. To ensure that the algorithm provides accurate counts for your images, be sure to follow the instructuions in the [image capture workflow](https://docs.google.com/document/d/1WqvyStj1oJBW2A7Xqlo0mq0W0xOidGS7VAgk4tvFv_Y/edit?usp=sharing). 
 
 
-#### Welcome Window: This is where you will choose to analyze images, unblind your data or generate data visualizations
-Select the tool you would like to use from the dropdown menu:
+### Welcome Window: This is where you will choose to analyze images, unblind your data or generate data visualizations
+Select the tool you would like to use from the dropdown menu
+* Image analysis
+* Unblinding data
+* Data visualization
 
 #### Single Image Processing
 1. Metadata: There are text fields to enter some of metadata to be included in the results that are returned to the user. These text fields are ...not mandatory... 

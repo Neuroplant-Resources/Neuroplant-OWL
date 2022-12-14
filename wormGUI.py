@@ -196,6 +196,7 @@ def dataviz_multitwo_window():
 #     return tl_win
 
 def dataviz_window():     
+
     sharedcontrol = [
         [sg.Text('Shared control plot', justification='center', key='_shared_control_')],
         [sg.Text('What is your independent variable?',size=(100,1), font='Lucida', justification='left')],
@@ -243,11 +244,13 @@ def dataviz_window():
        
 
     # ----------- Create actual layout using Columns and a row of Buttons
+
     dv_layout = [[sg.Button('Shared Control'), sg.Button('Multi'), sg.Button('Two Groups')],
     [sg.Column(sharedcontrol, key='-Shared Control-'), sg.Column(multigroups, visible=False, key='-Multi-'), sg.Column(twogroups, visible=False, key='-Two Groups-')]]
 
     dv_window = sg.Window('Data visualization', dv_layout)
     dv_layout = 'Shared Control'  # The currently visible layout
+
 
     while True:
         event, values = dv_window.read()
@@ -255,6 +258,8 @@ def dataviz_window():
         if event in (None, 'Exit'):
             break
         if event == 'Back':
+            dv_window.close()
+            make_GUI()
             break
 
         if event in ['Shared Control', 'Multi', 'Two Groups']:
@@ -268,9 +273,9 @@ def dataviz_window():
             break
         #if event == 'Do Data Vis' and dv_layout == 'Multi':
         #if event == 'Do Data Vis' and dv_layout == 'Two Groups':
-                
-    return dv_window, event, values, dv_layout
-            #break
+              
+    return dv_window, dv_layout
+
 
 def check_fpaths(ipath, rpath):
         return True
@@ -355,22 +360,33 @@ def make_GUI():
             
         if (event == 'Go') and (values[0]=='Data visualization'):
             win1.hide()
-            dv_win, e, v, l = dataviz_window()
+            l = 'Shared Control'
+            dv_win, l = dataviz_window()
+            #print(e, v)
             while True:
+                e, v = dv_win.read()
                 if e == sg.WIN_CLOSED or e == 'Exit':
-                    print(e)
                     dv_win.close()
                     break
                 elif e == 'Back':
                     dv_win.close()
                     make_GUI()
                     break
+                if (e == 'Shared Control') or (e == 'Multi') or (e == 'Two Groups'):
+                    dv_win[f'-{l}-'].update(visible=False)
+                    l = e       
+                    dv_win[f'-{l}-'].update(visible=True)
                 if e == 'Do Data Vis' and l == 'Shared Control':
-
                     dv.do_data_visualisation(v)
                     dv_win.close()
                     make_GUI()
                     break
+                #     if e == 'Do Data Vis' and l == 'Shared Control':
+
+            #         #dv.do_data_visualisation(v)
+            #         #dv_win.close()
+            #         make_GUI()
+            #         break
             dv_win.close()
             break
 
