@@ -180,7 +180,13 @@ def dataviz_multitwo_window():
     [sg.Button('Do Data Vis'), sg.Button('Back')], [sg.Exit()]]
     dataviz_multitwo_win = sg.Window('Data Visualization Options', layout7, size=(900,400), resizable=True, finalize=True)
     return dataviz_multitwo_win
-   
+
+def dataviz_window():
+    dv_layout = [
+        [sg.Button('Two groups'), sg.Button('Shared Control'), sg.Button('Paired?')],
+        [sg.Button('Back'), sg.Button('Exit')]]
+    dv_hold = sg.Window('Data Viz Options', dv_layout, size=(500,500), resizable=True, finalize=True)
+    return dv_hold
 # def timelapse_window():
 #     layout4 = [
 #     [sg.Text('If you have time lapse analysis, you may add a time point collumn to your batch results file by using the time lapse key template that matches the file name to the time point',size=(120,1), font='Lucida', justification='left')],
@@ -194,10 +200,8 @@ def dataviz_multitwo_window():
     
 #     tl_win = sg.Window('Time Lapse Analysis Collumn', layout4, size=(900,250), resizable=True, finalize=True)
 #     return tl_win
-
-def dataviz_window():     
-
-    sharedcontrol = [
+def dv_sharedcontrol():
+    sc_layout = [
         [sg.Text('Shared control plot', justification='center', key='_shared_control_')],
         [sg.Text('What is your independent variable?',size=(100,1), font='Lucida', justification='left')],
         [sg.Combo(('Compound', 'Strain', 'Time lapse'), default_value='Compound', key='_IV_sc_', enable_events=True)],
@@ -208,25 +212,27 @@ def dataviz_window():
         [sg.Text('Where would you like to save your file?', justification='left', visible='False', size=(50, 1), font=(9)),  sg.InputText('Select folder', key = '_save_loc_sc_', visible='False'), sg.FolderBrowse()],
         [sg.Text('File name:', auto_size_text=False, justification='left', size=(50, 1), font=(9)),
         sg.InputText('Data visualisation', key='_fname_sc_')],
-        [sg.Button('Do Data Vis'), sg.Button('Back')], [sg.Exit()]]
-        
-        #dataviz_options_win = sg.Window('Data Visualization Options', layout1, size=(900,600), resizable=True, finalize=True)
-        #return dataviz_options_win
+        [sg.Button('Do Data Vis'), sg.Button('Home')], [sg.Exit()]]
+    
+    sc = sg.Window('Shared control', sc_layout, size=(900,600), resizable=True, finalize=True)
+    return sc
 
-    multigroups = [
+def dv_tg():
+    tg_layout = [
         [sg.Text('What is your independent variable?',size=(100,1), font='Lucida', justification='left')],
-        [sg.Combo(('Compound','Strain'), default_value='Compound', key='_IV_comp_')],
-        [sg.Text('Select your Image Analysis Summary file: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'batch_results_file', visible='False'), sg.FileBrowse()],
-        [sg.Text('Select the folder that contains your location files: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left'),sg.InputText('Default Folder', key = '-location_files_folder-'), sg.FolderBrowse()],
+        [sg.Combo(('Compound','Strain'), default_value='Compound', key='_IV_cond_')],
+        [sg.Text('Select your Image Analysis Summary file: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = '_tg_sum_', visible='False'), sg.FileBrowse()],
+        [sg.Text('Select the folder that contains your location files: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left'),sg.InputText('Default Folder', key = '_tg_loc_'), sg.FolderBrowse()],
         [sg.Text('Control condition:', size=(50, 1), auto_size_text=False, justification='left', font=(12)),
-        sg.InputText('Control', key='-control_name-')],
+        sg.InputText('Control', key='_control_name_')],
         [sg.Text('Test condition:', size=(50, 1), auto_size_text=False, justification='left', font=(12)),
         sg.InputText('Test', key='-test_name-')],
-        [sg.Button('Do Data Vis'), sg.Button('Back')], [sg.Exit()]]
-        #dataviz_twogroup_win = sg.Window('Data Visualization Options', layout6, size=(900,250), resizable=True, finalize=True)
-        #return dataviz_twogroup_win
+        [sg.Button('Do Data Vis'), sg.Button('Home')], [sg.Exit()]]
+    tg = sg.Window('Two group comparison', tg_layout, size=(900,250), resizable=True, finalize=True)
+    return tg
 
-    twogroups = [
+def dv_mg():
+    multigroups = [
         [sg.Text('What is your reference condition?',size=(100,1), font='Lucida', justification='left')],
         [sg.Combo(('Compound','Strain'), default_value='Compound', key='_Reference_', enable_events=True)],
         [sg.Text('What are the 2 reference condition types?', size=(30, 1), auto_size_text=False, justification='left', font=(12)),
@@ -235,21 +241,17 @@ def dataviz_window():
         [sg.Combo(('Compound ', 'Strain'), default_value='Compound', key='_Comparison_', enable_events=True)],
         [sg.Text('What is the name of your control variable in your comparison factor?', size=(50, 1), auto_size_text=False, justification='left', font=(12)),
         sg.InputText('Control', key='-control_name-')],
-        [sg.Text('Select your batch results file: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'batch_results_file', visible='False'), sg.FileBrowse()],
-        [sg.Text('Select the folder that contains your location files: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left'),sg.InputText('Default Folder', key = '-location_files_folder-'), sg.FolderBrowse()],
+        [sg.Text('Select your batch results file: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'brf_2g', visible='False'), sg.FileBrowse()],
+        [sg.Text('Select the folder that contains your location files: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left'),sg.InputText('Default Folder', key = 'locf_2g'), sg.FolderBrowse()],
         [sg.Text('If you prefer to select your colors, attach a colors key, otherwise leave blank:', size=(50, 2),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'col_key', visible='False'), sg.FileBrowse()],
         [sg.Button('Do Data Vis'), sg.Button('Back')], [sg.Exit()]]
-        #dataviz_multitwo_win = sg.Window('Data Visualization Options', layout7, size=(900,400), resizable=True, finalize=True)
-        #return dataviz_multitwo_win
+    mg = sg.Window('Paired analysis?', multigroups, size=(900,400), resizable=True, finalize=True)
+    return mg
        
 
     # ----------- Create actual layout using Columns and a row of Buttons
 
-    dv_layout = [[sg.Button('Shared Control'), sg.Button('Multi'), sg.Button('Two Groups')],
-    [sg.Column(sharedcontrol, key='-Shared Control-'), sg.Column(multigroups, visible=False, key='-Multi-'), sg.Column(twogroups, visible=False, key='-Two Groups-')]]
 
-    dv_window = sg.Window('Data visualization', dv_layout)
-    dv_layout = 'Shared Control'  # The currently visible layout
 
 
     while True:
@@ -272,7 +274,11 @@ def dataviz_window():
             make_GUI()
             break
         #if event == 'Do Data Vis' and dv_layout == 'Multi':
-        #if event == 'Do Data Vis' and dv_layout == 'Two Groups':
+        if event == 'Do Data Vis' and dv_layout == 'Two Groups':
+            dv.do_dv_tg(values)
+            dv_window.close()
+            make_GUI()
+            break
               
     return dv_window, dv_layout
 
@@ -360,11 +366,11 @@ def make_GUI():
             
         if (event == 'Go') and (values[0]=='Data visualization'):
             win1.hide()
-            l = 'Shared Control'
-            dv_win, l = dataviz_window()
-            #print(e, v)
+            dv_win = dataviz_window()
+
             while True:
                 e, v = dv_win.read()
+
                 if e == sg.WIN_CLOSED or e == 'Exit':
                     dv_win.close()
                     break
@@ -372,83 +378,109 @@ def make_GUI():
                     dv_win.close()
                     make_GUI()
                     break
-                if (e == 'Shared Control') or (e == 'Multi') or (e == 'Two Groups'):
-                    dv_win[f'-{l}-'].update(visible=False)
-                    l = e       
-                    dv_win[f'-{l}-'].update(visible=True)
-                if e == 'Do Data Vis' and l == 'Shared Control':
-                    dv.do_data_visualisation(v)
-                    dv_win.close()
-                    make_GUI()
-                    break
-                #     if e == 'Do Data Vis' and l == 'Shared Control':
-
-            #         #dv.do_data_visualisation(v)
-            #         #dv_win.close()
-            #         make_GUI()
-            #         break
+                elif e == 'Shared Control':
+                    dv_win.hide()
+                    shared = dv_sharedcontrol()
+                    while True:
+                        sc_e, sc_v = shared.read()
+                        if sc_e == sg.WIN_CLOSED or sc_e == 'Exit':
+                            shared.close()
+                            dv_win.close()
+                            break
+                        elif sc_e == 'Home':
+                            shared.close()
+                            dv_win.close()
+                            make_GUI()
+                            break
+                        elif (sc_e == 'Do Data Vis') and (plb.Path(sc_v['_sumfile_sc_']).exists()) and (plb.Path(sc_v['_locfile_sc_']).exists()) and (plb.Path(sc_v['_save_loc_sc_']).exists()):
+                            dv.do_data_visualisation(sc_v)
+                            shared.close()
+                            dv_win.close()
+                            make_GUI()
+                            break
+                elif e == 'Two groups':
+                    dv_win.hide()
+                    two_groups = dv_tg()
+                    while True:
+                        tg_e, tg_v = two_groups.read()
+                        if tg_e == sg.WIN_CLOSED or tg_e == 'Exit':
+                            two_groups.close()
+                            dv_win.close()
+                            break
+                        elif tg_e == 'Home':
+                            two_groups.close()
+                            dv_win.close()
+                            make_GUI()
+                            break
+                        elif (tg_e == 'Do Data Vis') and (plb.Path(tg_v['_tg_sum_']).exists()) and (plb.Path(tg_v['_tg_loc_']).exists()):
+                            dv.do_dv_tg(tg_v)
+                            two_groups.close()
+                            dv_win.close()
+                            make_GUI()
+                            break
+    
             dv_win.close()
             break
 
 
-        if values['_DataVizSharedControl_']:
-            win1.hide()
-            dataviz_options = shared_control_window()
-            while True:
-                e5, v5 = dataviz_options.read()
-                if e5 == 'Back':
-                    dataviz_options.close()
-                    make_GUI()
-                    break
-                if e5 == sg.WIN_CLOSED or e5 == 'Exit':
-                    dataviz_options.close()
-                    break
-                if e5 == 'Do Data Vis':
-                    batch_res = v5['batch_results_file']
-                    loc_files_folder = v5['-location_files_folder-']
-                    control_name = v5['-control_name-']
-                    if v5['yes_for_saving_pdf']:
-                        pdf_store_folder = v5['pdf_key']
-                    else:
-                        pdf_store_folder = 'Select file'
-                    pdf_file_name = v5['-pdf_name_plot-']
-                    if v5['yes_for_col_key']:
-                        colors_key = v5['col_key']
-                    else:
-                        colors_key = 'None'
-                    if v5['_none_select_']:
-                        if colors_key != 'None':
-                            colors = ck.dict_color_key(colors_key)
-                        else:
-                            colors = 'Select file'
-                        if v5['_CompoundInfo_']:
-                            dv.do_data_visualisation_compound(batch_res, loc_files_folder, control_name, colors, pdf_store_folder, pdf_file_name)
-                        elif v5['_StrainInfo_']:
-                            dv.do_data_visualisation_strain(batch_res, loc_files_folder, control_name, colors, pdf_store_folder, pdf_file_name)
-                        elif v5['_TimeLapse_']:
-                            dv.do_data_visualisation_timelapse(batch_res, loc_files_folder, control_name, colors, pdf_store_folder, pdf_file_name)
-                    if colors_key != 'None':
-                        colors = ck.dict_color_key_mutli2(colors_key)
-                    else:
-                        colors = 'Select file'
-                    if v5['_StrainInfo_'] and v5['_compound_select_']:
-                        selected_compound = v5['-compound-select-name-']
-                        dv.data_viz_for_strain_under_1_compound(batch_res, loc_files_folder, control_name, selected_compound, colors, pdf_store_folder, pdf_file_name)
-                    if v5['_CompoundInfo_'] and v5['_strain_select_']:
-                        selected_strain = v5['-strain-select-name-']
-                        dv.data_viz_for_compound_under_1_strain(batch_res, loc_files_folder, control_name, selected_strain, colors, pdf_store_folder, pdf_file_name)
-                    if v5['_TimeLapse_'] and v5['_compound_select_']:
-                        selected_compound = v5['-compound-select-name-']
-                        dv.do_data_visualisation_timelapse_under_1compound(batch_res, loc_files_folder, control_name, selected_compound, colors, pdf_store_folder, pdf_file_name)
-                    if v5['_TimeLapse_'] and v5['_strain_select_']:
-                        selected_strain = v5['-strain-select-name-']
-                        dv.do_data_visualisation_timelapse_under_1strain(batch_res, loc_files_folder, control_name, selected_strain, colors, pdf_store_folder, pdf_file_name)
-                    if v5['_TimeLapse_'] and v5['_both_select_']:
-                        selected_compound = v5['-compound-select-name-']
-                        selected_strain = v5['-strain-select-name-']
-                        dv.do_data_visualisation_timelapse_under_1compound_and_1strain(batch_res, loc_files_folder, control_name, selected_compound, selected_strain, colors, pdf_store_folder, pdf_file_name)
-            dataviz_options.close()
-            break
+        # if values['_DataVizSharedControl_']:
+        #     win1.hide()
+        #     dataviz_options = shared_control_window()
+        #     while True:
+        #         e5, v5 = dataviz_options.read()
+        #         if e5 == 'Back':
+        #             dataviz_options.close()
+        #             make_GUI()
+        #             break
+        #         if e5 == sg.WIN_CLOSED or e5 == 'Exit':
+        #             dataviz_options.close()
+        #             break
+        #         if e5 == 'Do Data Vis':
+        #             batch_res = v5['batch_results_file']
+        #             loc_files_folder = v5['-location_files_folder-']
+        #             control_name = v5['-control_name-']
+        #             if v5['yes_for_saving_pdf']:
+        #                 pdf_store_folder = v5['pdf_key']
+        #             else:
+        #                 pdf_store_folder = 'Select file'
+        #             pdf_file_name = v5['-pdf_name_plot-']
+        #             if v5['yes_for_col_key']:
+        #                 colors_key = v5['col_key']
+        #             else:
+        #                 colors_key = 'None'
+        #             if v5['_none_select_']:
+        #                 if colors_key != 'None':
+        #                     colors = ck.dict_color_key(colors_key)
+        #                 else:
+        #                     colors = 'Select file'
+        #                 if v5['_CompoundInfo_']:
+        #                     dv.do_data_visualisation_compound(batch_res, loc_files_folder, control_name, colors, pdf_store_folder, pdf_file_name)
+        #                 elif v5['_StrainInfo_']:
+        #                     dv.do_data_visualisation_strain(batch_res, loc_files_folder, control_name, colors, pdf_store_folder, pdf_file_name)
+        #                 elif v5['_TimeLapse_']:
+        #                     dv.do_data_visualisation_timelapse(batch_res, loc_files_folder, control_name, colors, pdf_store_folder, pdf_file_name)
+        #             if colors_key != 'None':
+        #                 colors = ck.dict_color_key_mutli2(colors_key)
+        #             else:
+        #                 colors = 'Select file'
+        #             if v5['_StrainInfo_'] and v5['_compound_select_']:
+        #                 selected_compound = v5['-compound-select-name-']
+        #                 dv.data_viz_for_strain_under_1_compound(batch_res, loc_files_folder, control_name, selected_compound, colors, pdf_store_folder, pdf_file_name)
+        #             if v5['_CompoundInfo_'] and v5['_strain_select_']:
+        #                 selected_strain = v5['-strain-select-name-']
+        #                 dv.data_viz_for_compound_under_1_strain(batch_res, loc_files_folder, control_name, selected_strain, colors, pdf_store_folder, pdf_file_name)
+        #             if v5['_TimeLapse_'] and v5['_compound_select_']:
+        #                 selected_compound = v5['-compound-select-name-']
+        #                 dv.do_data_visualisation_timelapse_under_1compound(batch_res, loc_files_folder, control_name, selected_compound, colors, pdf_store_folder, pdf_file_name)
+        #             if v5['_TimeLapse_'] and v5['_strain_select_']:
+        #                 selected_strain = v5['-strain-select-name-']
+        #                 dv.do_data_visualisation_timelapse_under_1strain(batch_res, loc_files_folder, control_name, selected_strain, colors, pdf_store_folder, pdf_file_name)
+        #             if v5['_TimeLapse_'] and v5['_both_select_']:
+        #                 selected_compound = v5['-compound-select-name-']
+        #                 selected_strain = v5['-strain-select-name-']
+        #                 dv.do_data_visualisation_timelapse_under_1compound_and_1strain(batch_res, loc_files_folder, control_name, selected_compound, selected_strain, colors, pdf_store_folder, pdf_file_name)
+        #     dataviz_options.close()
+        #     break
                     
                         
                         
