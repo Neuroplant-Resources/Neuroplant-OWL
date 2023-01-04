@@ -103,11 +103,7 @@ def colors_key_check(colors_key, tuple_list):
 def getting_location_collumns(row, folder_of_loc_files, c, dic):
 
     #name of the strain, filename, wellno on that row, in which each row is a well
-    if c == 'Strain':
-        name = row['Strain']
-    elif c == 'Compound':
-        name = row['Compound']
-    cname = name.lower()
+    cname = row[c].lower()
     file_name = row['File Name']
     well_name = row['WellNo']
     
@@ -159,20 +155,20 @@ def do_dv_tg(vals):
     
     # #keeping track of the number of wells that pass quality control
     # number_of_wells_that_pass_qc = 0
-    c = vals['_IV_cond_']
+    cond = vals['_IV_cond_']
 
     #control variable
     control = vals['_control_name_'].lower()
     test = vals['-test_name-'].lower()
 
-    filtered = batch_res[(batch_res[c] == vals['_control_name_']) | (batch_res[c] == vals['-test_name-'])]
+    filtered = batch_res[(batch_res[cond] == vals['_control_name_']) | (batch_res[cond] == vals['-test_name-'])]
     # #loops through all the rows in the batch results data frame
     for index, row in filtered.iterrows():
     #     #adding compounds as keys and locations of the worms as values to the dictionary
-        dc = getting_location_collumns(row, folder_of_loc_files, d)
+        dc = getting_location_collumns(row, folder_of_loc_files, cond, d)
     
     #converting the dictionary into a data frame where collumn titles are time points and converting the location units from pixel per inch to mm
-    d = pd.DataGrame.from_dict(dc)
+    d = pd.DataFrame.from_dict(dc)
     df = converting_ppi_to_mm(d)
     
 
@@ -183,6 +179,7 @@ def do_dv_tg(vals):
     mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
     
     #showing the plot
+
     plt.show()
     
 #data visualisation for strain shared control estimation plot
@@ -503,58 +500,7 @@ def turn_to_number(string):
 
     
     
-#2 group estimation plot for strain as independent variable
-def do_data_visualisation_strain_2_group(filename, location_filesfolder, control_name, test_name):
 
-    #creates the dictionary that will keep strain as key, and its value as all the location values of worms under that compound
-    dict = {}
-    
-    #converts the batch results file from a csv to a pandas data frame
-    batch_res = pd.read_csv(filename)
-    
-    #converts the folder that contains the location values from a string to a pathlib object
-    folder_of_loc_files = plb.Path(location_filesfolder)
-    
-    #the list for storing the well nos that don't pass qc
-    list_nopass_qc = []
-    
-    #keeping track of the number of wells that pass quality control
-    number_of_wells_that_pass_qc = 0
-    
-    
-    #loops through all the rows in the batch results data frame
-    for index, row in batch_res.iterrows():
-        #adding strains as keys and locations of the worms as values to the dictionary
-        number_of_wells_that_pass_qc = getting_location_collumns_strain(row, folder_of_loc_files, dict, list_nopass_qc, number_of_wells_that_pass_qc)
-    
-    #converting the dictionary into a data frame where collumn titles are time points and converting the location units from pixel per inch to mm
-    data_frame = converting_dict_to_dataframe_and_ppi_to_mm(dict)
-    
-    
-    #control variable
-    control = control_name.lower()
-    
-    #test variable
-    test = test_name.lower()
-    
-    #prints that wellnos that didn't pass qc
-    print('wells that didnt pass quality control', list_doesnt_pass_qc)
-    
-    
-    #prints the number of wells that pass quality control
-    print('number of wells that pass quality control that are used in data visualisation:', number_of_wells_that_pass_qc)
-    
-    
-    #loads the data frame and the tuple to dabest
-    new_object = db.load(data_frame, idx= (control, test))
-    
-    #two group estimation plot
-    mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Mean differene (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
-    
-    #showing the plot
-    plt.show()
-
-        
 
 #getting the locations of the worms from the location file data frame and converting the values into a list
 def getting_locations_of_worms_and_converting_into_a_list(locationfile):
