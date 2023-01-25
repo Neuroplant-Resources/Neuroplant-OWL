@@ -148,8 +148,8 @@ def dataviz_window():
         [sg.Text('Two group example', key = 'tg_link',**link_style), sg.Button('Two groups')],
         [sg.Text('2. Shared control: Compare multiple test conditions to a single control group')],
         [sg.Text('Shared control example', key = 'sc_link',**link_style), sg.Button('Shared Control')],
-        [sg.Text('3. Multiple groups: Compare multiple controls to their respective test conditions')],
-        [sg.Text('Multiple groups example', key = 'mg_link',**link_style), sg.Button('Multiple Groups')],
+        # [sg.Text('3. Multiple groups: Compare multiple controls to their respective test conditions')],
+        # [sg.Text('Multiple groups example', key = 'mg_link',**link_style), sg.Button('Multiple Groups')],
         [sg.Button('Back'), sg.Button('Exit')]
         ]
 
@@ -158,19 +158,34 @@ def dataviz_window():
     return dv_hold
 
 def dv_sharedcontrol():
-    sc_layout = [
-        [sg.Text('Shared control plot', justification='center', key='_shared_control_')],
-        [sg.Text('What is your independent variable?',size=(100,1), font='Lucida', justification='right')],
+    rgt = [
+
+        
         [sg.Combo(('Compound', 'Strain'), default_value='Compound', key='_IV_sc_', enable_events=True, size=(15,1))],
-        [sg.Text('Select your Image Analysis Summary file: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='right', visible='False'), sg.InputText('Select file', key = '_sumfile_sc_', visible='False'), sg.FileBrowse()],
-        [sg.Text('Select the folder that contains your location files: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='right'),sg.InputText('Default Folder', key = '_locfile_sc_'), sg.FolderBrowse()],
-        [sg.Text('What is your control condition?', size=(50, 1), auto_size_text=False, justification='right', font=(12)), sg.InputText('Control', key='_control_sc_')],
-        [sg.Text('What type of file would you like to save your plot as?', font=(9), justification='right'), sg.Combo(('PDF', 'SVG' , 'PNG'), default_value='PDF', key='_filetype_sc_', size=(8,1), enable_events=True)],
-        [sg.Text('Where would you like to save your file?', justification='right', visible='False', size=(50, 1), font=(9)),  sg.InputText('Select folder', key = '_save_loc_sc_', visible='False'), sg.FolderBrowse()],
-        [sg.Text('File name:', auto_size_text=False, justification='right', size=(50, 1), font=(9)),
-        sg.InputText('Data visualisation', key='_fname_sc_')],
-        [sg.Button('Do Data Vis'), sg.Button('Home')], [sg.Exit()]]
-    
+        [sg.InputText('Select file', key = '_sumfile_sc_', visible='False'), sg.FileBrowse()],
+        [sg.InputText('Default Folder', key = '_locfile_sc_'), sg.FolderBrowse()],
+        [sg.InputText('Control', key='_control_sc_')],
+        [sg.Combo(('PDF', 'SVG' , 'PNG'), default_value='PDF', key='_filetype_sc_', size=(8,1), enable_events=True)],
+        [sg.InputText('Select folder', key = '_save_loc_sc_', visible='False'), sg.FolderBrowse()],
+        [sg.InputText('Data visualisation', key='_fname_sc_')],
+        ]
+
+    lft = [
+        [sg.Text('What is your independent variable?', font='Lucida', justification='left')],
+        [sg.Text('Select your Image Analysis Summary file: ',font=(12) ,auto_size_text=False, justification='left', visible='False')],
+        [sg.Text('Select the folder that contains your location files: ', font=(12) ,auto_size_text=False, justification='left')],
+        [sg.Text('What is your control condition?', auto_size_text=False, justification='left', font=(12))], 
+        [sg.Text('What type of file would you like to save your plot as?', font=(9), justification='left')],
+        [sg.Text('Where would you like to save your file?', justification='left', visible='False', font=(9))], 
+        [sg.Text('Give a filename to your plot:', auto_size_text=False, justification='left', font=(9))],
+        ]
+
+    sc_layout = [
+        [sg.Column(lft, pad=(0, None)),
+         sg.Column(rgt, pad=(0, None))],
+        [sg.Button('Do Data Vis'), sg.Button('Home'), sg.Exit()]
+    ]
+
     sc = sg.Window('Shared control', sc_layout, size=(900,400), resizable=True, finalize=True)
     return sc
 
@@ -188,18 +203,23 @@ def dv_tg():
     tg = sg.Window('Two group comparison', tg_layout, size=(900,250), resizable=True, finalize=True)
     return tg
 
-def dv_mg():
-    multigroups = [
-        [sg.Text('To plot multiple groups on one axis, fill in the fields below. Input the list of conditions with your control as the fist item. Seperate each condition by a comma',size=(100,1), font='Lucida', justification='left')],
-        [sg.Text('Group 1:'), sg.InputText(key='-g1-')],
-        [sg.Text('Group 2:'), sg.InputText(key='-g2-')],
-        [sg.Text('Group 3:'), sg.InputText(key='-g3-')],
-        [sg.Text('Select your batch results file: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'brf_2g', visible='False'), sg.FileBrowse()],
-        [sg.Text('Select the folder that contains your location files: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left'),sg.InputText('Default Folder', key = 'locf_2g'), sg.FolderBrowse()],
-        [sg.Text('If you prefer to select your colors, attach a colors key, otherwise leave blank:', size=(50, 2),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'col_key', visible='False'), sg.FileBrowse()],
-        [sg.Button('Do Data Vis'), sg.Button('Home')], [sg.Exit()]]
-    mg = sg.Window('Paired analysis?', multigroups, size=(900,400), resizable=True, finalize=True)
-    return mg
+# def dv_mg():
+#     multigroups = [
+#         [sg.Text('To plot multiple groups on one axis, fill in the fields below.', font='Lucida', justification='left')],
+#         [sg.Text('* Input the list of conditions with your control as the fist item and seperate each condition by a comma', font='Lucida', justification='left')],
+#         [sg.Text('Example: DMSO, isoamyl alcohol, 2-nonanone', font='Lucida', justification='left')],
+#         [sg.Text('Example: N2, PR678, CX10', font='Lucida', justification='left')],
+#         [sg.Text('Group 1:'), sg.InputText(key='-g1-')],
+#         [sg.Text('Group 2:'), sg.InputText(key='-g2-')],
+#         [sg.Text('Group 3:'), sg.InputText(key='-g3-')],
+#         [sg.Text('Group 4:'), sg.InputText(key='-g4-')],
+#         [sg.Text('Group 5:'), sg.InputText(key='-g5-')],
+#         [sg.Text('Select your batch results file: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'brf_2g', visible='False'), sg.FileBrowse()],
+#         [sg.Text('Select the folder that contains your location files: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left'),sg.InputText('Default Folder', key = 'locf_2g'), sg.FolderBrowse()],
+#         [sg.Text('If you prefer to select your colors, attach a colors key, otherwise leave blank:', size=(50, 2),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'col_key', visible='False'), sg.FileBrowse()],
+#         [sg.Button('Do Data Vis'), sg.Button('Home')], [sg.Exit()]]
+#     mg = sg.Window('Paired analysis?', multigroups, size=(900,400), resizable=True, finalize=True)
+#     return mg
        
 
     # ----------- Create actual layout using Columns and a row of Buttons
@@ -343,27 +363,27 @@ def make_GUI():
                             dv_win.close()
                             make_GUI()
                             break
-                elif e == 'Multiple Groups':
-                    dv_win.hide()
-                    multi_groups = dv_mg()
-                    while True:
-                        mg_e, mg_v = multi_groups.read()
-                        print(mg_v)
-                        if mg_e == sg.WIN_CLOSED or mg_e == 'Exit':
-                            multi_groups.close()
-                            dv_win.close()
-                            break
-                        elif mg_e == 'Home':
-                            multi_groups.close()
-                            dv_win.close()
-                            make_GUI()
-                            break
-                        elif (mg_e == 'Do Data Vis') and (plb.Path(mg_v['_mg_sum_']).exists()) and (plb.Path(mg_v['_mg_loc_']).exists()):
-                            dv.do_dv_mg(mg_v)
-                            multi_groups.close()
-                            dv_win.close()
-                            make_GUI()
-                            break
+                # elif e == 'Multiple Groups':
+                #     dv_win.hide()
+                #     multi_groups = dv_mg()
+                #     while True:
+                #         mg_e, mg_v = multi_groups.read()
+                #         print(mg_v)
+                #         if mg_e == sg.WIN_CLOSED or mg_e == 'Exit':
+                #             multi_groups.close()
+                #             dv_win.close()
+                #             break
+                #         elif mg_e == 'Home':
+                #             multi_groups.close()
+                #             dv_win.close()
+                #             make_GUI()
+                #             break
+                #         elif (mg_e == 'Do Data Vis') and (plb.Path(mg_v['_mg_sum_']).exists()) and (plb.Path(mg_v['_mg_loc_']).exists()):
+                #             dv.do_dv_mg(mg_v)
+                #             multi_groups.close()
+                #             dv_win.close()
+                #             make_GUI()
+                #             break
             dv_win.close()
             break
 
