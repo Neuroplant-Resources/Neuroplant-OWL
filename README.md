@@ -36,16 +36,12 @@ Select the tool you would like to use from the dropdown menu
 * Unblinding data
 * Data visualization
 
-#### Single Image Processing
-1. Metadata: There are text fields to enter some of metadata to be included in the results that are returned to the user. These text fields are ...not mandatory... 
-1. Results Folder: The user is required to choose a folder to store the analysis results in. Click the 'Browse' button and navigate to the desired folder. ...The user should not store the results in the repository folder...
-1. Image File: The user is required to choose an image file to analyze. Click 'Browse' and select the desired image file.
-1. Click 'Analyze'
-1. The results will be stored as a .csv file in the folder chosen and will be named with the title of the image file selected: Choosen_image.csv
 
-#### Batch Image Processing
+#### Image analysis
+
+1. Image Folder: The user is required to choose a folder containing the images they want to analyze. Click 'Browse' and select the desired folder. The code will detect and analyze all files ending in .tif or .tiff that are contained in the choosen folder
+1. Metadata file: the user is able to connect an assay's metadata to the images being analyzed. Connecting the metadata will populate the summary of the results with the conditions for each of the wells of each assay plate. *The user is required to use the metadata template to ensure that the accurate transfer of data.*
 1. Results Folder: The user is required to choose a folder to store the analysis results in. Click the 'Browse' button and navigate to the desired folder.
-1. Image Folder: The user is required to choose a folder containing images to analyze. Click 'Browse' and select the desired folder. The code will detect and analyze all files ending in .tif
 1. Click 'Analyze'
 
 
@@ -58,14 +54,11 @@ It is always a good idea to check that the returned results are accurate. If the
 
 
 ## Unblinding your Metadata Sheet
-The Worm Counter GUI allows users to unblind their metadata sheets. Rather than manually unblinding the metadata sheet, users can record their blinding information that consists of the blinded names and actual names into the 'blinding key' sheet that is provided below, enter the blinding key and the metadata sheet into the unblinding page of the GUI, and obtain the unblinded verison of their metadata. Depending on the users needs, the GUI gives the options to unblind the compound names, the strain names, or both. 
+The Worm Counter GUI allows users to unblind their metadata sheets. Rather than manually unblinding the metadata sheet, users can record their blinded data into the 'blinding key' sheet that is provided below. enter the blinding key and the metadata sheet into the unblinding page of the GUI, and obtain the unblinded verison of their metadata. Depending on the users needs, the GUI gives the options to unblind the compound names, the strain names, or both. 
 The following link is the google sheet of the blinding key template. Users should make a copy of this template to make edits on their local device, enter the blinded names and actual names of the compounds and/or strains, and download it as csv file.
 The blinding key template: (https://docs.google.com/spreadsheets/d/1XUiqgqrw89kvR9hmZIWSK4jBfCoYfG0F9WB4e3YIkN0/edit?usp=sharing)
 The unblinding page is designed to have both the metadata sheet and the blinding key in csv format. Users should ensure that the type of their documents are csv files.
 
-## Adding Time Points to your Batch Results File
-If you have done time lapse analysis and would like to do data visualisations with the time points, you may add a time points collumn to your batch results file (the file that gets produced from the image analysis). To do so, please insert your batch results file, the time points key file, which matches the filename with the time point, and the name you would like the new batch results file which has a time points collumn to have. Users should make a copy of the time points key template to make edits on their local device, and enter the filename and the corresponding time point. 
-The time points key template: (https://docs.google.com/spreadsheets/d/1TMy_FJ-7xEaRHS1HiiJfOHE9yI8LHBTdbuKqjPxzTB8/edit?usp=sharing)
 
 ## Data Visualisation
 
