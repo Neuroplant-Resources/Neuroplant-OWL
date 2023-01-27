@@ -7,6 +7,7 @@ import dataviz as dv
 import timepoint_add as tl
 import colors_key as ck
 import webbrowser
+import pandas as pd
 
 sg.ChangeLookAndFeel('GreenTan')
 
@@ -165,6 +166,7 @@ def dv_sharedcontrol():
         [sg.InputText('Select file', key = '_sumfile_sc_', visible='False'), sg.FileBrowse()],
         [sg.InputText('Default Folder', key = '_locfile_sc_'), sg.FolderBrowse()],
         [sg.InputText('Control', key='_control_sc_')],
+        [sg.InputText('Color Key', key='_ckey_'), sg.FileBrowse()],
         [sg.Combo(('PDF', 'SVG' , 'PNG'), default_value='PDF', key='_filetype_sc_', size=(8,1), enable_events=True)],
         [sg.InputText('Select folder', key = '_save_loc_sc_', visible='False'), sg.FolderBrowse()],
         [sg.InputText('Data visualisation', key='_fname_sc_')],
@@ -175,6 +177,7 @@ def dv_sharedcontrol():
         [sg.Text('Select your Image Analysis Summary file: ',font=(12) ,auto_size_text=False, justification='left', visible='False')],
         [sg.Text('Select the folder that contains your location files: ', font=(12) ,auto_size_text=False, justification='left')],
         [sg.Text('What is your control condition?', auto_size_text=False, justification='left', font=(12))], 
+                [sg.Text('Link to Color Key:', font=(9), justification='left')],
         [sg.Text('What type of file would you like to save your plot as?', font=(9), justification='left')],
         [sg.Text('Where would you like to save your file?', justification='left', visible='False', font=(9))], 
         [sg.Text('Give a filename to your plot:', auto_size_text=False, justification='left', font=(9))],
@@ -223,8 +226,35 @@ def dv_tg():
        
 
     # ----------- Create actual layout using Columns and a row of Buttons
+def check_control(fpath, con, val):
+    cf = plb.Path(fpath)
+    cfile = pd.read_csv(cf)
+    tf = val in cfile[con].to_list()
+    return tf
+
+def check_colorkey(vals):
+    ckfp = plb.Path(vals['_ckey_'])
+    ckf = pd.read_csv(ckfp)
+    colors = ckf.apply(lambda x: x.astype(str).str.lower())
+    cols = colors.columns
+    cdict = colors.set_index(cols[0])[cols[1]].to_dict()
 
 
+    dfp = plb.Path(vals['_sumfile_sc_'])
+    dat = pd.read_csv(dfp)
+    conditions = dat[vals['_IV_sc_']].to_list()
+    conditions = [str(x).lower() for x in conditions]
+    tf = all(y in cdict for y in conditions)
+    return tf
+
+def check_resultfile(fpath):
+    cf = plb.Path(fpath)
+    cfile = pd.read_csv(cf)
+    heds = cfile.columns.to_list()
+    expected = ['WellNo', 'Total Worms', 'Compound', 'Strain',
+       'File Name', 'Well width', 'Plate ID', 'Passes QC']
+    tf = all(x in heds for x in expected)
+    return tf
 
 ### This funtion initiates the GUI
 def make_GUI():
@@ -338,11 +368,32 @@ def make_GUI():
                             make_GUI()
                             break
                         elif (sc_e == 'Do Data Vis') and (plb.Path(sc_v['_sumfile_sc_']).exists()) and (plb.Path(sc_v['_locfile_sc_']).exists()) and (plb.Path(sc_v['_save_loc_sc_']).exists()):
-                            dv.do_data_visualisation(sc_v)
-                            shared.close()
-                            dv_win.close()
-                            make_GUI()
-                            break
+                            control_val = sc_v['_control_sc_'] 
+                            control_con = sc_v['_IV_sc_']
+                            fp = sc_v['_sumfile_sc_']
+                            if check_resultfile(fp):
+                                if check_control(fp, control_con, control_val) == True:
+                                    color_key = sc_v['_ckey_']
+                                    if color_key == 'Color Key' or color_key == '':
+                                        dv.do_data_visualisation(sc_v)
+                                        shared.close()
+                                        dv_win.close()
+                                        make_GUI()
+                                        break
+                                    elif plb.Path(color_key).exists():
+                                        b = check_colorkey(sc_v)
+                                        if b:
+                                            dv.do_data_visualisation(sc_v)
+                                            shared.close()
+                                            dv_win.close()
+                                            make_GUI()
+                                            break
+                                        else:
+                                            sg.popup('There are either missing values in the color key,\nor data entry errors in the summary file')
+                                else:
+                                    sg.popup('Control not found in the data, please recheck column values')
+                            else:
+                                sg.popup('Column headers do not match expected values.\nCheck that you have input the correcto files or\nSee documentation for expected headers')
                 elif e == 'Two groups':
                     dv_win.hide()
                     two_groups = dv_tg()

@@ -208,50 +208,50 @@ def do_data_visualisation(vals):
     control = vals['_control_sc_'].lower()
 
     condition_list = data_frame.columns.tolist()
-    if control in condition_list:
-        condition_list.remove(control)
-        condition_list.insert(0, control)
-
-        #creates the list where the control is the first variable, then converts it into a tuple
+    condition_list = [x.lower() for x in condition_list]
 
 
-        #prints that wellnos that didn't pass qc
-        #print('wells that didnt pass quality control', list_nopass_qc)
-        
-        #prints the number of wells that pass quality control
-        #print('number of wells that pass quality control that are used in data visualisation:', number_of_wells_that_pass_qc)
-        
-        #loads the data frame and the tuple to dabest
-        new_object = db.load(data_frame, idx= condition_list)
-        
-        # #if no colors key is attached
-        # if colors_key == 'Select file' or colors_key == '':
-            
-        #     #shared control visualisation
-        #     mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
-        
-        # else:
-        #     #checking if all the colors in the key are present in the data frame
-        #     dict_colors = {}
-        #     for color in colors_key.keys():
-        #         if color in new_list:
-        #             color_match = colors_key[color]
-        #             dict_colors[color] = color_match
-                    
-            #shared control visualisation with color
-        mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
-        
-        
-        if vals['_save_loc_sc_'] != 'Select file':
-            #saving the pdf of the plot
-            save_path = plb.Path(vals['_save_loc_sc_'])
-            title = vals['_fname_sc_'] + '.' + vals['_filetype_sc_'].lower()
-            plt.savefig(save_path.joinpath(title))
+    condition_list.remove(control)
+    condition_list.insert(0, control)
+
+    #creates the list where the control is the first variable, then converts it into a tuple
 
 
+    #prints that wellnos that didn't pass qc
+    #print('wells that didnt pass quality control', list_nopass_qc)
+    
+    #prints the number of wells that pass quality control
+    #print('number of wells that pass quality control that are used in data visualisation:', number_of_wells_that_pass_qc)
+    
+    #loads the data frame and the tuple to dabest
+    new_object = db.load(data_frame, idx= condition_list)
+    
+    # #if no colors key is attached
+    colors_key = vals['_ckey_']
+    if colors_key == 'Color Key' or colors_key == '':
+        
+         #shared control visualisation
+         mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
+    
     else:
-            sg.popup('Control not found in the data, please recheck column values')
-            pass
+        ckey = plb.Path(colors_key)
+
+        colors = pd.read_csv(ckey)
+        colors = colors.apply(lambda x: x.astype(str).str.lower())
+        cols = colors.columns
+        cdict = colors.set_index(cols[0])[cols[1]].to_dict()
+        print(cdict)       
+        #shared control visualisation with color
+        mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', custom_palette=cdict, contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
+
+            
+
+    #saving the pdf of the plot
+    save_path = plb.Path(vals['_save_loc_sc_'])
+    title = vals['_fname_sc_'] + '.' + vals['_filetype_sc_'].lower()
+    plt.savefig(save_path.joinpath(title))
+
+
     
 #accesing the location files of each well, putting the locations into a dictionary where time points are keys and the corresponding values are the locations of worms under that time point
 def getting_location_collumns_timelapse(row, folder_of_loc_files, dict, number_of_wells_that_pass_qc):
