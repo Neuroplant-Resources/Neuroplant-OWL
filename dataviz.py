@@ -7,7 +7,7 @@ import dabest as db
 import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib.ticker as ticker
-
+import PySimpleGUI as sg
 
 #accessing the location files of each well, and putting the location values of each compound into a dictionary
 def getting_location_collumns_compound(row, folder_of_loc_files, dict, list_qc_nopass, number_of_wells_that_pass_qc):
@@ -24,52 +24,43 @@ def getting_location_collumns_compound(row, folder_of_loc_files, dict, list_qc_n
     #finding the location file in the given folder that contains it
     location = folder_of_loc_files.joinpath(loc_file)
     
-    #checks if the well passes quality control
-    if row['Passes QC'] == 'Y':
+
+
+    if location.is_file():
     
-        if location.is_file():
+        #incrementing the number of wells that pass quality control since this well is being used in data visualisation
+        number_of_wells_that_pass_qc += 1
+    
+        #converts the location file into a pandas data frame
+        location_file = pd.read_csv(location)
         
-            #incrementing the number of wells that pass quality control since this well is being used in data visualisation
-            number_of_wells_that_pass_qc += 1
+        #gets the location of the worms, converts it into a list
+        x_pos = location_file['X']
+        x_pos_list = x_pos.tolist()
+    
+        #if the compound is not in the dictionary, creates its key and adds the locations as its value
+        if compound_name not in dict:
+            dict[compound_name] = x_pos_list
         
-            #converts the location file into a pandas data frame
-            location_file = pd.read_csv(location)
-            
-            #gets the location of the worms, converts it into a list
-            x_pos = location_file['X']
-            x_pos_list = x_pos.tolist()
-        
-            #if the compound is not in the dictionary, creates its key and adds the locations as its value
-            if compound_name not in dict:
-                dict[compound_name] = x_pos_list
-            
-            #if the compound is in the dictionary, appends the locations to its value
-            else:
-                dict[compound_name].extend(x_pos_list)
-            
+        #if the compound is in the dictionary, appends the locations to its value
         else:
-            pass
-    
-    #if the well doesn't pass quality control, adds the wellno to the list of the wells that don't pass qc
-    elif row['Passes QC'] == 'N':
-        list_qc_nopass.append(well_name)
+            dict[compound_name].extend(x_pos_list)
+        
+    else:
+        pass
         
     return number_of_wells_that_pass_qc
         
 # function for converting the dictionary that has the variable as keys and the the corresponding locations as values into a data frame, and arranging the unit from pixel per inch to mm
-def converting_dict_to_dataframe_and_ppi_to_mm(di):
-   
-    #converts the dictionary into a data frame
-    df = pd.DataFrame.from_dict(di, orient='index')
-    data_fr = df.transpose()
+def converting_ppi_to_mm(di):
     
     #conversion factor from pixel per inch to mm
     px_mm = 1200 / 25.4
     
     #converts all location values in the data frame from ppi to mm, and orients them to the starting position of middle from left.
-    data_frame = data_fr.apply(lambda x: -(x/px_mm)+32.5)
+    df = di.apply(lambda x: -(x/px_mm)+32.5)
     
-    return data_frame
+    return df
     
 #looping over the dictionary keys to put the control to the start and the rest of the variables next to it as test conditions
 def creating_the_input_tuple(dict, control):
@@ -106,83 +97,13 @@ def colors_key_check(colors_key, tuple_list):
         return dict_colors
     
 
-# function for data visualisation of compound as independent variable
-def do_data_visualisation_compound(filename, location_filesfolder, control_name, colors_key, save_folder, save_name):
-
-    #creates the dictionary that will keep compound as key, and its value as all the location values of worms under that compound
-    dict = {}
-    
-    #converts the batch results file from a csv to a pandas data frame
-    batch_res = pd.read_csv(filename)
-    
-    #converts the folder that contains the location values from a string to a pathlib object
-    folder_of_loc_files = plb.Path(location_filesfolder)
-    
-    #the list for storing the well nos that don't pass qc
-    list_doesnt_pass_qc = []
-    
-    #keeping track of the number of wells that pass quality control
-    number_of_wells_that_pass_qc = 0
-    
-    #loops through all the rows in the batch results data frame
-    for index, row in batch_res.iterrows():
-    
-        #adding compounds as keys and locations of the worms as values to the dictionary
-        number_of_wells_that_pass_qc = getting_location_collumns_compound(row, folder_of_loc_files, dict, list_doesnt_pass_qc, number_of_wells_that_pass_qc)
-    
-    #converting the dictionary into a data frame where collumn titles are time points and converting the location units from pixel per inch to mm
-    data_frame = converting_dict_to_dataframe_and_ppi_to_mm(dict)
-    
-    control = control_name.lower()
-
-    #creates the list where the control is the first variable, then converts it into a tuple
-    lili = creating_the_input_tuple(dict, control)
-    
-    #prints that wellnos that didn't pass qc
-    print('wells that didnt pass quality control', list_doesnt_pass_qc)
-    
-    #prints the number of wells that pass quality control
-    print('number of wells that pass quality control that are used in data visualisation:', number_of_wells_that_pass_qc)
-    
-    #loads the data frame and the tuple to dabest
-    new_object = db.load(data_frame, idx= lili)
-    
-    #if no colors key is attached
-    if colors_key == 'Select file':
-        
-        #shared control visualisation
-        mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
-    
-    else:
-        #checking if all the colors in the key are present in the data frame
-        dict_colors = colors_key_check(colors_key, lili)
-                
-        #shared control visualisation with color
-        mm_refs_plot = new_object.mean_diff.plot(custom_palette=dict_colors, raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
-        
-    if save_folder != 'Select file':
-        #saving the pdf of the plot
-        my_path = os.path.abspath(save_folder)
-        title = save_name + '.pdf'
-        plt.savefig(os.path.join(my_path, title))
-    
-    #to show the plot
-    plt.show()
-    
-
-    
-    
-
-
-        
 
     
 #accessing the location files of each well, and putting the location values of each strain into a dictionary
-def getting_location_collumns_strain(row, folder_of_loc_files, dict, list_qc_nopass, number_of_wells_that_pass_qc):
+def getting_location_collumns(row, folder_of_loc_files, c, dic):
 
     #name of the strain, filename, wellno on that row, in which each row is a well
-    name_s = row['Strain']
-    strain_name = name_s.lower()
+    cname = row[c].lower()
     file_name = row['File Name']
     well_name = row['WellNo']
     
@@ -192,115 +113,145 @@ def getting_location_collumns_strain(row, folder_of_loc_files, dict, list_qc_nop
     #finding the location file in the given folder that contains it
     location = folder_of_loc_files.joinpath(loc_file)
     
-    #checks if the well passes quality control
-    if row['Passes QC'] == 'Y':
-        if location.is_file():
-                
-            #incrementing the number of wells that pass quality control since this well is being used in data visualisation
-            number_of_wells_that_pass_qc += 1
-        
-            #converts the location file into a pandas data frame
-            location_file = pd.read_csv(location)
-            
-            #gets the location of the worms, converts it into a list
-            x_pos = location_file['X']
-            x_pos_list = x_pos.tolist()
-        
-            #if the strain is not in the dictionary, creates its key and adds the locations as its value
-            if strain_name not in dict:
-                dict[strain_name] = x_pos_list
-            
-            #if the strain is in the dictionary, appends the locations to its value
-            else:
-                dict[strain_name].extend(x_pos_list)
-            
-        else:
-            pass
-        
-    #if the well doesn't pass quality control, adds the wellno to the list of the wells that don't pass qc
-    elif row['Passes QC'] == 'N':
-        list_qc_nopass.append(well_name)
-            
-    return number_of_wells_that_pass_qc
-            
-
-        
+    if location.is_file():
     
-#data visualisation for strain shared control estimation plot
-def do_data_visualisation_strain(filename, location_filesfolder, control_name, colors_key, save_folder, save_name):
+        #converts the location file into a pandas data frame
+        location_file = pd.read_csv(location)
+        
+        #gets the location of the worms, converts it into a list
+        x_pos = location_file['X']
 
-    #creates the dictionary that will keep strain as key, and its value as all the location values of worms under that strain
-    dict = {}
+        #x_pos_list = x_pos.tolist()
+    
+        #if the strain is not in the dictionary, creates its key and adds the locations as its value
+        if cname not in dic:
+            dic[cname] = x_pos
+        
+        #if the strain is in the dictionary, appends the locations to its value
+        else:
+            dic[cname].append(x_pos)
+            dic[cname].reset_index(inplace=True, drop=True)
+    else:
+        pass
+            
+    
+    return dic
+            
+
+#2 group estimation plot for compound as independent variable
+def do_dv_tg(vals):
+
+    #creates the dictionary that will keep compound as key, and its value as all the location values of worms under that compound
+    d = {}
     
     #converts the batch results file from a csv to a pandas data frame
-    batch_res = pd.read_csv(filename)
+    batch_res = pd.read_csv(vals['_tg_sum_'])
     
     #converts the folder that contains the location values from a string to a pathlib object
-    folder_of_loc_files = plb.Path(location_filesfolder)
+    folder_of_loc_files = plb.Path(vals['_tg_loc_'])
     
-    #the list for storing the well nos that don't pass qc
-    list_nopass_qc = []
+    # #the list for storing the well nos that don't pass qc
+    # list_doesnt_pass_qc = []
     
-    #keeping track of the number of wells that pass quality control
-    number_of_wells_that_pass_qc = 0
+    # #keeping track of the number of wells that pass quality control
+    # number_of_wells_that_pass_qc = 0
+    cond = vals['_IV_cond_']
+
+    #control variable
+    control = vals['_control_name_'].lower()
+    test = vals['-test_name-'].lower()
+
+    filtered = batch_res[(batch_res[cond] == vals['_control_name_']) | (batch_res[cond] == vals['-test_name-'])]
+    # #loops through all the rows in the batch results data frame
+    for index, row in filtered.iterrows():
+    #     #adding compounds as keys and locations of the worms as values to the dictionary
+        dc = getting_location_collumns(row, folder_of_loc_files, cond, d)
     
+    #converting the dictionary into a data frame where collumn titles are time points and converting the location units from pixel per inch to mm
+    d = pd.DataFrame.from_dict(dc)
+    df = converting_ppi_to_mm(d)
+    
+
+    #loads the data frame and the tuple to dabest
+    new_object = db.load(df, idx= (control, test))
+    
+    #two group estimation plot
+    mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
+    
+    #showing the plot
+
+    plt.show()
+    
+#data visualisation for strain shared control estimation plot
+def do_data_visualisation(vals):
+
+    condition = vals['_IV_sc_']
+    
+    #converts the batch results file from a csv to a pandas data frame
+    batch_res = pd.read_csv(vals['_sumfile_sc_'])
+    
+    #converts the folder that contains the location values from a string to a pathlib object
+    folder_of_loc_files = plb.Path(vals['_locfile_sc_'])
+    
+    #creates the dictionary that will keep strain as key, and its value as all the location values of worms under that strain
+
+    d = {}
     #loops through all the rows in the batch results data frame
     for index, row in batch_res.iterrows():
         #adding strains as keys and locations of the worms as values to the dictionary
-        number_of_wells_that_pass_qc = getting_location_collumns_strain(row, folder_of_loc_files, dict, list_nopass_qc, number_of_wells_that_pass_qc)
-    
+        dc = getting_location_collumns(row, folder_of_loc_files, condition, d)
+
+
     #converting the dictionary into a data frame where collumn titles are time points and converting the location units from pixel per inch to mm
-    data_frame = converting_dict_to_dataframe_and_ppi_to_mm(dict)
-    
-    control = control_name.lower()
-    list = []
-    
-    #loops over all the compounds in the dictionary, to distinguish the control (can find a solution without a loop)
-    for key in dict.keys():
-        if key.lower() != control:
-            list.append(key)
-            
-    #creates the list where the control is the first variable, then converts it into a tuple
-    new_list = [control]
-    new_list.extend(list)
-    lili = tuple(new_list)
+    d = pd.DataFrame.from_dict(dc)
+    data_frame = converting_ppi_to_mm(d)    
+    control = vals['_control_sc_'].lower()
 
-    #prints that wellnos that didn't pass qc
-    print('wells that didnt pass quality control', list_nopass_qc)
-    
-    #prints the number of wells that pass quality control
-    print('number of wells that pass quality control that are used in data visualisation:', number_of_wells_that_pass_qc)
-    
-    #loads the data frame and the tuple to dabest
-    new_object = db.load(data_frame, idx= lili)
-    
-    #if no colors key is attached
-    if colors_key == 'Select file' or colors_key == '':
+    condition_list = data_frame.columns.tolist()
+    if control in condition_list:
+        condition_list.remove(control)
+        condition_list.insert(0, control)
+
+        #creates the list where the control is the first variable, then converts it into a tuple
+
+
+        #prints that wellnos that didn't pass qc
+        #print('wells that didnt pass quality control', list_nopass_qc)
         
-        #shared control visualisation
+        #prints the number of wells that pass quality control
+        #print('number of wells that pass quality control that are used in data visualisation:', number_of_wells_that_pass_qc)
+        
+        #loads the data frame and the tuple to dabest
+        new_object = db.load(data_frame, idx= condition_list)
+        
+        # #if no colors key is attached
+        # if colors_key == 'Select file' or colors_key == '':
+            
+        #     #shared control visualisation
+        #     mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
+        
+        # else:
+        #     #checking if all the colors in the key are present in the data frame
+        #     dict_colors = {}
+        #     for color in colors_key.keys():
+        #         if color in new_list:
+        #             color_match = colors_key[color]
+        #             dict_colors[color] = color_match
+                    
+            #shared control visualisation with color
         mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
-    
-    else:
-        #checking if all the colors in the key are present in the data frame
-        dict_colors = {}
-        for color in colors_key.keys():
-            if color in new_list:
-                color_match = colors_key[color]
-                dict_colors[color] = color_match
-                
-        #shared control visualisation with color
-        mm_refs_plot = new_object.mean_diff.plot(custom_palette=dict_colors, raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
-    
-    
-    if save_folder != 'Select file':
-        #saving the pdf of the plot
-        my_path = os.path.abspath(save_folder)
-        title = save_name + '.pdf'
-        plt.savefig(os.path.join(my_path, title))
-    
-    #to show the plot
-    plt.show()
+        
+        
+        if vals['_save_loc_sc_'] != 'Select file':
+            #saving the pdf of the plot
+            save_path = plb.Path(vals['_save_loc_sc_'])
+            title = vals['_fname_sc_'] + '.' + vals['_filetype_sc_'].lower()
+            plt.savefig(save_path.joinpath(title))
 
+
+    else:
+            sg.popup('Control not found in the data, please recheck column values')
+            pass
     
 #accesing the location files of each well, putting the locations into a dictionary where time points are keys and the corresponding values are the locations of worms under that time point
 def getting_location_collumns_timelapse(row, folder_of_loc_files, dict, number_of_wells_that_pass_qc):
@@ -333,11 +284,12 @@ def getting_location_collumns_timelapse(row, folder_of_loc_files, dict, number_o
         #if the time point is in the dictionary, appends the locations to its value
         else:
             dict[time].extend(x_pos_list)
+        return number_of_wells_that_pass_qc
             
     else:
         pass
         
-    return number_of_wells_that_pass_qc
+
  
 #putting time points in ascending order
 def putting_time_points_in_ascending_order(dict, control):
@@ -545,107 +497,10 @@ def turn_to_number(string):
     
 
 
-#2 group estimation plot for compound as independent variable
-def do_data_visualisation_compound_2_group(filename, location_filesfolder, control_name, test_name):
-
-    #creates the dictionary that will keep compound as key, and its value as all the location values of worms under that compound
-    dict = {}
-    
-    #converts the batch results file from a csv to a pandas data frame
-    batch_res = pd.read_csv(filename)
-    
-    #converts the folder that contains the location values from a string to a pathlib object
-    folder_of_loc_files = plb.Path(location_filesfolder)
-    
-    #the list for storing the well nos that don't pass qc
-    list_doesnt_pass_qc = []
-    
-    #keeping track of the number of wells that pass quality control
-    number_of_wells_that_pass_qc = 0
-    
-    #loops through all the rows in the batch results data frame
-    for index, row in batch_res.iterrows():
-        #adding compounds as keys and locations of the worms as values to the dictionary
-        number_of_wells_that_pass_qc = getting_location_collumns_compound(row, folder_of_loc_files, dict, list_doesnt_pass_qc, number_of_wells_that_pass_qc)
-    
-    #converting the dictionary into a data frame where collumn titles are time points and converting the location units from pixel per inch to mm
-    data_frame = converting_dict_to_dataframe_and_ppi_to_mm(dict)
-    
-    #control variable
-    control = control_name.lower()
-    
-    #test variable
-    test = test_name.lower()
-    
-    #prints that wellnos that didn't pass qc
-    print('wells that didnt pass quality control', list_doesnt_pass_qc)
-    
-    #prints the number of wells that pass quality control
-    print('number of wells that pass quality control that are used in data visualisation:', number_of_wells_that_pass_qc)
-    
-    #loads the data frame and the tuple to dabest
-    new_object = db.load(data_frame, idx= (control, test))
-    
-    #two group estimation plot
-    mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
-    
-    #showing the plot
-    plt.show()
 
     
     
-#2 group estimation plot for strain as independent variable
-def do_data_visualisation_strain_2_group(filename, location_filesfolder, control_name, test_name):
 
-    #creates the dictionary that will keep strain as key, and its value as all the location values of worms under that compound
-    dict = {}
-    
-    #converts the batch results file from a csv to a pandas data frame
-    batch_res = pd.read_csv(filename)
-    
-    #converts the folder that contains the location values from a string to a pathlib object
-    folder_of_loc_files = plb.Path(location_filesfolder)
-    
-    #the list for storing the well nos that don't pass qc
-    list_nopass_qc = []
-    
-    #keeping track of the number of wells that pass quality control
-    number_of_wells_that_pass_qc = 0
-    
-    
-    #loops through all the rows in the batch results data frame
-    for index, row in batch_res.iterrows():
-        #adding strains as keys and locations of the worms as values to the dictionary
-        number_of_wells_that_pass_qc = getting_location_collumns_strain(row, folder_of_loc_files, dict, list_nopass_qc, number_of_wells_that_pass_qc)
-    
-    #converting the dictionary into a data frame where collumn titles are time points and converting the location units from pixel per inch to mm
-    data_frame = converting_dict_to_dataframe_and_ppi_to_mm(dict)
-    
-    
-    #control variable
-    control = control_name.lower()
-    
-    #test variable
-    test = test_name.lower()
-    
-    #prints that wellnos that didn't pass qc
-    print('wells that didnt pass quality control', list_doesnt_pass_qc)
-    
-    
-    #prints the number of wells that pass quality control
-    print('number of wells that pass quality control that are used in data visualisation:', number_of_wells_that_pass_qc)
-    
-    
-    #loads the data frame and the tuple to dabest
-    new_object = db.load(data_frame, idx= (control, test))
-    
-    #two group estimation plot
-    mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Mean differene (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
-    
-    #showing the plot
-    plt.show()
-
-        
 
 #getting the locations of the worms from the location file data frame and converting the values into a list
 def getting_locations_of_worms_and_converting_into_a_list(locationfile):
@@ -1037,146 +892,7 @@ def multi2group_dataviz_2(filename, location_filesfolder, compound_control, stra
     
 
 
-#shared control estimation plot for compound as independent variable restriction under 1 strain condition
-def data_viz_for_compound_under_1_strain(filename, location_filesfolder, compound_control, one_strain, colors_key, save_folder, save_name):
 
-    #creates the dictionary that will keep compound as key, and its value as all the location values of worms under that compound
-    dict = {}
-    
-    #converts the batch results file from a csv to a pandas data frame
-    batch_res = pd.read_csv(filename)
-    
-    #converts the folder that contains the location values from a string to a pathlib object
-    folder_of_loc_files = plb.Path(location_filesfolder)
-    
-    #the list for storing the well nos that don't pass qc
-    list_doesnt_pass_qc = []
-    
-    #keeping track of the number of wells that pass quality control
-    number_of_wells_that_pass_qc = 0
-    
-    #loops through all the rows in the batch results data frame
-    for index, row in batch_res.iterrows():
-    
-        #checking if the strain of the well is the selected strain
-        if (row['Strain']).lower() == one_strain.lower():
-        
-            #adding compounds as keys and locations of the worms as values to the dictionary
-            number_of_wells_that_pass_qc = getting_location_collumns_compound(row, folder_of_loc_files, dict, list_doesnt_pass_qc, number_of_wells_that_pass_qc)
-            
-    #updating the keys of dictionary to include the selected strain with dictionary comprehension
-    dict = {key + '_' + one_strain: value for key, value in dict.items()}
-    
-    #converting the dictionary into a data frame where collumn titles are the names and converting the locations from pixel per inch to mm
-    data_frame = converting_dict_to_dataframe_and_ppi_to_mm(dict)
-    
-    #control variable
-    control = compound_control.lower() + '_' + one_strain
-    
-    #creating the tuple for data vis
-    lili = creating_the_input_tuple(dict, control)
-    
-    #prints that wellnos that didn't pass qc
-    print('wells that didnt pass quality control', list_doesnt_pass_qc)
-    
-    #prints the number of wells that pass quality control
-    print('number of wells that pass quality control that are used in data visualisation:', number_of_wells_that_pass_qc)
-    
-    #loads the data frame and the tuple to dabest
-    new_object = db.load(data_frame, idx= lili)
-    
-    #if there is no colors key
-    if colors_key == 'Select file':
-    
-        #shared control visualisation
-        mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
-        
-    else:
-        #checking if all the colors in the key are present in the data frame
-        dict_colors = colors_key_check(colors_key, lili)
-
-        #shared control visualisation with color
-        mm_refs_plot = new_object.mean_diff.plot(custom_palette=dict_colors, raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
-    
-    
-    if save_folder != 'Select file':
-        #saving the pdf of the plot
-        my_path = os.path.abspath(save_folder)
-        title = save_name + '.pdf'
-        plt.savefig(os.path.join(my_path, title))
-        
-    #to show the plot
-    plt.show()
-    
-
-#shared control estimation plot for strain as independent variable restriction under 1 compound condition
-def data_viz_for_strain_under_1_compound(filename, location_filesfolder, strain_control, one_compound, colors_key, save_folder, save_name):
-
-    #creates the dictionary that will keep compound as key, and its value as all the location values of worms under that compound
-    dict = {}
-    
-    #converts the batch results file from a csv to a pandas data frame
-    batch_res = pd.read_csv(filename)
-    
-    #converts the folder that contains the location values from a string to a pathlib object
-    folder_of_loc_files = plb.Path(location_filesfolder)
-    
-    #the list for storing the well nos that don't pass qc
-    list_doesnt_pass_qc = []
-    
-    #keeping track of the number of wells that pass quality control
-    number_of_wells_that_pass_qc = 0
-    
-    #loops through all the rows in the batch results data frame
-    for index, row in batch_res.iterrows():
-    
-        #checking if the compound of the well is the selected compound
-        if (row['Compound']).lower() == one_compound.lower():
-            #adding strains as keys and locations of the worms as values to the dictionary
-            number_of_wells_that_pass_qc = getting_location_collumns_strain(row, folder_of_loc_files, dict, list_doesnt_pass_qc, number_of_wells_that_pass_qc)
-     
-    #changing the naming of the dictionary keys to include the compound they are restricted under with dictionary comprehension
-    dict = {one_compound + '_' + key : value for key, value in dict.items()}
-    
-    #converting the dictionary into a data frame and changing the locations from pixel per inch to mm
-    data_frame = converting_dict_to_dataframe_and_ppi_to_mm(dict)
-    
-    #control variable
-    control = one_compound  + '_' + strain_control.lower()
-    
-    #creating the tuple for data vis
-    lili = creating_the_input_tuple(dict, control)
-    
-    #prints that wellnos that didn't pass qc
-    print('wells that didnt pass quality control', list_doesnt_pass_qc)
-    
-    #prints the number of wells that pass quality control
-    print('number of wells that pass quality control that are used in data visualisation:', number_of_wells_that_pass_qc)
-    
-    #loads the data frame and the tuple to dabest
-    new_object = db.load(data_frame, idx= lili)
-    
-    #if there is no colors key
-    if colors_key == 'Select file':
-    
-        #shared control visualisation
-        mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
-        
-    else:
-        #checking if all the colors in the key are present in the data frame
-        dict_colors = colors_key_check(colors_key, lili)
-                
-        #shared control visualisation with color
-        mm_refs_plot = new_object.mean_diff.plot(custom_palette=dict_colors, raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
-        
-    if save_folder != 'Select file':
-        #saving the pdf of the plot
-        my_path = os.path.abspath(save_folder)
-        title = save_name + '.pdf'
-        plt.savefig(os.path.join(my_path, title))
-    
-    #to show the plot
-    plt.show()
     
     
 #shared control estimation plot for time points as independent variable restriction under 1 compound condition

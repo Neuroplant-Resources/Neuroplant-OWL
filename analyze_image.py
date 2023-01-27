@@ -23,6 +23,7 @@ import time
 import threading
 import queue
 import glob
+from PySimpleGUI import popup
 
 
 
@@ -45,9 +46,7 @@ def calc_chemotaxis_index(filtered_worm, dims):
     worms_in_middle_region = len(middle_worms)
     worms_in_right_region = len(right_side_worms)
     total_worms_found = len(filtered_worm)
-    #print('Left; ' + str(worms_in_left_region) + '   Right: ' + str(worms_in_right_region))
 
-    
 
     try:
         chemotaxis_index = ((worms_in_left_region - worms_in_right_region)
@@ -87,31 +86,22 @@ def single_process(image_fpath, rslt_path, vals, event):
 
 ### This function is called when the user clicks the "Submit" button in the Batch Process window
 def batch_process(image_fpath, rslt_path, mdpath, vals, event, results_name):
-   
-   
-#    self1 = App()
-#    self1.mainloop()
-    image_folder = plb.Path(image_fpath)
-    results_folder = plb.Path(rslt_path)
+
 
     results_df = pd.DataFrame()
- #   tasks = len(glob.glob1(image_folder,'*.tif'))
-    for image in image_folder.glob('[!._]*.tif*'):
+
+    for image in image_fpath.glob('[!._]*.tif*'):
         pattern = '^[a-zA-Z]'
         image_data = crop_image(image, rslt_path, vals, event)
-  #      image_data = crop_image(image, rslt_path, vals, event, self1)
         fname = image.stem
-        #image_data.to_csv(path_or_buf= results_folder.joinpath(fname + '.csv'))
         results_df = results_df.append(image_data)
-        #results_df.head()
-  #      time.sleep(1) #delay
-  #      self1.progressbar1['value'] += (100/tasks)
-  #      self1.update_idletasks() #updating the window each time to see the gradual progress
 
 
     if path.exists(mdpath):
         connected = connect_metadata.connect(mdpath, results_df)
-
+    elif (path.exists(mdpath) == False) and (len(mdpath) > 0):
+        popup('File path to metadata invalid. Metadata will not be connected.')
+        connected = results_df
     else:
         connected = results_df
  
@@ -127,14 +117,7 @@ def batch_process(image_fpath, rslt_path, mdpath, vals, event, results_name):
         connected.to_csv(path_or_buf= results_folder.joinpath(results_file))
     else:
         connected.drop(['centroid-0', 'centroid-1', 'bbox-0', 'bbox-1', 'bbox-2', 'bbox-3'], axis=1, inplace=True)
-        connected.to_csv(path_or_buf= results_folder.joinpath(results_file))
-    #popup window when the analysis is done:
-#    if self1.progressbar1['value'] == 100:
-#        window_2 = tk.Tk()
-#        window_2.title('Message!')
-#        label2 = tk.Label(window_2, text = 'Analysis Done!', width = 50, height = 10, fg = 'yellow', bg = 'purple')
-#        label2.pack()
-#        button2 = tk.Button(window_2, text = 'OK', command = window_2.destroy).pack()
+        connected.to_csv(path_or_buf= rslt_path.joinpath(results_file))
 
 
 
@@ -145,12 +128,9 @@ def batch_process(image_fpath, rslt_path, mdpath, vals, event, results_name):
 ### loopwell() is called after the image has been cropped
 ### This is when the worms are identified, counted and when the CI is calculated
 def loopWell(df_f,image, im_path, path_rslt, vals, event):
-#def loopWell(df_f,image, im_path, path_rslt, vals, event, self1):
-    for index, row in df_f.iterrows():
-  #      if index == len(df_f.index) - 1:
-  #          update_progressbar(self1) #updating the window each time to see the gradual progress
 
-#     fin_image = image[ df_f[][]:Lower_boundary , Left_boundary:Right_boundary ]
+    for index, row in df_f.iterrows():
+
         
         fin_image = image[ df_f['bbox-0'][index]:df_f['bbox-2'][index], df_f['bbox-1'][index]:df_f['bbox-3'][index]]
         wellno = df_f['WellNo'][index]
@@ -180,12 +160,7 @@ def loopWell(df_f,image, im_path, path_rslt, vals, event):
         filt_worm=worms[worms['area']<2500]
         filtered_worm=filt_worm[filt_worm['area']>50]
         filtered_worm.to_csv(rslts_fldr.joinpath('loc_' + image_fname + '_' +  wellno + '.csv'))
-        
-        #fig, axes = plt.subplots(figsize=(8, 16), constrained_layout=True)
-        #axes.imshow(binarized)
-        #axes.set_title(wellno)
-        #sns.scatterplot(x='centroid-1', y='centroid-0', ax=axes, data=filtered_worm, s=10,color='red',edgecolor='none', legend=False )
-        #fig.savefig(fig_path.joinpath(wellno + ".tif"), orientation='landscape')
+
         
         tw = len(filtered_worm)
         CI = calc_chemotaxis_index(filtered_worm,image_dims)
@@ -200,10 +175,7 @@ def loopWell(df_f,image, im_path, path_rslt, vals, event):
         df_f.loc[index, 'Passes QC'] = qc
         df_f.loc[index, 'Compound'] = compound
         df_f.loc[index, 'Strain'] = strain
-#        if self1.progressbar2['value'] == 100:
-#            self1.progressbar2['value'] = 0
-            
-        
+
 
     return df_f
 
@@ -211,8 +183,7 @@ def loopWell(df_f,image, im_path, path_rslt, vals, event):
 
 
 def crop_image(flpath, rslt_path, vals, event):
-#def crop_image(flpath, rslt_path, vals, event, self1):
- #   self1 = self1
+
     label_begin = time.time()
     image = imread(flpath)
     image_nvrt = np.invert(image)
@@ -221,7 +192,7 @@ def crop_image(flpath, rslt_path, vals, event):
     print('At threshold')
     thresh = threshold_otsu(image_nvrt)
     print('Threshold: ' + str(thresh))
- #   update_progressbar(self1)
+
     bw = closing(image_nvrt > thresh, square(3))
     
     # remove artifacts connected to image border
