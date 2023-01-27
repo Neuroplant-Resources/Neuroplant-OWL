@@ -61,11 +61,11 @@ You can follow [this link to the blinding key template](https://docs.google.com/
 
 #### Steps for unblinding your data:
 1. Choose what type of file to unblind:
-  1. Metadata sheet
-  1. Image analysis summary file - this is the summary file that is returned in addition to the location files during image analysis. 
+    1. Metadata sheet
+    1. Image analysis summary file - this is the summary file that is returned in addition to the location files during image analysis. 
 1. Choose what condition you would like to unblind:
-  1. Strain
-  1. Compound
+    1. Strain
+    1. Compound
 1. Input the location of the file that needs to be unblinded by clicking browse.
 1. Input the location of your blinding key.
 1. Choose where to store your unblinded file.
