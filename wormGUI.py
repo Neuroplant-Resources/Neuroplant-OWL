@@ -26,6 +26,7 @@ link_style = {
 
 RM_URL = 'https://github.com/wormsenseLab/Neuroplant-OWL'
 MD_URL = 'https://docs.google.com/spreadsheets/d/1u8PN5a5s7SFurxspXNJSq5FKKNKTdzFmCgwjjsEf4XE/edit?usp=sharing'
+ck_URL = 'https://docs.google.com/spreadsheets/d/1xdAJYOK26fsM8uFkZXIBNLxrziE9vB7q0AoK1pYCyWI/edit?usp=sharing'
 tg_URL = 'https://acclab.github.io/DABEST-python-docs/_images/tutorial_27_0.png'
 sc_URL = 'https://acclab.github.io/DABEST-python-docs/_images/tutorial_42_0.png'
 mg_URL = 'https://acclab.github.io/DABEST-python-docs/_images/tutorial_47_0.png'
@@ -144,7 +145,7 @@ def unblind_window():
 def dataviz_window():
 
     dv_layout = [
-        [sg.Text('The OWL offers 3 different visualization options:')],
+        [sg.Text('The OWL offers 2 different visualization options:')],
         [sg.Text('1. Two groups: Compare only two groups (Control and Test)')],
         [sg.Text('Two group example', key = 'tg_link',**link_style), sg.Button('Two groups')],
         [sg.Text('2. Shared control: Compare multiple test conditions to a single control group')],
@@ -166,7 +167,7 @@ def dv_sharedcontrol():
         [sg.InputText('Select file', key = '_sumfile_sc_', visible='False'), sg.FileBrowse()],
         [sg.InputText('Default Folder', key = '_locfile_sc_'), sg.FolderBrowse()],
         [sg.InputText('Control', key='_control_sc_')],
-        [sg.InputText('Color Key', key='_ckey_'), sg.FileBrowse()],
+        [sg.InputText('Color Key', key='_ckey_'), sg.Text('Color key template', key = 'ckey_link',**link_style), sg.FileBrowse()],
         [sg.Combo(('PDF', 'SVG' , 'PNG'), default_value='PDF', key='_filetype_sc_', size=(8,1), enable_events=True)],
         [sg.InputText('Select folder', key = '_save_loc_sc_', visible='False'), sg.FolderBrowse()],
         [sg.InputText('Data visualisation', key='_fname_sc_')],
@@ -229,6 +230,7 @@ def dv_tg():
 def check_control(fpath, con, val):
     cf = plb.Path(fpath)
     cfile = pd.read_csv(cf)
+    cfile[con] = cfile[con].apply(str.lower) 
     tf = val in cfile[con].to_list()
     return tf
 
@@ -368,7 +370,10 @@ def make_GUI():
                             make_GUI()
                             break
                         elif (sc_e == 'Do Data Vis') and (plb.Path(sc_v['_sumfile_sc_']).exists()) and (plb.Path(sc_v['_locfile_sc_']).exists()) and (plb.Path(sc_v['_save_loc_sc_']).exists()):
-                            control_val = sc_v['_control_sc_'] 
+                            if e == 'ckey_link':
+                                webbrowser.open(ck_URL)
+                            control_val = sc_v['_control_sc_'].lower()
+                            print(control_val)
                             control_con = sc_v['_IV_sc_']
                             fp = sc_v['_sumfile_sc_']
                             if check_resultfile(fp):
