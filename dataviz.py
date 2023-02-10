@@ -183,7 +183,7 @@ def do_dv_tg(vals):
     plt.show()
     
 #data visualisation for strain shared control estimation plot
-def do_data_visualisation(vals):
+def do_data_visualisation(vals, ck):
 
     condition = vals['_IV_sc_']
     
@@ -227,17 +227,15 @@ def do_data_visualisation(vals):
     new_object = db.load(data_frame, idx= condition_list)
     
     # #if no colors key is attached
-    colors_key = vals['_ckey_']
-    if colors_key == 'Color Key' or colors_key == '':
+    
+    if ck.empty:
         
          #shared control visualisation
          mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
     
     else:
-        ckey = plb.Path(colors_key)
 
-        colors = pd.read_csv(ckey)
-        colors = colors.apply(lambda x: x.astype(str).str.lower())
+        colors = ck.apply(lambda x: x.astype(str).str.lower())
         cols = colors.columns
         cdict = colors.set_index(cols[0])[cols[1]].to_dict()
         print(cdict)       

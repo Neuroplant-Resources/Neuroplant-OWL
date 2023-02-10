@@ -5,7 +5,6 @@ import unblind_key as un
 import tkinter as tk
 import dataviz as dv
 import timepoint_add as tl
-import colors_key as ck
 import webbrowser
 import pandas as pd
 
@@ -167,7 +166,8 @@ def dv_sharedcontrol():
         [sg.InputText('Select file', key = '_sumfile_sc_', visible='False'), sg.FileBrowse()],
         [sg.InputText('Default Folder', key = '_locfile_sc_'), sg.FolderBrowse()],
         [sg.InputText('Control', key='_control_sc_')],
-        [sg.InputText('Color Key', key='_ckey_'), sg.Text('Color key template', key = 'ckey_link',**link_style), sg.FileBrowse()],
+        [sg.Button('Select Data and Colors')],
+        #[sg.InputText('Color Key', key='_ckey_'), sg.Text('Color key template', key = 'ckey_link',**link_style), sg.FileBrowse()],
         [sg.Combo(('PDF', 'SVG' , 'PNG'), default_value='PDF', key='_filetype_sc_', size=(8,1), enable_events=True)],
         [sg.InputText('Select folder', key = '_save_loc_sc_', visible='False'), sg.FolderBrowse()],
         [sg.InputText('Data visualisation', key='_fname_sc_')],
@@ -178,7 +178,6 @@ def dv_sharedcontrol():
         [sg.Text('Select your Image Analysis Summary file: ',font=(12) ,auto_size_text=False, justification='left', visible='False')],
         [sg.Text('Select the folder that contains your location files: ', font=(12) ,auto_size_text=False, justification='left')],
         [sg.Text('What is your control condition?', auto_size_text=False, justification='left', font=(12))], 
-                [sg.Text('Link to Color Key:', font=(9), justification='left')],
         [sg.Text('What type of file would you like to save your plot as?', font=(9), justification='left')],
         [sg.Text('Where would you like to save your file?', justification='left', visible='False', font=(9))], 
         [sg.Text('Give a filename to your plot:', auto_size_text=False, justification='left', font=(9))],
@@ -225,8 +224,46 @@ def dv_tg():
 #     mg = sg.Window('Paired analysis?', multigroups, size=(900,400), resizable=True, finalize=True)
 #     return mg
        
+def generate_df(vs):
+    df = pd.DataFrame(columns=['Condition', 'Color'])
+    
+    for row in range(15):
+        current_row = []
+        for col in range(2):
+            current_row.append(vs[row, col])
+        #print(current_row)
+        df.loc[len(df)] = current_row
+    return df
 
-    # ----------- Create actual layout using Columns and a row of Buttons
+def clear_all(w):
+    for row in range(15):
+        for col in range(2):
+            w[(row,col)].update('')
+
+
+def make_ckey():
+
+    header = [
+
+    sg.Text('Condition', pad=(0,0), size=(15,1), justification='c'), 
+    sg.Text('Color (Hex code)',  pad=(0,0), size=(15,1), justification='c')]
+
+    layout = [header]
+
+    for row in range(0, 15):
+        current_row = [
+            sg.Input(size=(15,1), pad = (0,0), key=(row,0)),
+            sg.Input(size=(15,1), pad = (0,0), key=(row,1))
+        ]
+
+        layout.append(current_row)
+
+    button_row = [sg.Button('Submit'), sg.Button('Clear')]
+    layout.append(button_row)
+
+    ck_window = sg.Window('Spreadsheet', layout)
+    return ck_window
+
 def check_control(fpath, con, val):
     cf = plb.Path(fpath)
     cfile = pd.read_csv(cf)
@@ -234,10 +271,8 @@ def check_control(fpath, con, val):
     tf = val in cfile[con].to_list()
     return tf
 
-def check_colorkey(vals):
-    ckfp = plb.Path(vals['_ckey_'])
-    ckf = pd.read_csv(ckfp)
-    colors = ckf.apply(lambda x: x.astype(str).str.lower())
+def check_colorkey(k, vals):
+    colors = k.apply(lambda x: x.astype(str).str.lower())
     cols = colors.columns
     cdict = colors.set_index(cols[0])[cols[1]].to_dict()
 
@@ -360,6 +395,20 @@ def make_GUI():
                     shared = dv_sharedcontrol()
                     while True:
                         sc_e, sc_v = shared.read()
+                        if sc_e == 'Select Data and Colors':
+                            ckey_win = make_ckey()
+                            while True:
+                                ck_e, ck_v = ckey_win.read()
+                                if ck_e in (sg.WIN_CLOSED, 'Exit'):
+                                    ckey_win.close()
+                                    break
+                                elif ck_e == 'Submit':
+                                    colorkey = generate_df(ck_v)
+                                    ckey_win.close()
+                                    break
+                                elif ck_e == 'Clear':
+                                    clear_all(ckey_win)
+                                    continue
                         if sc_e == sg.WIN_CLOSED or sc_e == 'Exit':
                             shared.close()
                             dv_win.close()
@@ -369,26 +418,30 @@ def make_GUI():
                             dv_win.close()
                             make_GUI()
                             break
+
                         elif (sc_e == 'Do Data Vis') and (plb.Path(sc_v['_sumfile_sc_']).exists()) and (plb.Path(sc_v['_locfile_sc_']).exists()) and (plb.Path(sc_v['_save_loc_sc_']).exists()):
-                            if e == 'ckey_link':
-                                webbrowser.open(ck_URL)
+
                             control_val = sc_v['_control_sc_'].lower()
-                            print(control_val)
                             control_con = sc_v['_IV_sc_']
                             fp = sc_v['_sumfile_sc_']
+
                             if check_resultfile(fp):
                                 if check_control(fp, control_con, control_val) == True:
-                                    color_key = sc_v['_ckey_']
-                                    if color_key == 'Color Key' or color_key == '':
-                                        dv.do_data_visualisation(sc_v)
+                                    try:
+                                        colorkey
+                                    except NameError:
+                                        var_exists = False
+                                        hold = pd.DataFrame()
+                                        dv.do_data_visualisation(sc_v, hold)
                                         shared.close()
                                         dv_win.close()
                                         make_GUI()
                                         break
-                                    elif plb.Path(color_key).exists():
-                                        b = check_colorkey(sc_v)
+                                    else:
+                                        var_exists = True
+                                        b = check_colorkey(colorkey, sc_v)
                                         if b:
-                                            dv.do_data_visualisation(sc_v)
+                                            dv.do_data_visualisation(sc_v, colorkey)
                                             shared.close()
                                             dv_win.close()
                                             make_GUI()

@@ -24,6 +24,7 @@ def clear_all(w):
 def make_ckey():
 
 	header = [
+
 	sg.Text('Condition', pad=(0,0), size=(15,1), justification='c'), 
 	sg.Text('Color (Hex code)',  pad=(0,0), size=(15,1), justification='c')]
 
@@ -46,18 +47,21 @@ def make_ckey():
 
 		event, values = window.read()
 		if event in (sg.WIN_CLOSED, 'Exit'):
+			window.close()
 			break
 		elif event == 'Submit':
 			colorkey = generate_df(values)
 			return colorkey
-			pass
+			window.close()
+			break
 		elif event == 'Clear':
 			clear_all(window)
-			pass
+			continue
 
 
-def main():
-    make_ckey()
+# def main():
+#     make_ckey()
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
+
