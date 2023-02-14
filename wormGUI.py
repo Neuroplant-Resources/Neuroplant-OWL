@@ -162,29 +162,19 @@ def dv_sharedcontrol():
     rgt = [
 
         
-        [sg.Combo(('Compound', 'Strain'), default_value='Compound', key='_IV_sc_', enable_events=True, size=(15,1))],
-        [sg.InputText('Select file', key = '_sumfile_sc_', visible='False'), sg.FileBrowse()],
-        [sg.InputText('Default Folder', key = '_locfile_sc_'), sg.FolderBrowse()],
-        [sg.InputText('Control', key='_control_sc_')],
-        [sg.Button('Select Data and Colors')],
-        #[sg.InputText('Color Key', key='_ckey_'), sg.Text('Color key template', key = 'ckey_link',**link_style), sg.FileBrowse()],
-        [sg.Combo(('PDF', 'SVG' , 'PNG'), default_value='PDF', key='_filetype_sc_', size=(8,1), enable_events=True)],
-        [sg.InputText('Select folder', key = '_save_loc_sc_', visible='False'), sg.FolderBrowse()],
-        [sg.InputText('Data visualisation', key='_fname_sc_')],
-        ]
-
-    lft = [
-        [sg.Text('What is your independent variable?', font='Lucida', justification='left')],
-        [sg.Text('Select your Image Analysis Summary file: ',font=(12) ,auto_size_text=False, justification='left', visible='False')],
-        [sg.Text('Select the folder that contains your location files: ', font=(12) ,auto_size_text=False, justification='left')],
-        [sg.Text('What is your control condition?', auto_size_text=False, justification='left', font=(12))], 
-        [sg.Text('What type of file would you like to save your plot as?', font=(9), justification='left')],
-        [sg.Text('Where would you like to save your file?', justification='left', visible='False', font=(9))], 
-        [sg.Text('Give a filename to your plot:', auto_size_text=False, justification='left', font=(9))],
+        [sg.Text('What is your independent variable?', size=(50,1), justification='left'), sg.Combo(('Compound', 'Strain'), default_value='Compound', key='_IV_sc_', enable_events=True, pad=(0,20),size=(15,1))],
+        [sg.Text('Select your Image Analysis Summary file: ', size=(50,1) , justification='left', visible='False'), sg.InputText('Select file', key = '_sumfile_sc_', visible='False'), sg.FileBrowse()],
+        [sg.Text('Select the folder that contains your location files: ',  size=(50,1), justification='left'), sg.InputText('Default Folder', key = '_locfile_sc_'), sg.FolderBrowse()],
+        [sg.Text('What is your control condition?', justification='left',  size=(50,1)), sg.InputText('Control', key='_control_sc_')],
+        [sg.Text('What type of file would you like to save your plot as?',  size=(50,1), justification='left'), sg.Combo(('PDF', 'SVG' , 'PNG'), default_value='PDF', key='_filetype_sc_', size=(8,1), enable_events=True)],
+        [sg.Text('Where would you like to save your file?', justification='left', visible='False',  size=(50,1)), sg.InputText('Select folder', key = '_save_loc_sc_', visible='False'), sg.FolderBrowse()],
+        [sg.Text('Give a filename to your plot:',  justification='left',  size=(50,1)), sg.InputText('Data visualisation', key='_fname_sc_')],
+        [sg.Text('Select the colors you would like to use in your plot (Optional):', justification='left', size=(50,1)), sg.Button('Select Data and Colors')],
+        [sg.Checkbox('Check this box if you would like to exclude data that does not pass quality control (<150 worms)',key = '_qc_', default=False)]
         ]
 
     sc_layout = [
-        [sg.Column(lft, pad=(0, None)),
+        [
          sg.Column(rgt, pad=(0, None))],
         [sg.Button('Do Data Vis'), sg.Button('Home'), sg.Exit()]
     ]
@@ -440,6 +430,7 @@ def make_GUI():
                                     else:
                                         var_exists = True
                                         b = check_colorkey(colorkey, sc_v)
+
                                         if b:
                                             dv.do_data_visualisation(sc_v, colorkey)
                                             shared.close()

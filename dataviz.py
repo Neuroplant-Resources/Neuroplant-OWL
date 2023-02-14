@@ -196,10 +196,21 @@ def do_data_visualisation(vals, ck):
     #creates the dictionary that will keep strain as key, and its value as all the location values of worms under that strain
 
     d = {}
+    print(vals['_qc_'])
     #loops through all the rows in the batch results data frame
-    for index, row in batch_res.iterrows():
+    if vals['_qc_'] == True:
+        for index, row in batch_res.iterrows():
+            if row['Passes QC'] == 'N':
+                print('No')
+                continue
+            elif row['Passes QC'] == 'Y':
+                print('yes')
+                dc = getting_location_collumns(row, folder_of_loc_files, condition, d)
         #adding strains as keys and locations of the worms as values to the dictionary
-        dc = getting_location_collumns(row, folder_of_loc_files, condition, d)
+    elif vals['_qc_'] == False:
+        for index, row in batch_res.iterrows():
+            dc = getting_location_collumns(row, folder_of_loc_files, condition, d)
+
 
 
     #converting the dictionary into a data frame where collumn titles are time points and converting the location units from pixel per inch to mm
@@ -239,11 +250,14 @@ def do_data_visualisation(vals, ck):
         cols = colors.columns
         cdict = colors.set_index(cols[0])[cols[1]].to_dict()
         print(cdict)       
-        #shared control visualisation with color
-        mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', custom_palette=cdict, contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
-
+    
+        try:
+            mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', custom_palette=cdict, contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
+        except ValueError:
             
-
+            d = {k: v or 'red' for (k, v) in cdict.items()}
+            #c = {k: v for k, v in cdict.items() if v}
+            mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', custom_palette=d, contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
     #saving the pdf of the plot
     save_path = plb.Path(vals['_save_loc_sc_'])
     title = vals['_fname_sc_'] + '.' + vals['_filetype_sc_'].lower()
