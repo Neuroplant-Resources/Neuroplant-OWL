@@ -14,6 +14,13 @@ text_style = {
     'size': (40, 1),
     'justification': 'right'
 }
+
+dv_text = {
+    'size':(50, 1),
+    'auto_size_text':False,
+    'justification':'left'
+}
+
 box_style = {
     'size': (25, 1)
 }
@@ -184,13 +191,13 @@ def dv_sharedcontrol():
 
 def dv_tg():
     tg_layout = [
-        [sg.Text('What is your independent variable?',size=(100,1), font='Lucida', justification='left')],
+        [sg.Text('What is your independent variable?', **dv_text)],
         [sg.Combo(('Compound','Strain'), default_value='Compound', key='_IV_cond_', size=(15,1))],
-        [sg.Text('Select your Image Analysis Summary file: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = '_tg_sum_', visible='False'), sg.FileBrowse()],
-        [sg.Text('Select the folder that contains your location files: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left'),sg.InputText('Default Folder', key = '_tg_loc_'), sg.FolderBrowse()],
-        [sg.Text('Control condition:', size=(50, 1), auto_size_text=False, justification='left', font=(12)),
+        [sg.Text('Select your Image Analysis Summary file: ', **dv_text), sg.InputText('Select file', key = '_tg_sum_', visible='False'), sg.FileBrowse()],
+        [sg.Text('Select the folder that contains your location files: ', **dv_text),sg.InputText('Default Folder', key = '_tg_loc_'), sg.FolderBrowse()],
+        [sg.Text('Control condition:',**dv_text),
         sg.InputText('Control', key='_control_name_')],
-        [sg.Text('Test condition:', size=(50, 1), auto_size_text=False, justification='left', font=(12)),
+        [sg.Text('Test condition:', **dv_text),
         sg.InputText('Test', key='-test_name-')],
         [sg.Button('Do Data Vis'), sg.Button('Home')], [sg.Exit()]]
     tg = sg.Window('Two group comparison', tg_layout, size=(900,250), resizable=True, finalize=True)
@@ -288,7 +295,7 @@ def make_GUI():
     win1 = make_win1()
     while True:
         event, values = win1.read()
-        print(values)
+
         
         ### If exit button is clicked then the whole program is terminated
         if event in (None, 'Exit'):
@@ -442,7 +449,7 @@ def make_GUI():
                                 else:
                                     sg.popup('Control not found in the data, please recheck column values')
                             else:
-                                sg.popup('Column headers do not match expected values.\nCheck that you have input the correcto files or\nSee documentation for expected headers')
+                                sg.popup('Column headers do not match expected values.\nCheck that you have input the correct files or\nSee documentation for expected headers')
                 elif e == 'Two groups':
                     dv_win.hide()
                     two_groups = dv_tg()
@@ -458,11 +465,23 @@ def make_GUI():
                             make_GUI()
                             break
                         elif (tg_e == 'Do Data Vis') and (plb.Path(tg_v['_tg_sum_']).exists()) and (plb.Path(tg_v['_tg_loc_']).exists()):
-                            dv.do_dv_tg(tg_v)
-                            two_groups.close()
-                            dv_win.close()
-                            make_GUI()
-                            break
+                            control_val = tg_v['_control_name_'].lower()
+                            control_con = tg_v['_IV_cond_']
+                            fp = tg_v['_tg_sum_']
+
+                            if check_resultfile(fp):
+                                if (check_control(fp, control_con, control_val) == True) & (check_control(fp, control_con ,tg_v['-test_name-']) == True):
+                                    dv.do_dv_tg(tg_v)
+                                    two_groups.close()
+                                    dv_win.close()
+                                    make_GUI()
+                                    break
+                                        
+                                else:
+                                    sg.popup('Values not found in the data, please recheck column values')
+                            else:
+                                sg.popup('Column headers do not match expected values.\nCheck that you have input the correct files or\nSee documentation for expected headers')
+
                 # elif e == 'Multiple Groups':
                 #     dv_win.hide()
                 #     multi_groups = dv_mg()
