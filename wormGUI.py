@@ -4,7 +4,6 @@ import pathlib as plb
 import unblind_key as un
 import tkinter as tk
 import dataviz as dv
-import timepoint_add as tl
 import webbrowser
 import pandas as pd
 
@@ -134,19 +133,7 @@ def unblind_window():
 
 
 
-# def timelapse_window():
-#     layout4 = [
-#     [sg.Text('If you have time lapse analysis, you may add a time point collumn to your batch results file by using the time lapse key template that matches the file name to the time point',size=(120,1), font='Lucida', justification='left')],
-#     [sg.Text('Select your batch results file that you would like the time points collumn to be added to: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'filefortimelapse_', visible='False'), sg.FileBrowse()],
-#     [sg.Text('Select your time lapse key: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = 'timelapsekey_', visible='False'), sg.FileBrowse()],
-#     [sg.Text('Select a folder to store the new file: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left'),sg.InputText('Default Folder', key = '-tl_folder-'), sg.FolderBrowse()],
-#      [sg.Text('Name your file with the time points collumn:', size=(50, 1), auto_size_text=False, justification='left', font=(12)),
-#     sg.InputText('File with Time Points', key='-filenamewithtimelapse-')],
-#     [sg.Text('_'  * 140)],
-#         [sg.Button('Add TimePoints'), sg.Button('Back')], [sg.Exit()]]
-    
-#     tl_win = sg.Window('Time Lapse Analysis Collumn', layout4, size=(900,250), resizable=True, finalize=True)
-#     return tl_win
+
 
 def dataviz_window():
 
@@ -504,30 +491,7 @@ def make_GUI():
                 #             make_GUI()
                 #             break
             dv_win.close()
-            break
-
-        
-        # if values['_TimeLapseCollumn_']:
-        #     win1.hide()
-        #     tl_window = timelapse_window()
-        #     while True:
-        #         e8, v8 = tl_window.read()
-        #         if e8 == 'Back':
-        #             tl_window.hide()
-        #             make_GUI()
-        #         if e8 in ('Exit', None):
-        #             break
-        #         if e8 == 'Add TimePoints':
-        #             file = v8['filefortimelapse_']
-        #             key = v8['timelapsekey_']
-        #             name = v8['-filenamewithtimelapse-']
-        #             folder = v8['-tl_folder-']
-        #             tl.timelapse_collumn_addition(file, key, folder, name)
-        #             message_win()
-        #             tl_window.close()
-
-                    
-                    
+            break                    
                     
     win1.close()
    
