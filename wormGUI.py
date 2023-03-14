@@ -5,8 +5,8 @@ import unblind_key as un
 import tkinter as tk
 import dataviz as dv
 import timepoint_add as tl
-import colors_key as ck
 import webbrowser
+import pandas as pd
 
 sg.ChangeLookAndFeel('GreenTan')
 
@@ -14,6 +14,13 @@ text_style = {
     'size': (40, 1),
     'justification': 'right'
 }
+
+dv_text = {
+    'size':(50, 1),
+    'auto_size_text':False,
+    'justification':'left'
+}
+
 box_style = {
     'size': (25, 1)
 }
@@ -25,6 +32,7 @@ link_style = {
 
 RM_URL = 'https://github.com/wormsenseLab/Neuroplant-OWL'
 MD_URL = 'https://docs.google.com/spreadsheets/d/1u8PN5a5s7SFurxspXNJSq5FKKNKTdzFmCgwjjsEf4XE/edit?usp=sharing'
+ck_URL = 'https://docs.google.com/spreadsheets/d/1xdAJYOK26fsM8uFkZXIBNLxrziE9vB7q0AoK1pYCyWI/edit?usp=sharing'
 tg_URL = 'https://acclab.github.io/DABEST-python-docs/_images/tutorial_27_0.png'
 sc_URL = 'https://acclab.github.io/DABEST-python-docs/_images/tutorial_42_0.png'
 mg_URL = 'https://acclab.github.io/DABEST-python-docs/_images/tutorial_47_0.png'
@@ -97,14 +105,14 @@ def make_batch_win():
 def unblind_window():
 
     ub_inupt_column = [
-    [sg.Text('Select the type of file you would like to unblind:',size=(100,1), font='Lucida')],
+    [sg.Text('Select the type of file you would like to unblind:', **dv_text)],
     [sg.Combo(('Metadata sheet', 'Image analysis summary'), key = '_data_2UB_', default_value='Metadata sheet', size=(20, 1))],
-    [sg.Text('What test condition would you like to unblind?',size=(100,1), font='Lucida')],
+    [sg.Text('What test condition would you like to unblind?', **dv_text)],
     [sg.Combo(('Strain name', 'Test compound'), key='_conditions_', default_value = 'Strain name', size=(20, 1))],
-    [sg.Text('Select the file you would like to unblind: ', size=(50, 1),font=(12) ,auto_size_text=False, visible='False')], [sg.InputText('Select file', key = '_to_unblind_', visible='False'), sg.FileBrowse()],
-    [sg.Text('Select your blinding key: ', size=(50, 1),font=(12) ,auto_size_text=False, visible='False')], [sg.InputText('Select file', key = 'key_file', visible='False'), sg.FileBrowse()],
-    [sg.Text('Select a folder to store your results: ', size=(50, 1),font=(12) ,auto_size_text=False)], [sg.InputText('Select folder', key = '-results_folder-'), sg.FolderBrowse()],
-    [sg.Text('Name your unblinded data sheet:', size=(50, 1), auto_size_text=False, font=(12))], [sg.InputText('Unblinded Metadata', key='-metadata_name-')],
+    [sg.Text('Select the file you would like to unblind: ', **dv_text)], [sg.InputText('Select file', key = '_to_unblind_', visible='False'), sg.FileBrowse()],
+    [sg.Text('Select your blinding key: ', **dv_text)], [sg.InputText('Select file', key = 'key_file', visible='False'), sg.FileBrowse()],
+    [sg.Text('Select a folder to store your results: ',**dv_text)], [sg.InputText('Select folder', key = '-results_folder-'), sg.FolderBrowse()],
+    [sg.Text('Name your unblinded data sheet:', **dv_text)], [sg.InputText('Unblinded Metadata', key='-metadata_name-')],
     [sg.Button('Unblind'), sg.Button('Back'), sg.Exit()]]
 
     ub_text_column = [
@@ -143,7 +151,7 @@ def unblind_window():
 def dataviz_window():
 
     dv_layout = [
-        [sg.Text('The OWL offers 3 different visualization options:')],
+        [sg.Text('The OWL offers 2 different visualization options:')],
         [sg.Text('1. Two groups: Compare only two groups (Control and Test)')],
         [sg.Text('Two group example', key = 'tg_link',**link_style), sg.Button('Two groups')],
         [sg.Text('2. Shared control: Compare multiple test conditions to a single control group')],
@@ -161,27 +169,19 @@ def dv_sharedcontrol():
     rgt = [
 
         
-        [sg.Combo(('Compound', 'Strain'), default_value='Compound', key='_IV_sc_', enable_events=True, size=(15,1))],
-        [sg.InputText('Select file', key = '_sumfile_sc_', visible='False'), sg.FileBrowse()],
-        [sg.InputText('Default Folder', key = '_locfile_sc_'), sg.FolderBrowse()],
-        [sg.InputText('Control', key='_control_sc_')],
-        [sg.Combo(('PDF', 'SVG' , 'PNG'), default_value='PDF', key='_filetype_sc_', size=(8,1), enable_events=True)],
-        [sg.InputText('Select folder', key = '_save_loc_sc_', visible='False'), sg.FolderBrowse()],
-        [sg.InputText('Data visualisation', key='_fname_sc_')],
-        ]
-
-    lft = [
-        [sg.Text('What is your independent variable?', font='Lucida', justification='left')],
-        [sg.Text('Select your Image Analysis Summary file: ',font=(12) ,auto_size_text=False, justification='left', visible='False')],
-        [sg.Text('Select the folder that contains your location files: ', font=(12) ,auto_size_text=False, justification='left')],
-        [sg.Text('What is your control condition?', auto_size_text=False, justification='left', font=(12))], 
-        [sg.Text('What type of file would you like to save your plot as?', font=(9), justification='left')],
-        [sg.Text('Where would you like to save your file?', justification='left', visible='False', font=(9))], 
-        [sg.Text('Give a filename to your plot:', auto_size_text=False, justification='left', font=(9))],
+        [sg.Text('What is your independent variable?', size=(50,1), justification='left'), sg.Combo(('Compound', 'Strain'), default_value='Compound', key='_IV_sc_', enable_events=True, pad=(0,20),size=(15,1))],
+        [sg.Text('Select your Image Analysis Summary file: ', size=(50,1) , justification='left', visible='False'), sg.InputText('Select file', key = '_sumfile_sc_', visible='False'), sg.FileBrowse()],
+        [sg.Text('Select the folder that contains your location files: ',  size=(50,1), justification='left'), sg.InputText('Default Folder', key = '_locfile_sc_'), sg.FolderBrowse()],
+        [sg.Text('What is your control condition?', justification='left',  size=(50,1)), sg.InputText('Control', key='_control_sc_')],
+        [sg.Text('What type of file would you like to save your plot as?',  size=(50,1), justification='left'), sg.Combo(('PDF', 'SVG' , 'PNG'), default_value='PDF', key='_filetype_sc_', size=(8,1), enable_events=True)],
+        [sg.Text('Where would you like to save your file?', justification='left', visible='False',  size=(50,1)), sg.InputText('Select folder', key = '_save_loc_sc_', visible='False'), sg.FolderBrowse()],
+        [sg.Text('Give a filename to your plot:',  justification='left',  size=(50,1)), sg.InputText('Data visualisation', key='_fname_sc_')],
+        [sg.Text('Select the colors you would like to use in your plot (Optional):', justification='left', size=(50,1)), sg.Button('Select Data and Colors')],
+        [sg.Checkbox('Check this box if you would like to exclude data that does not pass quality control (<150 worms)',key = '_qc_', default=False)]
         ]
 
     sc_layout = [
-        [sg.Column(lft, pad=(0, None)),
+        [
          sg.Column(rgt, pad=(0, None))],
         [sg.Button('Do Data Vis'), sg.Button('Home'), sg.Exit()]
     ]
@@ -191,13 +191,13 @@ def dv_sharedcontrol():
 
 def dv_tg():
     tg_layout = [
-        [sg.Text('What is your independent variable?',size=(100,1), font='Lucida', justification='left')],
+        [sg.Text('What is your independent variable?', **dv_text)],
         [sg.Combo(('Compound','Strain'), default_value='Compound', key='_IV_cond_', size=(15,1))],
-        [sg.Text('Select your Image Analysis Summary file: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left', visible='False'), sg.InputText('Select file', key = '_tg_sum_', visible='False'), sg.FileBrowse()],
-        [sg.Text('Select the folder that contains your location files: ', size=(50, 1),font=(12) ,auto_size_text=False, justification='left'),sg.InputText('Default Folder', key = '_tg_loc_'), sg.FolderBrowse()],
-        [sg.Text('Control condition:', size=(50, 1), auto_size_text=False, justification='left', font=(12)),
+        [sg.Text('Select your Image Analysis Summary file: ', **dv_text), sg.InputText('Select file', key = '_tg_sum_', visible='False'), sg.FileBrowse()],
+        [sg.Text('Select the folder that contains your location files: ', **dv_text),sg.InputText('Default Folder', key = '_tg_loc_'), sg.FolderBrowse()],
+        [sg.Text('Control condition:',**dv_text),
         sg.InputText('Control', key='_control_name_')],
-        [sg.Text('Test condition:', size=(50, 1), auto_size_text=False, justification='left', font=(12)),
+        [sg.Text('Test condition:', **dv_text),
         sg.InputText('Test', key='-test_name-')],
         [sg.Button('Do Data Vis'), sg.Button('Home')], [sg.Exit()]]
     tg = sg.Window('Two group comparison', tg_layout, size=(900,250), resizable=True, finalize=True)
@@ -221,17 +221,81 @@ def dv_tg():
 #     mg = sg.Window('Paired analysis?', multigroups, size=(900,400), resizable=True, finalize=True)
 #     return mg
        
+def generate_df(vs):
+    df = pd.DataFrame(columns=['Condition', 'Color'])
+    
+    for row in range(15):
+        current_row = []
+        for col in range(2):
+            current_row.append(vs[row, col])
+        #print(current_row)
+        df.loc[len(df)] = current_row
+    return df
 
-    # ----------- Create actual layout using Columns and a row of Buttons
+def clear_all(w):
+    for row in range(15):
+        for col in range(2):
+            w[(row,col)].update('')
 
 
+def make_ckey():
+
+    header = [
+
+    sg.Text('Condition', pad=(0,0), size=(15,1), justification='c'), 
+    sg.Text('Color (Hex code)',  pad=(0,0), size=(15,1), justification='c')]
+
+    layout = [header]
+
+    for row in range(0, 15):
+        current_row = [
+            sg.Input(size=(15,1), pad = (0,0), key=(row,0)),
+            sg.Input(size=(15,1), pad = (0,0), key=(row,1))
+        ]
+
+        layout.append(current_row)
+
+    button_row = [sg.Button('Submit'), sg.Button('Clear')]
+    layout.append(button_row)
+
+    ck_window = sg.Window('Spreadsheet', layout)
+    return ck_window
+
+def check_control(fpath, con, val):
+    cf = plb.Path(fpath)
+    cfile = pd.read_csv(cf)
+    cfile[con] = cfile[con].apply(str.lower) 
+    tf = val in cfile[con].to_list()
+    return tf
+
+def check_colorkey(k, vals):
+    colors = k.apply(lambda x: x.astype(str).str.lower())
+    cols = colors.columns
+    cdict = colors.set_index(cols[0])[cols[1]].to_dict()
+
+
+    dfp = plb.Path(vals['_sumfile_sc_'])
+    dat = pd.read_csv(dfp)
+    conditions = dat[vals['_IV_sc_']].to_list()
+    conditions = [str(x).lower() for x in conditions]
+    tf = all(y in cdict for y in conditions)
+    return tf
+
+def check_resultfile(fpath):
+    cf = plb.Path(fpath)
+    cfile = pd.read_csv(cf)
+    heds = cfile.columns.to_list()
+    expected = ['WellNo', 'Total Worms', 'Compound', 'Strain',
+       'File Name', 'Well width', 'Plate ID', 'Passes QC']
+    tf = all(x in heds for x in expected)
+    return tf
 
 ### This funtion initiates the GUI
 def make_GUI():
     win1 = make_win1()
     while True:
         event, values = win1.read()
-        print(values)
+
         
         ### If exit button is clicked then the whole program is terminated
         if event in (None, 'Exit'):
@@ -328,6 +392,20 @@ def make_GUI():
                     shared = dv_sharedcontrol()
                     while True:
                         sc_e, sc_v = shared.read()
+                        if sc_e == 'Select Data and Colors':
+                            ckey_win = make_ckey()
+                            while True:
+                                ck_e, ck_v = ckey_win.read()
+                                if ck_e in (sg.WIN_CLOSED, 'Exit'):
+                                    ckey_win.close()
+                                    break
+                                elif ck_e == 'Submit':
+                                    colorkey = generate_df(ck_v)
+                                    ckey_win.close()
+                                    break
+                                elif ck_e == 'Clear':
+                                    clear_all(ckey_win)
+                                    continue
                         if sc_e == sg.WIN_CLOSED or sc_e == 'Exit':
                             shared.close()
                             dv_win.close()
@@ -337,12 +415,41 @@ def make_GUI():
                             dv_win.close()
                             make_GUI()
                             break
+
                         elif (sc_e == 'Do Data Vis') and (plb.Path(sc_v['_sumfile_sc_']).exists()) and (plb.Path(sc_v['_locfile_sc_']).exists()) and (plb.Path(sc_v['_save_loc_sc_']).exists()):
-                            dv.do_data_visualisation(sc_v)
-                            shared.close()
-                            dv_win.close()
-                            make_GUI()
-                            break
+
+                            control_val = sc_v['_control_sc_'].lower()
+                            control_con = sc_v['_IV_sc_']
+                            fp = sc_v['_sumfile_sc_']
+
+                            if check_resultfile(fp):
+                                if check_control(fp, control_con, control_val) == True:
+                                    try:
+                                        colorkey
+                                    except NameError:
+                                        var_exists = False
+                                        hold = pd.DataFrame()
+                                        dv.do_data_visualisation(sc_v, hold)
+                                        shared.close()
+                                        dv_win.close()
+                                        make_GUI()
+                                        break
+                                    else:
+                                        var_exists = True
+                                        b = check_colorkey(colorkey, sc_v)
+
+                                        if b:
+                                            dv.do_data_visualisation(sc_v, colorkey)
+                                            shared.close()
+                                            dv_win.close()
+                                            make_GUI()
+                                            break
+                                        else:
+                                            sg.popup('There are either missing values in the color key,\nor data entry errors in the summary file')
+                                else:
+                                    sg.popup('Control not found in the data, please recheck column values')
+                            else:
+                                sg.popup('Column headers do not match expected values.\nCheck that you have input the correct files or\nSee documentation for expected headers')
                 elif e == 'Two groups':
                     dv_win.hide()
                     two_groups = dv_tg()
@@ -358,11 +465,23 @@ def make_GUI():
                             make_GUI()
                             break
                         elif (tg_e == 'Do Data Vis') and (plb.Path(tg_v['_tg_sum_']).exists()) and (plb.Path(tg_v['_tg_loc_']).exists()):
-                            dv.do_dv_tg(tg_v)
-                            two_groups.close()
-                            dv_win.close()
-                            make_GUI()
-                            break
+                            control_val = tg_v['_control_name_'].lower()
+                            control_con = tg_v['_IV_cond_']
+                            fp = tg_v['_tg_sum_']
+
+                            if check_resultfile(fp):
+                                if (check_control(fp, control_con, control_val) == True) & (check_control(fp, control_con ,tg_v['-test_name-']) == True):
+                                    dv.do_dv_tg(tg_v)
+                                    two_groups.close()
+                                    dv_win.close()
+                                    make_GUI()
+                                    break
+                                        
+                                else:
+                                    sg.popup('Values not found in the data, please recheck column values')
+                            else:
+                                sg.popup('Column headers do not match expected values.\nCheck that you have input the correct files or\nSee documentation for expected headers')
+
                 # elif e == 'Multiple Groups':
                 #     dv_win.hide()
                 #     multi_groups = dv_mg()
