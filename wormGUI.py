@@ -105,14 +105,14 @@ def make_batch_win():
 def unblind_window():
 
     ub_inupt_column = [
-    [sg.Text('Select the type of file you would like to unblind:',size=(100,1), font='Lucida')],
+    [sg.Text('Select the type of file you would like to unblind:', **dv_text)],
     [sg.Combo(('Metadata sheet', 'Image analysis summary'), key = '_data_2UB_', default_value='Metadata sheet', size=(20, 1))],
-    [sg.Text('What test condition would you like to unblind?',size=(100,1), font='Lucida')],
+    [sg.Text('What test condition would you like to unblind?', **dv_text)],
     [sg.Combo(('Strain name', 'Test compound'), key='_conditions_', default_value = 'Strain name', size=(20, 1))],
-    [sg.Text('Select the file you would like to unblind: ', size=(50, 1),font=(12) ,auto_size_text=False, visible='False')], [sg.InputText('Select file', key = '_to_unblind_', visible='False'), sg.FileBrowse()],
-    [sg.Text('Select your blinding key: ', size=(50, 1),font=(12) ,auto_size_text=False, visible='False')], [sg.InputText('Select file', key = 'key_file', visible='False'), sg.FileBrowse()],
-    [sg.Text('Select a folder to store your results: ', size=(50, 1),font=(12) ,auto_size_text=False)], [sg.InputText('Select folder', key = '-results_folder-'), sg.FolderBrowse()],
-    [sg.Text('Name your unblinded data sheet:', size=(50, 1), auto_size_text=False, font=(12))], [sg.InputText('Unblinded Metadata', key='-metadata_name-')],
+    [sg.Text('Select the file you would like to unblind: ', **dv_text)], [sg.InputText('Select file', key = '_to_unblind_', visible='False'), sg.FileBrowse()],
+    [sg.Text('Select your blinding key: ', **dv_text)], [sg.InputText('Select file', key = 'key_file', visible='False'), sg.FileBrowse()],
+    [sg.Text('Select a folder to store your results: ',**dv_text)], [sg.InputText('Select folder', key = '-results_folder-'), sg.FolderBrowse()],
+    [sg.Text('Name your unblinded data sheet:', **dv_text)], [sg.InputText('Unblinded Metadata', key='-metadata_name-')],
     [sg.Button('Unblind'), sg.Button('Back'), sg.Exit()]]
 
     ub_text_column = [
