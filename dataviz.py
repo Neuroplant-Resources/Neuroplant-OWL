@@ -143,7 +143,7 @@ def do_data_visualisation(vals, ck):
     #converting the dictionary into a data frame where collumn titles are time points and converting the location units from pixel per inch to mm
     d = pd.DataFrame(dict([ (k,pd.Series(v)) for k,v in dc.items() ]))
     #d = pd.DataFrame.from_dict(dc)
-    print(d)
+    
     data_frame = converting_ppi_to_mm(d)    
     control = vals['_control_sc_'].lower()
 
