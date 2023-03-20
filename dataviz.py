@@ -166,8 +166,16 @@ def do_data_visualisation(vals, ck):
         if ck.empty:
             
              #shared control visualisation
-             mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
-        
+            mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
+            rawswarm_axes = mm_refs_plot.axes[0]
+            contrast_axes = mm_refs_plot.axes[1]
+
+            rawswarm_axes.yaxis.set_tick_params(tickdir='in')
+            rawswarm_axes.xaxis.set_tick_params(tickdir='in')
+
+
+            contrast_axes.yaxis.set_tick_params(tickdir='in')
+            contrast_axes.xaxis.set_tick_params(tickdir='in')
         else:
 
             colors = ck.apply(lambda x: x.astype(str).str.lower())
@@ -177,15 +185,35 @@ def do_data_visualisation(vals, ck):
         
             try:
                 mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', custom_palette=cdict, contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
+                rawswarm_axes = mm_refs_plot.axes[0]
+                contrast_axes = mm_refs_plot.axes[1]
+
+                rawswarm_axes.yaxis.set_tick_params(tickdir='in')
+                rawswarm_axes.xaxis.set_tick_params(tickdir='in')
+
+
+                contrast_axes.yaxis.set_tick_params(tickdir='in')
+                contrast_axes.xaxis.set_tick_params(tickdir='in')
             except ValueError:
                 
                 d = {k: v or 'red' for (k, v) in cdict.items()}
                 #c = {k: v for k, v in cdict.items() if v}
                 mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', custom_palette=d, contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
+                rawswarm_axes = mm_refs_plot.axes[0]
+                contrast_axes = mm_refs_plot.axes[1]
+
+                rawswarm_axes.yaxis.set_tick_params(tickdir='in')
+                rawswarm_axes.xaxis.set_tick_params(tickdir='in')
+
+
+                contrast_axes.yaxis.set_tick_params(tickdir='in')
+                contrast_axes.xaxis.set_tick_params(tickdir='in')
         #saving the pdf of the plot
+        res = new_object.mean_diff.results
         save_path = plb.Path(vals['_save_loc_sc_'])
         title = vals['_fname_sc_'] + '.' + vals['_filetype_sc_'].lower()
         plt.savefig(save_path.joinpath(title))
+        res.to_csv(save_path.joinpath(vals['_fname_sc_'] + '.csv'))
 
 
     
