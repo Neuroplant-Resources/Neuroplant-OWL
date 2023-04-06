@@ -1,5 +1,6 @@
 # Neuroplant - Our Worm Locator (OWL)
 A graphic user interface for analyzing images and generating confidence interval plots associated with the neuroplant project. [Neuroplant project](http://www.neuroplant.org/). 
+[![DOI](https://zenodo.org/badge/203633591.svg)](https://zenodo.org/badge/latestdoi/203633591)
 
 ## Getting started
 Installing and running the code requires some knowledge of using github, conda, jupyter notebook, and python.
