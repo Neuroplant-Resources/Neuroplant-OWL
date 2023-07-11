@@ -124,7 +124,6 @@ def do_data_visualisation(vals, ck):
     #creates the dictionary that will keep strain as key, and its value as all the location values of worms under that strain
 
     dc = {}
-    print(vals['_qc_'])
     #loops through all the rows in the batch results data frame
     if vals['_qc_'] == True:
         for index, row in batch_res.iterrows():
