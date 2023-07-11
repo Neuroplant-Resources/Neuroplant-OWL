@@ -251,7 +251,7 @@ def make_ckey():
 def check_control(fpath, con, val):
     cf = plb.Path(fpath)
     cfile = pd.read_csv(cf)
-    cfile[con] = cfile[con].apply(str.lower) 
+    cfile[con] = cfile[con].apply(str.lower)
     tf = val in cfile[con].to_list()
     return tf
 
@@ -455,9 +455,11 @@ def make_GUI():
                             control_val = tg_v['_control_name_'].lower()
                             control_con = tg_v['_IV_cond_']
                             fp = tg_v['_tg_sum_']
+                            test_con = tg_v['-test_name-'].lower()
 
                             if check_resultfile(fp):
-                                if (check_control(fp, control_con, control_val) == True) & (check_control(fp, control_con ,tg_v['-test_name-']) == True):
+
+                                if (check_control(fp, control_con, control_val) == True) & (check_control(fp, control_con, test_con) == True):
                                     dv.do_dv_tg(tg_v)
                                     two_groups.close()
                                     dv_win.close()
