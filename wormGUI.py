@@ -7,6 +7,7 @@ import dataviz as dv
 import webbrowser
 import pandas as pd
 
+
 sg.ChangeLookAndFeel('GreenTan')
 
 text_style = {
@@ -311,8 +312,8 @@ def make_GUI():
                     res_path = plb.Path(rpath)
                     
                     if im_path.exists() and res_path.exists() and (len(rpath) != 0) and (len(fpath) !=0 ) and (len(results_name) != 0):
-
                         ai.batch_process(im_path, res_path, mdpath, v2, e2, results_name)
+
                         batch_win.close()
                         make_GUI()
                         break

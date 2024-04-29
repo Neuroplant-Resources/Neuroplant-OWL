@@ -8,7 +8,7 @@ dependencies:
   - ipython
   - jupyter
   - matplotlib
-  - numpy=1.16.4
+  - numpy
   - pillow
   - pip
   - pydrive
