@@ -16,7 +16,8 @@ def add_PlateID(row, metadata):
         pid = 'No data'
         return pid
     else:
-        return pid
+        print(pid.values[0])
+        return pid.values[0]
 
     
 
@@ -34,27 +35,48 @@ def add_Compound(row, metadata):
         elif isinstance(compound, str):
             return compound
         else:
-            return compound
+            return compound.values[0]
     else:
-        sg.popup('"' + well_val +  '" header not found in metadata sheet. Check spelling. \nMetadata not connected')
-
+        return "No data"
 
 
 def add_Strain(row, metadata):
     wellID = row['WellNo'][1]
     well_val = 'Strain Well ' + wellID 
 
-    strain = metadata.loc[metadata['Plate ID']==row['Plate ID']].get(well_val, default = "Strain column not matched")
+    if well_val in metadata.columns:
+        strain = metadata.loc[metadata['Plate ID']==row['Plate ID']].get(well_val, default = "Strain column not matched")
 
 
-    if len(strain) == 0:
-        return 'No data'
-        pass
-    elif isinstance(strain, str):
-        return strain
+        if len(strain) == 0:
+            return 'No data'
+            pass
+        elif isinstance(strain, str):
+            return strain
+        else:
+            return strain.values[0]
+
     else:
-        return strain.values[0]    
+        return "No Data"
 
+
+def get_dat(metdat, rslt):
+
+    if 'Plate ID' in metdat.columns:
+        rslt['Plate ID'] = rslt.apply(
+        lambda row: add_PlateID(row, metdat), axis=1)
+
+        rslt['Compound'] = rslt.apply(
+        lambda row: add_Compound(row, metdat), axis=1)
+
+        rslt['Strain'] = rslt.apply(
+        lambda row: add_Strain(row, metdat), axis=1)
+
+        return rslt
+
+    else:
+        sg.popup('Plate ID column header not found. Check spelling. \nMetadata not connected.')
+        return rslt
 
 
 def connect(md_path, results):
@@ -62,19 +84,21 @@ def connect(md_path, results):
     md = pd.read_csv(md_file_path)
 
 
-    if 'Plate ID' in md.columns:
-        results['Plate ID'] = results.apply(
-        lambda row: add_PlateID(row, md), axis=1)
-    
-        results['Compound'] = results.apply(
-        lambda row: add_Compound(row, md), axis=1)
+    cols = ['Compound well A', 'Compound well B', 'Compound well C', 'Compound well D',
+    'Strain well A', 'Strain well B', 'Strain well C', 'Strain well D']
 
-        results['Strain'] = results.apply(
-        lambda row: add_Strain(row, md), axis=1)
+    missing = []
 
-        return results
+    for c in cols:
+        if c not in md.columns:
+            missing.append(c)
+        else:
+            continue
 
+    if len(c) > 0:
+        sg.popup('"'+ c + '" column headers do not match. \nThese columns will not be improted')
+        imprtd = get_dat(md, results)
     else:
-        sg.popup('Plate ID column header not found. Check spelling. \nMetadata not connected.')
-        return results
+        imprtd = get_dat(md, results)
 
+    return imprtd
