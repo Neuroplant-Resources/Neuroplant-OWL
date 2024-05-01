@@ -84,19 +84,21 @@ def connect(md_path, results):
     md = pd.read_csv(md_file_path)
 
 
-    cols = ['Compound well A', 'Compound well B', 'Compound well C', 'Compound well D',
-    'Strain well A', 'Strain well B', 'Strain well C', 'Strain well D']
+    cols = ['Compound Well A', 'Compound Well B', 'Compound Well C', 'Compound Well D',
+    'Strain Well A', 'Strain Well B', 'Strain Well C', 'Strain Well D']
 
     missing = []
 
+
     for c in cols:
-        if c not in md.columns:
+        if c not in list(md.columns):
             missing.append(c)
         else:
             continue
 
+
     if len(c) > 0:
-        sg.popup('"'+ c + '" column headers do not match. \nThese columns will not be improted')
+        sg.popup('"'+ str(missing) + '" column header(s) do not match. \nColumn(s) will not be imported')
         imprtd = get_dat(md, results)
     else:
         imprtd = get_dat(md, results)
