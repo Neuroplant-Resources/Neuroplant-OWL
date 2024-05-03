@@ -18,7 +18,6 @@ def add_PlateID(row, metadata):
         pid = 'No data'
         return pid
     else:
-        print(pid.values[0])
         return pid.values[0]
 
     

@@ -316,7 +316,7 @@ def make_GUI():
                     
                     if im_path.exists() and res_path.exists() and (len(rpath) != 0) and (len(fpath) !=0 ) and (len(results_name) != 0):
                         ai.batch_process(im_path, res_path, mdpath, v2, e2, results_name)
-
+                        print('Image analysis complete')
                         batch_win.close()
                         make_GUI()
                         break
