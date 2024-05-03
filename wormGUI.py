@@ -6,6 +6,9 @@ import tkinter as tk
 import dataviz as dv
 import webbrowser
 import pandas as pd
+import warnings
+
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
 sg.ChangeLookAndFeel('GreenTan')
