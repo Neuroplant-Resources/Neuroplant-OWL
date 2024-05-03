@@ -7,7 +7,8 @@ Installing and running the code requires some knowledge of using github, virtual
 
 1. Clone the github repo:  [Cloning this github repository](https://help.github.com/en/articles/cloning-a-repository)
 1. Create the working environment: To use the code, you first need to install the software libraries it uses. The easiest way to ensure that you have all the required packages is to work with a package manager. 
-We recommend using [MiniForge]('https://github.com/conda-forge/miniforge'), [MambaForge]('https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html'), or [MiniConda]('https://docs.conda.io/en/main/miniconda.html'). Anaconda will work too, but it can be slow and it takes up a lot disk space. To create create the environment, open the terminal associated with your package manaager (miniforge prompt, anaconda prompt, etc), navigate to the cloned repository and run the command:
+We recommend using [MiniForge]('https://github.com/conda-forge/miniforge')
+[MambaForge]('https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html'), or [MiniConda]('https://docs.conda.io/en/main/miniconda.html'). Anaconda will work too, but it can be slow and it takes up a lot disk space. To create create the environment, open the terminal associated with your package manaager (miniforge prompt, anaconda prompt, etc), navigate to the cloned repository and run the command:
    ```
    cd /path/to/repo/Neuroplant
    conda env create -f NP_conda_env.yml

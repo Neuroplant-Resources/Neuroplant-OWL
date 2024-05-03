@@ -97,7 +97,7 @@ def connect(md_path, results):
             continue
 
 
-    if len(c) > 0:
+    if len(missing) > 0:
         sg.popup('"'+ str(missing) + '" column header(s) do not match. \nColumn(s) will not be imported')
         imprtd = get_dat(md, results)
     else:
