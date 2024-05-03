@@ -1,7 +1,9 @@
 import pandas as pd
 import pathlib as plb
 import PySimpleGUI as sg
+import warnings
 
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 def add_PlateID(row, metadata):
     slotID = row['WellNo'][0]

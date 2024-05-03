@@ -20,10 +20,11 @@ import connect_metadata
 import tkinter as tk
 import tkinter.ttk as ttk
 import time
-import threading
-import queue
 import glob
 from PySimpleGUI import popup
+import warnings
+
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
 
