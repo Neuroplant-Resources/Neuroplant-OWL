@@ -3,18 +3,20 @@ A graphic user interface for analyzing images and generating confidence interval
 [![DOI](https://zenodo.org/badge/203633591.svg)](https://zenodo.org/badge/latestdoi/203633591)
 
 ## Getting started
-Installing and running the code requires some knowledge of using github, conda, jupyter notebook, and python.
+Installing and running the code requires some knowledge of using github, virtual environments, and python.
 
 1. Clone the github repo:  [Cloning this github repository](https://help.github.com/en/articles/cloning-a-repository)
-1. Create the working environment: To use the code, you first need to install the software libraries it uses. The easiest way to ensure that you have all the required packages is to work with Anaconda [install conda](https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html) or [miniconda]('https://docs.conda.io/en/main/miniconda.html'). Use the `NP_conda_env.yml` file to recreate the software libraries needed for running the code. To do so, open a terminal, navigate to the cloned git repo and run the command:
+1. Create the working environment: To use the code, you first need to install the software libraries it uses. The easiest way to ensure that you have all the required packages is to work with a package manager. 
+We recommend using [MiniForge]('https://github.com/conda-forge/miniforge'), [MambaForge]('https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html'), or [MiniConda]('https://docs.conda.io/en/main/miniconda.html'). Anaconda will work too, but it can be slow and it takes up a lot disk space. To create create the environment, open the terminal associated with your package manaager (miniforge prompt, anaconda prompt, etc), navigate to the cloned repository and run the command:
    ```
+   cd /path/to/repo/Neuroplant
    conda env create -f NP_conda_env.yml
    ```
-   This will create a conda environment called `neuroplant` that has all the packages for running the analysis code. You will only need to create the environment once.
+You will only need to create the environment once.
 
 ## Opening and running the OWL
 
-1. Run the wormGUI.py code: Navigate to the location of the github repo, activate the conda environment and run the OWL python file. The following lines of code will run each step. Be sure replace the text in the file path to match the location of the repo on your own device.
+1. To run the wormGUI.py code: Navigate to the location of the repository, activate the conda environment and run the OWL python file. The following lines of code will run each step. Be sure replace the text in the file path to match the location of the repo on your own device.
    ```
    cd /path/to/repo/Neuroplant
    conda activate neuroplant
@@ -119,7 +121,3 @@ The OWL allows users to analyze the results of their experiments by generating 9
 
  
 
-<!---
-Google drive API tutorial: https://codelabs.developers.google.com/codelabs/gsuite-apis-intro/
-try pydrive instead?
- --->
