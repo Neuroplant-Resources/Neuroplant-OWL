@@ -92,10 +92,14 @@ def batch_process(image_fpath, rslt_path, mdpath, vals, event, results_name):
     results_df = pd.DataFrame()
 
     for image in image_fpath.glob('[!._]*.tif*'):
+
+        fname = image.stem
+        print('Processing image ID ' + fname)
         pattern = '^[a-zA-Z]'
         image_data = crop_image(image, rslt_path, vals, event)
-        fname = image.stem
+
         results_df = results_df.append(image_data)
+        print(fname + ' processed')
 
 
     if path.exists(mdpath):
@@ -190,7 +194,6 @@ def crop_image(flpath, rslt_path, vals, event):
     image_nvrt = np.invert(image)
     
     # apply threshold
-    print('At threshold')
     thresh = threshold_otsu(image_nvrt)
     print('Threshold: ' + str(thresh))
 
@@ -199,7 +202,7 @@ def crop_image(flpath, rslt_path, vals, event):
     # remove artifacts connected to image border
     cleared = clear_border(bw)
     #cleared = remove_small_objects(clear_border(bw))
-    print('Clearing small objects took ', str(int(time.time() - label_begin)), 'seconds.')
+
   #  update_progressbar(self1)
 
     # label image regions
