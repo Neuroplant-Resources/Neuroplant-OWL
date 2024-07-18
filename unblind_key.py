@@ -1,117 +1,69 @@
 import pandas as pd
-import numpy as np
 import pathlib as plb
-from os import path
+import PySimpleGUI as sg
 
 
-def dict_key_compound(filename):
-    dic = {}
-    file = pd.read_csv(filename)
-    for index, row in file.iterrows():
-        dic[(row['Compound Blinded Name:'])] = (row['Compound Actual Name:'])
-        # add .trim()
-    return dic
-    
-def dict_key_strain(filename):
-    dic = {}
-    file = pd.read_csv(filename)
-    for index, row in file.iterrows():
-        dic[(row['Strain Blinded Name:'])] = (row['Strain Actual Name:'])
-        # add .trim()
-    return dic
-    
-    
-def unblind(char1, char2, di, data, input_text):
-    if str(char1) in di.keys():
-        data[input_text + char2] = data[input_text + char2].replace([char1],di[char1])
 
 
-def solve_compound_names(filename1, filename2, resultfolder, title):
-    results_folder = plb.Path(resultfolder)
-    data = pd.read_csv(filename1)
-    di = dict_key_compound(filename2)
-    for index, row in data.iterrows():
-        unblind((row['Compound Well A']), 'A', di, data, 'Compound Well ')
-        unblind((row['Compound Well B']), 'B', di, data, 'Compound Well ')
-        unblind((row['Compound Well C']), 'C', di, data, 'Compound Well ')
-        unblind((row['Compound Well D']), 'D', di, data, 'Compound Well ')
-    data.to_csv(path_or_buf= results_folder.joinpath(title +'.csv'))
-
-
-def solve_strain_names(filename1, filename2, resultfolder, title):
-    results_folder = plb.Path(resultfolder)
-    data = pd.read_csv(filename1)
-    di = dict_key_strain(filename2)
-    for index, row in data.iterrows():
-        unblind(row['Strain Well A'], 'A', di, data, 'Strain Well ')
-        unblind(row['Strain Well B'], 'B', di, data, 'Strain Well ')
-        unblind(row['Strain Well C'], 'C', di, data, 'Strain Well ')
-        unblind(row['Strain Well D'], 'D', di, data, 'Strain Well ')
-    data.to_csv(path_or_buf= results_folder.joinpath(title +'.csv'))
-
-def solve_both_strain_and_compound_names(filename1, filename2, resultfolder, title):
-    results_folder = plb.Path(resultfolder)
-    data = pd.read_csv(filename1)
-    di_c = dict_key_compound(filename2)
-    di_s = dict_key_strain(filename2)
-    for index, row in data.iterrows():
-        unblind(row['Compound Well A'], 'A', di_c, data, 'Compound Well ')
-        unblind(row['Compound Well B'], 'B', di_c, data, 'Compound Well ')
-        unblind(row['Compound Well C'], 'C', di_c, data, 'Compound Well ')
-        unblind(row['Compound Well D'], 'D', di_c, data, 'Compound Well ')
-        unblind(row['Strain Well A'], 'A', di_s, data, 'Strain Well ')
-        unblind(row['Strain Well B'], 'B', di_s, data, 'Strain Well ')
-        unblind(row['Strain Well C'], 'C', di_s, data, 'Strain Well ')
-        unblind(row['Strain Well D'], 'D', di_s, data, 'Strain Well ')
-    data.to_csv(path_or_buf= results_folder.joinpath(title +'.csv'))
- 
- 
- 
- 
- 
- 
- ##############batch results file######################################
- 
-def solve_compound_names_batchres(filename1, filename2, resultfolder, title):
-    results_folder = plb.Path(resultfolder)
-    data = pd.read_csv(filename1)
-    di = dict_key_compound(filename2)
-    for index, row in data.iterrows():
-        one = row['Compound']
-        if one in di.keys():
-            data['Compound'] = data['Compound'].replace([one], di[one])
-    data.to_csv(path_or_buf= results_folder.joinpath(title +'.csv'))
-
-
-def solve_strain_names_batchres(filename1, filename2, resultfolder, title):
-    results_folder = plb.Path(resultfolder)
-    data = pd.read_csv(filename1)
-    di = dict_key_strain(filename2)
-    for index, row in data.iterrows():
-        one = row['Strain']
-        if one in di.keys():
-            data['Strain'] = data['Strain'].replace([one], di[one])
-    data.to_csv(path_or_buf= results_folder.joinpath(title +'.csv'))
-
-def solve_both_strain_and_compound_names_batchres(filename1, filename2, resultfolder, title):
-    results_folder = plb.Path(resultfolder)
-    data = pd.read_csv(filename1)
-    di_c = dict_key_compound(filename2)
-    di_s = dict_key_strain(filename2)
-    for index, row in data.iterrows():
-        one = row['Compound']
-        one = row['Strain']
-        if one in di_c.keys():
-            data['Compound'] = data['Compound'].replace([one], di[one])
-        if one in di_s.keys():
-            data['Strain'] = data['Strain'].replace([one], di[one])
-    data.to_csv(path_or_buf= results_folder.joinpath(title +'.csv'))
-    
+def dict_key(bkey_fpath):
+    bkey = pd.read_csv(bkey_fpath)
+    comp_dict = dict(zip(bkey['Compound blind'], bkey['Compound']))
+    strain_dict = dict(zip(bkey['Strain blind'], bkey['Strain']))
+    return comp_dict, strain_dict
     
 
-#if __name__ == '__main__':
-#    solve_compound_names('test-metadata.csv', 'test-key.csv')
-#    copy_of_original_input_metadata('test-metadata.csv')
-#    data.to_csv(path_or_buf= results_folder.joinpath('copy.csv'))
+def solve_metadata(di, mdat, v):
 
+    wells = ['A', 'B', 'C', 'D']
+
+    if v == 'Strain name':
+        x = 'Strain Well '
+        ubx = 'UB Strain Well '
+    elif v == 'Test compound':
+        x = 'Compound Well '
+        ubx = 'UB Compound Well '
+    
+    missing = {}
+
+    for index, row in mdat.iterrows():
+        for w in wells:
+            blind_header = x + w
+            ub_header = ubx + w
+            #print(ub_header)
+            blinded = row[blind_header]
+            ub = di.get(blinded)
+            if ub != None:
+                mdat.loc[index, ub_header] = ub
+            else: 
+                missing.update({blinded: [index, blind_header]})
+    if missing:
+        unmatched = ["Not matched: {}  Row: {} Column: {} ".format(key, missing[key][0], missing[key][1]) for key in missing]
+        print(unmatched)        #print(str(unmatched).split(','))#.join('\n')
+        s = '\n'.join([str(i) for i in unmatched])
+        sg.PopupScrolled(s, title='Unmasked conditions')
+
+               
+    return mdat
+
+def unblind(values):
+    
+    results_folder = plb.Path(values['-results_folder-'])
+    bkey = pd.read_csv(values['key_file'])
+    bkey_dict = dict(zip(bkey['Blind'], bkey['Actual']))
+    condition = values['_conditions_']
+
+    if values['_data_2UB_'] == 'Metadata sheet':
+        b = pd.read_csv(values['_to_unblind_'])
+        md = solve_metadata(bkey_dict, b, condition)
+        md.to_csv(results_folder.joinpath(values['-metadata_name-'] + '.csv')) 
+    elif values['_data_2UB_'] == 'Image analysis summary':
+        b = pd.read_csv(values['_to_unblind_'], index_col=0)
+        if condition == 'Strain name':
+            b['UB_Strain'] =  [bkey_dict.get(x, 'Strain column not matched') for x in b['Strain']]
+        elif condition == 'Test compound':
+            b['UB_Compound'] =  [bkey_dict.get(x, 'Compound column not matched') for x in b['Compound']]
+        b.to_csv(results_folder.joinpath(values['-metadata_name-'] + '.csv'))
+
+
+ 
 
