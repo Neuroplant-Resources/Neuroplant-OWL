@@ -26,7 +26,13 @@ import warnings
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-
+def dpi2mm(dpi):
+# 1 inch = 25.4mm
+    px_mm = 1200/25.4
+# 1200 pixels per 25.4mm
+    mm = (-(dpi/px_mm)+32.5)
+#mm_df = ref_df.apply(lambda x: -(x/px_mm)+32.5)
+    return mm
 
 
 def calc_chemotaxis_index(filtered_worm, dims):
@@ -170,6 +176,8 @@ def loopWell(df_f,image, im_path, path_rslt, vals, event):
         tw = len(filtered_worm)
         CI = calc_chemotaxis_index(filtered_worm,image_dims)
         qc = assay_qc(tw)
+        mean = filtered_worm.X.mean()
+        mean_mm = dpi2mm(mean)
 
 
         df_f.loc[index, 'File Name'] = image_fname
@@ -180,6 +188,7 @@ def loopWell(df_f,image, im_path, path_rslt, vals, event):
         df_f.loc[index, 'Passes QC'] = qc
         df_f.loc[index, 'Compound'] = compound
         df_f.loc[index, 'Strain'] = strain
+        df_f.loc[index, 'Mean Position'] = mean_mm
 
 
     return df_f

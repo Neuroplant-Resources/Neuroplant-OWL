@@ -10,17 +10,16 @@ import matplotlib.ticker as ticker
 import PySimpleGUI as sg
 
 
-        
-# function for converting the dictionary that has the variable as keys and the the corresponding locations as values into a data frame, and arranging the unit from pixel per inch to mm
 def converting_ppi_to_mm(di):
     
     #conversion factor from pixel per inch to mm
     px_mm = 1200 / 25.4
     
     #converts all location values in the data frame from ppi to mm, and orients them to the starting position of middle from left.
-    df = di.apply(lambda x: -(x/px_mm)+32.5)
+    mm = di.apply(lambda x: -(x/px_mm)+32.5)
     
-    return df
+    return mm
+
     
     
 #accessing the location files of each well, and putting the location values of each strain into a dictionary
@@ -42,11 +41,11 @@ def getting_location_collumns(row, folder_of_loc_files, c, dic):
         #converts the location file into a pandas data frame
         location_file = pd.read_csv(location)
         
-        #gets the location of the worms, converts it into a list
+        #gets the location of the worms, converts it into a lis
         x_pos = location_file['X']
-
         x_pos_list = x_pos.tolist()
-    
+        
+        meanpos = x_pos.mean()
         #if the strain is not in the dictionary, creates its key and adds the locations as its value
         if cname not in dic:
             dic[cname] = x_pos_list
@@ -60,7 +59,7 @@ def getting_location_collumns(row, folder_of_loc_files, c, dic):
         pass
             
     
-    return dic
+    return dic, meanpos
             
 
 #2 group estimation plot for compound as independent variable
@@ -93,15 +92,16 @@ def do_dv_tg(vals):
     # #loops through all the rows in the batch results data frame
     for index, row in filtered.iterrows():
     #     #adding compounds as keys and locations of the worms as values to the dictionary
-        dc = getting_location_collumns(row, folder_of_loc_files, cond, dc)
+        dtnry, m = getting_location_collumns(row, folder_of_loc_files, cond, dc)
+
+        filtered.loc[index, 'MeanPos'] = m
     
     #converting the dictionary into a data frame where collumn titles are time points and converting the location units from pixel per inch to mm
-    d = pd.DataFrame(dict([ (k,pd.Series(v)) for k,v in dc.items() ]))
-    df = converting_ppi_to_mm(d)
+    d = pd.DataFrame(dict([ (k,pd.Series(v)) for k,v in dtnry.items() ]))
     
 
     #loads the data frame and the tuple to dabest
-    new_object = db.load(df, idx= (control, test))
+    new_object = db.load(d, idx= (control, test))
     
     #two group estimation plot
     mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
@@ -116,7 +116,11 @@ def do_data_visualisation(vals, ck):
     condition = vals['_IV_sc_']
     
     #converts the batch results file from a csv to a pandas data frame
-    batch_res = pd.read_csv(vals['_sumfile_sc_'])
+    batch_res = pd.read_csv(vals['_sumfile_sc_'], index_col=0)
+
+    batch_res = batch_res.sort_values([condition], ascending=[True])
+    batch_res = batch_res.reset_index(drop=True)
+    #batch_res = summary_data.reset_index(drop=True)
     
     #converts the folder that contains the location values from a string to a pathlib object
     folder_of_loc_files = plb.Path(vals['_locfile_sc_'])
@@ -130,23 +134,28 @@ def do_data_visualisation(vals, ck):
             if row['Passes QC'] == 'N':
                 continue
             elif row['Passes QC'] == 'Y':
-                dc = getting_location_collumns(row, folder_of_loc_files, condition, dc)
+                dtnry, m = getting_location_collumns(row, folder_of_loc_files, condition, dc)
+                batch_res.loc[index, 'MeanPos'] = m
         #adding strains as keys and locations of the worms as values to the dictionary
     elif vals['_qc_'] == False:
         for index, row in batch_res.iterrows():
             
-            dc = getting_location_collumns(row, folder_of_loc_files, condition, dc)
-
+            dtnry, m = getting_location_collumns(row, folder_of_loc_files, condition, dc)
+            batch_res.loc[index, 'MeanPos'] = m
 
 
     #converting the dictionary into a data frame where collumn titles are time points and converting the location units from pixel per inch to mm
-    d = pd.DataFrame(dict([ (k,pd.Series(v)) for k,v in dc.items() ]))
+    d = pd.DataFrame(dict([ (k,pd.Series(v)) for k,v in dtnry.items() ]))
+    plot_df = converting_ppi_to_mm(d)
+    batch_res['MeanPos'] = converting_ppi_to_mm(batch_res['MeanPos'])
+    batch_res['Compound'] = batch_res['Compound'].str.lower()
+
     #d = pd.DataFrame.from_dict(dc)
-    
-    data_frame = converting_ppi_to_mm(d)    
+      
     control = vals['_control_sc_'].lower()
 
-    condition_list = data_frame.columns.tolist()
+
+    condition_list = plot_df.columns.tolist()
     condition_list = [x.lower() for x in condition_list]
 
     if len(condition_list) <= 1:
@@ -155,19 +164,27 @@ def do_data_visualisation(vals, ck):
         condition_list.remove(control)
         condition_list.insert(0, control)
 
+        
+        control_df = batch_res.loc[batch_res[condition]==control]
+        no_control_df = batch_res.loc[batch_res[condition]!=control]
 
+        ordered = control_df.append(no_control_df)
+        ordered.to_csv('/Users/Emily/OneDrive - Stanford/Desktop/screens/test_figs/test.csv')
     
     #loads the data frame and the tuple to dabest
-        new_object = db.load(data_frame, idx= condition_list)
+        new_object = db.load(plot_df, idx= condition_list)
         
         # #if no colors key is attached
         
         if ck.empty:
             
              #shared control visualisation
-            mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
+            mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, es_marker_size = 3, swarm_label = 'Worm Locations \nwithin the arena (mm)', contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
             rawswarm_axes = mm_refs_plot.axes[0]
             contrast_axes = mm_refs_plot.axes[1]
+
+            rawswarm_axes.scatter(ordered.Compound, ordered.MeanPos, s=3,c='black')
+            rawswarm_axes.axhline(y=0, color='#808080', linestyle='--')
 
             rawswarm_axes.yaxis.set_tick_params(tickdir='in')
             rawswarm_axes.xaxis.set_tick_params(tickdir='in')
@@ -180,26 +197,33 @@ def do_data_visualisation(vals, ck):
             colors = ck.apply(lambda x: x.astype(str).str.lower())
             cols = colors.columns
             cdict = colors.set_index(cols[0])[cols[1]].to_dict()
-            print(cdict)       
+          
         
             try:
-                mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', custom_palette=cdict, contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
+                mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, es_marker_size = 3,swarm_label = 'Worm Locations \nwithin the arena (mm)', custom_palette=cdict, contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
                 rawswarm_axes = mm_refs_plot.axes[0]
                 contrast_axes = mm_refs_plot.axes[1]
 
                 rawswarm_axes.yaxis.set_tick_params(tickdir='in')
                 rawswarm_axes.xaxis.set_tick_params(tickdir='in')
 
+                rawswarm_axes.scatter(ordered.Compound, ordered.MeanPos, s=3,c='black', alpha = .5)
+                rawswarm_axes.axhline(y=0, color='#808080', linestyle='--')
+
 
                 contrast_axes.yaxis.set_tick_params(tickdir='in')
                 contrast_axes.xaxis.set_tick_params(tickdir='in')
+            
             except ValueError:
                 
                 d = {k: v or 'red' for (k, v) in cdict.items()}
                 #c = {k: v for k, v in cdict.items() if v}
-                mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, swarm_label = 'Worm Locations \nwithin the arena (mm)', custom_palette=d, contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
+                mm_refs_plot = new_object.mean_diff.plot(raw_marker_size=1, es_marker_size = 3,swarm_label = 'Worm Locations \nwithin the arena (mm)', custom_palette=d, contrast_label= 'Difference of the Mean Locations (mm)', contrast_ylim = (-20,20), swarm_ylim=(-35,35))
                 rawswarm_axes = mm_refs_plot.axes[0]
                 contrast_axes = mm_refs_plot.axes[1]
+
+                rawswarm_axes.scatter(ordered.Compound, ordered.MeanPos, s=3,c='black', alpha = .5)
+                rawswarm_axes.axhline(y=0, color='#808080', linestyle='--')
 
                 rawswarm_axes.yaxis.set_tick_params(tickdir='in')
                 rawswarm_axes.xaxis.set_tick_params(tickdir='in')
